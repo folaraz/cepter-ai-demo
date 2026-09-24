@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DataRoom Lens — tokens</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&amp;family=Inter:wght@400;500;600&amp;family=DM+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:'Inter',-apple-system,sans-serif;letter-spacing:.01em;-webkit-font-smoothing:antialiased}
+.display{font-family:'Newsreader',Georgia,serif;font-weight:300;letter-spacing:-.02em}
+.mono{font-family:'DM Mono',monospace;letter-spacing:0}
+.label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.card{background:#FFFFFF;border:1px solid #E7E5E4;border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;gap:4px}
+.sw{display:grid;grid-template-columns:24px 128px 74px 1fr;gap:10px;align-items:center;font-size:12px;height:28px}
+.c{width:20px;height:20px;border-radius:9999px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500}
+.g{font-family:'DM Mono',monospace;font-size:11px;width:12px;text-align:center}
+.pill{display:inline-flex;align-items:center;height:36px;padding:0 18px;border-radius:9999px;font-size:13px;font-weight:500}
+</style>
+</helmet>
+<div style="width: 1280px; height: 900px; box-sizing: border-box; padding: 40px 44px; background: #F5F5F5; color: #0C0A09; display: flex; flex-direction: column; gap: 24px; font-variant-numeric: tabular-nums">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span class="label" style="color: #6B6660">Tokens</span>
+<h1 class="display" style="margin: 0; font-size: 36px; line-height: 1.12; max-width: 900px">Off-white canvas, warm ink, one pill. Colour only where it carries meaning.</h1>
+<p style="margin: 0; font-size: 14px; color: #4E4E4E; max-width: 820px">Newsreader 300 for display, Inter 400/500 for reading and controls, DM Mono for references. Ratios measured on canvas / surface / surface-strong; the lowest value is shown where it matters.</p>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr 1.1fr; gap: 16px; flex-grow: 1">
+
+<section class="card">
+<span class="label" style="color: #6B6660; padding-bottom: 8px">Light</span>
+<div class="sw"><span class="c" style="background: #F5F5F5"></span><span>--canvas</span><span class="mono">#F5F5F5</span><span style="color: #6B6660">page</span></div>
+<div class="sw"><span class="c" style="background: #FAFAFA"></span><span>--canvas-soft</span><span class="mono">#FAFAFA</span><span style="color: #6B6660">sidebar</span></div>
+<div class="sw"><span class="c" style="background: #FFFFFF"></span><span>--surface</span><span class="mono">#FFFFFF</span><span style="color: #6B6660">cards, table, panels</span></div>
+<div class="sw"><span class="c" style="background: #F0EFED"></span><span>--surface-strong</span><span class="mono">#F0EFED</span><span style="color: #6B6660">hover, selected</span></div>
+<div class="sw"><span class="c" style="background: #E7E5E4"></span><span>--hairline</span><span class="mono">#E7E5E4</span><span style="color: #6B6660">decorative dividers</span></div>
+<div class="sw"><span class="c" style="background: #8A8580"></span><span>--control-border</span><span class="mono">#8A8580</span><span style="color: #6B6660">inputs, outline pills · 3.2 : 1</span></div>
+<div class="sw"><span class="c" style="background: #6B6660"></span><span>--muted</span><span class="mono">#6B6660</span><span style="color: #6B6660">labels · 4.95 : 1</span></div>
+<div class="sw"><span class="c" style="background: #4E4E4E"></span><span>--body</span><span class="mono">#4E4E4E</span><span style="color: #6B6660">secondary · 7.2 : 1</span></div>
+<div class="sw"><span class="c" style="background: #292524"></span><span>--primary</span><span class="mono">#292524</span><span style="color: #6B6660">ink pill · white 15 : 1</span></div>
+<div class="sw"><span class="c" style="background: #0C0A09"></span><span>--ink</span><span class="mono">#0C0A09</span><span style="color: #6B6660">text · 17 : 1</span></div>
+<div class="sw"><span class="c" style="background: #2B4FAE"></span><span>--focus</span><span class="mono">#2B4FAE</span><span style="color: #6B6660">2px ring · 6.5 : 1</span></div>
+<div class="sw"><span class="c" style="background: #FCE7A0"></span><span>--mark</span><span class="mono">#FCE7A0</span><span style="color: #6B6660">cited quote</span></div>
+</section>
+
+<section class="card" style="background: #1C1917; border-color: #292524; color: #FAFAF9">
+<span class="label" style="color: #A8A29E; padding-bottom: 8px">Dark</span>
+<div class="sw"><span class="c" style="background: #0C0A09; box-shadow: inset 0 0 0 1px rgba(255,255,255,.15)"></span><span>--canvas</span><span class="mono">#0C0A09</span><span style="color: #A8A29E">page</span></div>
+<div class="sw"><span class="c" style="background: #1C1917; box-shadow: inset 0 0 0 1px rgba(255,255,255,.15)"></span><span>--surface</span><span class="mono">#1C1917</span><span style="color: #A8A29E">cards</span></div>
+<div class="sw"><span class="c" style="background: #292524"></span><span>--surface-strong</span><span class="mono">#292524</span><span style="color: #A8A29E">hover, hairline</span></div>
+<div class="sw"><span class="c" style="background: #78716C"></span><span>--control-border</span><span class="mono">#78716C</span><span style="color: #A8A29E">3.2 : 1</span></div>
+<div class="sw"><span class="c" style="background: #A8A29E"></span><span>--muted</span><span class="mono">#A8A29E</span><span style="color: #A8A29E">6.0 : 1</span></div>
+<div class="sw"><span class="c" style="background: #D6D3D1"></span><span>--body</span><span class="mono">#D6D3D1</span><span style="color: #A8A29E">10 : 1</span></div>
+<div class="sw"><span class="c" style="background: #FAFAF9"></span><span>--primary</span><span class="mono">#FAFAF9</span><span style="color: #A8A29E">pill, ink text on it</span></div>
+<div class="sw"><span class="c" style="background: #93AEEF"></span><span>--focus</span><span class="mono">#93AEEF</span><span style="color: #A8A29E">6.9 : 1</span></div>
+<div class="sw"><span class="c" style="background: #4F4212"></span><span>--mark</span><span class="mono">#4F4212</span><span style="color: #A8A29E">9.5 : 1 with ink</span></div>
+<span style="font-size: 12px; color: #A8A29E; padding-top: 10px">Meaning colours are lightened in dark (e.g. critical #F28B7D, ok #6CC98F), all ≥ 6.3 : 1.</span>
+</section>
+
+<div style="display: flex; flex-direction: column; gap: 16px">
+<section class="card" style="gap: 10px">
+<span class="label" style="color: #6B6660">Meaning · glyph + word + colour, all ≥ 5 : 1</span>
+<div style="display: grid; grid-template-columns: 70px 1fr; gap: 8px 12px; font-size: 12px; align-items: start">
+<span style="color: #6B6660; padding-top: 2px">Severity</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px"><span class="tag" style="color: #B42318"><span class="g">◆</span>Critical</span><span class="tag" style="color: #A14A00"><span class="g">▲</span>High</span><span class="tag" style="color: #7A5F00"><span class="g">●</span>Medium</span><span class="tag" style="color: #4B5B72"><span class="g">○</span>Low</span></div>
+<span style="color: #6B6660; padding-top: 2px">Result</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px"><span class="tag" style="color: #B42318"><span class="g">✕</span>Fail</span><span class="tag" style="color: #8A5A00"><span class="g">≠</span>Conflict</span><span class="tag" style="color: #2B4FAE"><span class="g">○</span>Missing evidence</span><span class="tag" style="color: #166534"><span class="g">✓</span>Pass</span></div>
+<span style="color: #6B6660; padding-top: 2px">Review</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px"><span class="tag" style="color: #4E4E4E"><span class="g">◇</span>AI-extracted</span><span class="tag" style="color: #A14A00"><span class="g">!</span>Needs review</span><span class="tag" style="color: #166534"><span class="g">✓</span>Lawyer-verified</span><span class="tag" style="color: #2B4FAE"><span class="g">✎</span>Corrected</span></div>
+</div>
+<span class="label" style="color: #6B6660; padding-top: 8px">Shape</span>
+<div style="display: flex; gap: 10px; align-items: center">
+<span class="pill" style="background: #292524; color: #FFFFFF">Accept</span>
+<span class="pill" style="border: 1px solid #8A8580">Correct</span>
+<span style="font-size: 12px; color: #4E4E4E">Pills 9999 · cards 16 · inner 12 · inputs 8 · keys 4</span>
+</div>
+</section>
+<section class="card" style="gap: 8px; flex-grow: 1">
+<span class="label" style="color: #6B6660; padding-bottom: 4px">Type</span>
+<div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="width: 22px; font-size: 11px; color: #6B6660">36</span><span class="display" style="font-size: 36px; line-height: 1.1">Newsreader 300</span></div>
+<div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="width: 22px; font-size: 11px; color: #6B6660">26</span><span class="display" style="font-size: 26px">Finding title</span></div>
+<div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="width: 22px; font-size: 11px; color: #6B6660">15</span><span style="font-size: 15px; font-weight: 500">Inter 500 · emphasis</span></div>
+<div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="width: 22px; font-size: 11px; color: #6B6660">14</span><span style="font-size: 14px">Inter 400 · body, findings</span></div>
+<div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="width: 22px; font-size: 11px; color: #6B6660">12</span><span style="font-size: 12px; color: #4E4E4E">Inter · meta and help</span></div>
+<div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="width: 22px; font-size: 11px; color: #6B6660">11</span><span class="label" style="color: #6B6660">Inter 600 label · 01. section</span></div>
+<div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="width: 22px; font-size: 11px; color: #6B6660">11</span><span class="mono" style="font-size: 12px">grid_offer:p2:¶3 · DM Mono</span></div>
+</section>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

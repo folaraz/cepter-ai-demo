@@ -1,0 +1,52 @@
+{
+  "id": "F-02",
+  "check_id": "grid_before_cod",
+  "title": "Grid connection falls 184 days after the PPA target COD",
+  "severity": "high",
+  "result": "fail",
+  "review": "ai_extracted",
+  "why": "The plant cannot export, and so cannot earn under the PPA, before it is connected. The connection lands 91 days before the PPA long-stop date, after which the buyer may terminate.",
+  "how": "Both dates verified verbatim. The check fails if connection_date > target_cod. 1 Oct 2029 is 184 days after 31 Mar 2029.",
+  "evidence": [
+    {
+      "kind": "quote",
+      "citation": {
+        "document_id": "grid",
+        "paragraph_id": "grid_offer:p2:¶3",
+        "page": 2,
+        "quote": "The Connection Date shall be 1 October 2029"
+      },
+      "document_title": "Grid connection offer",
+      "file_name": "grid_offer.pdf",
+      "role": "connection date",
+      "heading": "4. Connection",
+      "paragraph_text": "The Maximum Export Capacity at the Point of Connection shall be 45 MW. The Connection Date shall be 1 October 2029, subject to completion of Reinforcement Works at Wickham Primary Substation.",
+      "quote_start": 71,
+      "quote_end": 114,
+      "status": "verified"
+    },
+    {
+      "kind": "quote",
+      "citation": {
+        "document_id": "ppa",
+        "paragraph_id": "ppa:p4:¶1",
+        "page": 4,
+        "quote": "Commercial Operation on or before 31 March 2029"
+      },
+      "document_title": "Power purchase agreement",
+      "file_name": "ppa.pdf",
+      "role": "target COD",
+      "heading": "6. Commercial Operation",
+      "paragraph_text": "The Generator shall use reasonable endeavours to achieve Commercial Operation on or before 31 March 2029 (the \"Target COD\").",
+      "quote_start": 57,
+      "quote_end": 104,
+      "status": "verified"
+    }
+  ],
+  "quote_count": 2,
+  "gap_count": 0,
+  "source_titles": [
+    "Grid connection offer",
+    "Power purchase agreement"
+  ]
+}

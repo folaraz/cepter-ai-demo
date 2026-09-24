@@ -1,0 +1,208 @@
+/* DataRoom Lens design tokens.
+   Import once at the app root. Components use only these variables: no raw hex in components.
+   Every text colour is >= 4.5:1 and every control border / status glyph >= 3:1
+   on canvas, surface and surface-strong, in both themes. */
+
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap");
+
+:root,
+[data-theme="light"] {
+  /* Surfaces */
+  --canvas: #f5f5f5;
+  --canvas-soft: #fafafa;
+  --surface: #ffffff;
+  --surface-strong: #f0efed;
+
+  /* Lines */
+  --hairline: #e7e5e4;          /* decorative dividers only */
+  --control-border: #8a8580;    /* inputs, selects, outline pills (3.2:1+) */
+
+  /* Text */
+  --ink: #0c0a09;
+  --body: #4e4e4e;
+  --muted: #6b6660;             /* labels, meta (4.95:1 on surface-strong) */
+  --disabled: #a8a29e;          /* disabled text only, never information */
+
+  /* Primary action: the one ink pill per view */
+  --primary: #292524;
+  --on-primary: #ffffff;
+
+  /* Meaning (glyph + word + colour, never colour alone) */
+  --critical: #b42318;          /* ◆ Critical, ✕ Fail */
+  --high: #a14a00;              /* ▲ High, ! Needs review */
+  --medium: #7a5f00;            /* ● Medium */
+  --low: #4b5b72;               /* ○ Low */
+  --conflict: #8a5a00;          /* ≠ Conflict */
+  --missing: #2b4fae;           /* ○ Missing evidence, ✎ Corrected */
+  --ok: #166534;                /* ✓ Pass, Lawyer-verified, Verified quote */
+  --missing-soft: #eef2fb;      /* fill for the dashed missing-evidence card */
+
+  /* Interaction */
+  --focus: #2b4fae;
+  --mark: #fce7a0;              /* highlighted quote; ink text on it */
+  --scrim: rgba(12, 10, 9, 0.28);
+
+  /* Depth: one tier, used only on the document page, dialogs, toast */
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+
+  /* Atmosphere: a single glow behind the Summary headline only */
+  --orb: rgba(168, 200, 232, 0.35);
+  --orb-0: rgba(168, 200, 232, 0);
+
+  /* Type */
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --tracking-body: 0.01em;
+  --tracking-display: -0.02em;
+  --tracking-label: 0.08em;
+
+  /* Shape */
+  --radius-pill: 9999px;        /* every button, nav item, status badge, toast */
+  --radius-card: 16px;          /* panels, table card, dialogs */
+  --radius-inner: 12px;         /* source cards, missing-evidence card */
+  --radius-input: 8px;
+  --radius-key: 4px;            /* keyboard caps, inline code */
+
+  /* Spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* Sizes */
+  --topbar-h: 56px;
+  --sidebar-w: 248px;
+  --row-h: 44px;
+  --btn-h: 36px;
+  --input-h: 44px;
+}
+
+[data-theme="dark"] {
+  --canvas: #0c0a09;
+  --canvas-soft: #0c0a09;
+  --surface: #1c1917;
+  --surface-strong: #292524;
+  --hairline: #292524;
+  --control-border: #78716c;
+  --ink: #fafaf9;
+  --body: #d6d3d1;
+  --muted: #a8a29e;
+  --disabled: #78716c;
+  --primary: #fafaf9;
+  --on-primary: #0c0a09;
+  --critical: #f28b7d;
+  --high: #e9a25c;
+  --medium: #d8bd5b;
+  --low: #a9b8ce;
+  --conflict: #e0ae58;
+  --missing: #93aeef;
+  --ok: #6cc98f;
+  --missing-soft: #1e2436;
+  --focus: #93aeef;
+  --mark: #4f4212;
+  --scrim: rgba(0, 0, 0, 0.55);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --orb: rgba(168, 200, 232, 0.1);
+  --orb-0: rgba(168, 200, 232, 0);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --canvas: #0c0a09;
+    --canvas-soft: #0c0a09;
+    --surface: #1c1917;
+    --surface-strong: #292524;
+    --hairline: #292524;
+    --control-border: #78716c;
+    --ink: #fafaf9;
+    --body: #d6d3d1;
+    --muted: #a8a29e;
+    --disabled: #78716c;
+    --primary: #fafaf9;
+    --on-primary: #0c0a09;
+    --critical: #f28b7d;
+    --high: #e9a25c;
+    --medium: #d8bd5b;
+    --low: #a9b8ce;
+    --conflict: #e0ae58;
+    --missing: #93aeef;
+    --ok: #6cc98f;
+    --missing-soft: #1e2436;
+    --focus: #93aeef;
+    --mark: #4f4212;
+    --scrim: rgba(0, 0, 0, 0.55);
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --orb: rgba(168, 200, 232, 0.1);
+  }
+}
+
+/* ---------- Base ---------- */
+
+html,
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: var(--tracking-body);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ---------- Type roles ---------- */
+
+.t-display {           /* page headline: 36px */
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 36px;
+  line-height: 1.12;
+  letter-spacing: var(--tracking-display);
+}
+.t-title {             /* finding title in Evidence: 26px */
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.t-label {             /* section labels, column headers */
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.t-ref {               /* paragraph IDs, check names, file names */
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0;
+}
+.t-document {          /* contract text in the source viewer */
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.7;
+  letter-spacing: 0;
+}

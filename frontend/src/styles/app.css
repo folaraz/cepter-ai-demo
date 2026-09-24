@@ -1,0 +1,135 @@
+/* Tailwind v4, themed entirely from design/tokens.css.
+   Every default colour, font, radius, shadow and type size is cleared, so the only
+   utilities that exist are the design tokens (bg-surface, text-muted, rounded-card, ...).
+   Theme entries that share a token's name (e.g. --radius-card) are harmless: Tailwind
+   emits them inside @layer theme, and the unlayered tokens.css definitions always win. */
+
+@import 'tailwindcss';
+
+@theme inline {
+  /* tokens.css sets the root font size to 14px, so pin the spacing unit to the
+     4px token base instead of Tailwind's rem default (p-4 = 16px = --space-4). */
+  --spacing: 4px;
+
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-canvas: var(--canvas);
+  --color-canvas-soft: var(--canvas-soft);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-hairline: var(--hairline);
+  --color-control: var(--control-border);
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+  --color-disabled: var(--disabled);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-critical: var(--critical);
+  --color-high: var(--high);
+  --color-medium: var(--medium);
+  --color-low: var(--low);
+  --color-conflict: var(--conflict);
+  --color-missing: var(--missing);
+  --color-missing-soft: var(--missing-soft);
+  --color-ok: var(--ok);
+  --color-focus: var(--focus);
+  --color-mark: var(--mark);
+  --color-scrim: var(--scrim);
+  /* Paper: the document page is always light (see .paper below). */
+  --color-paper: var(--paper);
+  --color-paper-ink: var(--paper-ink);
+  --color-paper-body: var(--paper-body);
+  --color-paper-muted: var(--paper-muted);
+  --color-paper-rule: var(--paper-rule);
+
+  --font-*: initial;
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+
+  --radius-*: initial;
+  --radius-pill: var(--radius-pill);
+  --radius-card: var(--radius-card);
+  --radius-inner: var(--radius-inner);
+  --radius-input: var(--radius-input);
+  --radius-key: var(--radius-key);
+
+  --shadow-*: initial;
+  --shadow-lift: var(--shadow);
+
+  --tracking-*: initial;
+  --tracking-body: var(--tracking-body);
+  --tracking-display: var(--tracking-display);
+  --tracking-label: var(--tracking-label);
+  --tracking-tight: -0.01em;
+  --tracking-none: 0;
+
+  /* Type sizes used by the artboard. Line height is inherited unless set. */
+  --text-*: initial;
+  --text-2xs: 10px;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-base: 14px;
+  --text-lg: 15px;
+  --text-xl: 16px;
+  --text-heading: 19px;
+  --text-dialog: 22px;
+  --text-title: 26px;
+  --text-display: 36px;
+
+  --breakpoint-*: initial;
+  --breakpoint-md: 900px;
+  --breakpoint-lg: 1100px;
+
+  --animate-pulse-soft: pulse-soft 1.4s ease-in-out infinite;
+  --animate-rise: rise 180ms ease-out;
+
+  @keyframes pulse-soft {
+    50% {
+      opacity: 0.55;
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+}
+
+/* The only raw colours in the app: the document page is paper and stays light in dark
+   mode, so its highlight and status glyphs use the light-theme meaning colours. */
+.paper {
+  --paper: #ffffff;
+  --paper-ink: #0c0a09;
+  --paper-body: #4e4e4e;
+  --paper-muted: #6b6660;
+  --paper-rule: #e7e5e4;
+  --mark: #fce7a0;
+  --ok: #166534;
+  --conflict: #8a5a00;
+  color-scheme: light;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  button:not(:disabled, [aria-disabled='true']) {
+    cursor: pointer;
+  }
+  [tabindex='-1']:focus:not(:focus-visible) {
+    outline: none;
+  }
+  dialog::backdrop {
+    background: var(--scrim);
+  }
+  textarea::placeholder {
+    color: var(--muted);
+  }
+}
