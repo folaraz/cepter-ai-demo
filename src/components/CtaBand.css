@@ -1,0 +1,8 @@
+.cx-cta-band { position: relative; overflow: hidden; background: var(--cx-color-canvas); padding: 96px 24px; text-align: center; font-family: var(--cx-font-body); }
+.cx-cta-band__inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.cx-cta-band__subtitle { margin: 0; font-size: 16px; line-height: 1.5; letter-spacing: 0.16px; color: var(--cx-color-body); max-width: 520px; }
+.cx-cta-band__actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+.cx-cta-band--dark { background: var(--cx-color-surface-dark); }
+.cx-cta-band--dark .cx-display-lg { color: var(--cx-color-on-dark); }
+.cx-cta-band--dark .cx-cta-band__subtitle { color: var(--cx-color-on-dark-soft); }
+.cx-cta-band--dark .cx-orb { opacity: 0.35; }

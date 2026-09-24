@@ -1,0 +1,8 @@
+.cx-badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--cx-font-body); font-size: 12px; font-weight: 600; line-height: 1.4; letter-spacing: 0.96px; text-transform: uppercase; border-radius: var(--cx-radius-pill); padding: 4px 10px; white-space: nowrap; }
+.cx-badge--default { background: var(--cx-color-surface-strong); color: var(--cx-color-ink); }
+.cx-badge--outline { background: transparent; color: var(--cx-color-ink); box-shadow: inset 0 0 0 1px var(--cx-color-hairline-strong); }
+.cx-badge--ink { background: var(--cx-color-primary); color: var(--cx-color-on-primary); }
+.cx-badge--on-dark { background: var(--cx-color-surface-dark-elevated); color: var(--cx-color-on-dark); }
+.cx-badge--tag { text-transform: none; letter-spacing: 0; font-weight: 500; font-size: 13px; border-radius: var(--cx-radius-xs); padding: 2px 8px; }
+.cx-badge__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.cx-badge__dot--success { background: var(--cx-color-success); }

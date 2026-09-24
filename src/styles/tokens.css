@@ -1,0 +1,72 @@
+:root {
+  /* Brand */
+  --cx-color-primary: #292524;
+  --cx-color-primary-active: #0c0a09;
+
+  /* Surface */
+  --cx-color-canvas: #f5f5f5;
+  --cx-color-canvas-soft: #fafafa;
+  --cx-color-canvas-deep: #0c0a09;
+  --cx-color-surface-card: #ffffff;
+  --cx-color-surface-strong: #f0efed;
+  --cx-color-surface-dark: #0c0a09;
+  --cx-color-surface-dark-elevated: #1c1917;
+
+  /* Hairlines */
+  --cx-color-hairline: #e7e5e4;
+  --cx-color-hairline-soft: #f0efed;
+  --cx-color-hairline-strong: #d6d3d1;
+
+  /* Text */
+  --cx-color-ink: #0c0a09;
+  --cx-color-body: #4e4e4e;
+  --cx-color-body-strong: #292524;
+  --cx-color-muted: #777169;
+  --cx-color-muted-soft: #a8a29e;
+  --cx-color-on-primary: #ffffff;
+  --cx-color-on-dark: #ffffff;
+  --cx-color-on-dark-soft: #a8a29e;
+
+  /* Atmospheric gradient stops - decoration only */
+  --cx-gradient-mint: #a7e5d3;
+  --cx-gradient-peach: #f4c5a8;
+  --cx-gradient-lavender: #c8b8e0;
+  --cx-gradient-sky: #a8c8e8;
+  --cx-gradient-rose: #e8b8c4;
+
+  /* Semantic */
+  --cx-color-success: #16a34a;
+  --cx-color-error: #dc2626;
+
+  /* Type families */
+  --cx-font-display: 'Newsreader', 'Times New Roman', serif;
+  --cx-font-body: 'Inter', system-ui, sans-serif;
+
+  /* Spacing (4px base) */
+  --cx-space-xxs: 4px;
+  --cx-space-xs: 8px;
+  --cx-space-sm: 12px;
+  --cx-space-base: 16px;
+  --cx-space-md: 20px;
+  --cx-space-lg: 24px;
+  --cx-space-xl: 32px;
+  --cx-space-xxl: 48px;
+  --cx-space-section: 96px;
+
+  /* Radius */
+  --cx-radius-none: 0px;
+  --cx-radius-xs: 4px;
+  --cx-radius-sm: 6px;
+  --cx-radius-md: 8px;
+  --cx-radius-lg: 12px;
+  --cx-radius-xl: 16px;
+  --cx-radius-xxl: 24px;
+  --cx-radius-pill: 9999px;
+  --cx-radius-full: 9999px;
+
+  /* Elevation */
+  --cx-shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.04);
+
+  /* Layout */
+  --cx-container-max: 1200px;
+}

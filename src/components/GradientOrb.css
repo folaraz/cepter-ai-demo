@@ -1,0 +1,6 @@
+.cx-orb { position: absolute; pointer-events: none; border-radius: 50%; filter: blur(40px); opacity: 0.9; z-index: 0; transform: translate(-50%, -50%); }
+.cx-orb--mint { background: radial-gradient(circle at 50% 50%, var(--cx-gradient-mint) 0%, rgba(167,229,211,0.55) 38%, rgba(167,229,211,0) 70%); }
+.cx-orb--peach { background: radial-gradient(circle at 50% 50%, var(--cx-gradient-peach) 0%, rgba(244,197,168,0.55) 38%, rgba(244,197,168,0) 70%); }
+.cx-orb--lavender { background: radial-gradient(circle at 50% 50%, var(--cx-gradient-lavender) 0%, rgba(200,184,224,0.55) 38%, rgba(200,184,224,0) 70%); }
+.cx-orb--sky { background: radial-gradient(circle at 50% 50%, var(--cx-gradient-sky) 0%, rgba(168,200,232,0.55) 38%, rgba(168,200,232,0) 70%); }
+.cx-orb--rose { background: radial-gradient(circle at 50% 50%, var(--cx-gradient-rose) 0%, rgba(232,184,196,0.55) 38%, rgba(232,184,196,0) 70%); }

@@ -1,0 +1,5 @@
+.cx-orb-card { position: relative; overflow: hidden; background: var(--cx-color-canvas-soft); border-radius: var(--cx-radius-xxl); padding: 32px; min-height: 320px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; font-family: var(--cx-font-body); }
+.cx-orb-card > .cx-orb { opacity: 1; filter: blur(28px); }
+.cx-orb-card__content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 12px; max-width: 420px; }
+.cx-orb-card__description { margin: 0; font-size: 15px; line-height: 1.47; letter-spacing: 0.15px; color: var(--cx-color-body); }
+.cx-orb-card__footer { position: relative; z-index: 1; margin-top: 20px; }

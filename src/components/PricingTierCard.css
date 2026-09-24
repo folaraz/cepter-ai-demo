@@ -1,0 +1,17 @@
+.cx-pricing { background: var(--cx-color-surface-card); color: var(--cx-color-body); border: 1px solid var(--cx-color-hairline); border-radius: var(--cx-radius-xl); padding: 32px; display: flex; flex-direction: column; gap: 24px; font-family: var(--cx-font-body); height: 100%; box-sizing: border-box; }
+.cx-pricing__head { display: flex; flex-direction: column; gap: 8px; }
+.cx-pricing__name-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cx-pricing__name { font-size: 18px; font-weight: 500; line-height: 1.44; letter-spacing: 0.18px; color: var(--cx-color-ink); margin: 0; }
+.cx-pricing__description { margin: 0; font-size: 15px; line-height: 1.47; letter-spacing: 0.15px; color: var(--cx-color-body); }
+.cx-pricing__price { display: flex; align-items: baseline; gap: 6px; }
+.cx-pricing__amount { font-family: var(--cx-font-display); font-weight: 300; font-size: 48px; line-height: 1.08; letter-spacing: -0.96px; color: var(--cx-color-ink); }
+.cx-pricing__period { font-size: 14px; color: var(--cx-color-muted); }
+.cx-pricing__features { list-style: none; margin: 0; padding: 24px 0 0; border-top: 1px solid var(--cx-color-hairline); display: flex; flex-direction: column; gap: 12px; }
+.cx-pricing__feature { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.47; letter-spacing: 0.15px; }
+.cx-pricing__check { flex: none; width: 16px; height: 16px; margin-top: 3px; color: var(--cx-color-ink); }
+.cx-pricing__cta { margin-top: auto; }
+.cx-pricing--featured { background: var(--cx-color-surface-dark); border-color: var(--cx-color-surface-dark); color: var(--cx-color-on-dark-soft); }
+.cx-pricing--featured .cx-pricing__name, .cx-pricing--featured .cx-pricing__amount, .cx-pricing--featured .cx-pricing__check { color: var(--cx-color-on-dark); }
+.cx-pricing--featured .cx-pricing__description, .cx-pricing--featured .cx-pricing__period { color: var(--cx-color-on-dark-soft); }
+.cx-pricing--featured .cx-pricing__features { border-top-color: rgba(255,255,255,0.12); }
+.cx-pricing--featured .cx-pricing__feature { color: var(--cx-color-on-dark); }

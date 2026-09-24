@@ -1,0 +1,38 @@
+{
+  "pkg": "cepter-ui",
+  "globalName": "CepterUI",
+  "shape": "storybook",
+  "storybookConfigDir": ".storybook",
+  "storybookStatic": ".design-sync/sb-reference",
+  "buildCmd": "npm run build",
+  "cssEntry": "dist/styles.css",
+  "provider": {
+    "component": "Page"
+  },
+  "overrides": {
+    "Button": {
+      "cardMode": "column"
+    },
+    "FeatureCard": {
+      "cardMode": "column"
+    },
+    "Footer": {
+      "cardMode": "column"
+    },
+    "TopNav": {
+      "cardMode": "column",
+      "viewport": "1280x240"
+    },
+    "PricingTierCard": {
+      "cardMode": "column"
+    },
+    "VoiceIcon": {
+      "cardMode": "column"
+    },
+    "Page": {
+      "cardMode": "single",
+      "viewport": "1280x1400"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
