@@ -91,7 +91,7 @@ Label `03. Requests for information`, headline "Three questions for the seller, 
 
 ## View 4: Ask
 
-Added after the original artboards, so there is no artboard for it: design it inside the current UI's patterns (navigation, headings, cards, chips, tokens). Contract: `api/ask.types.ts`. Behaviour: `backend/SPEC.md` C14. User-facing messages: `backend/ask.yaml` → `messages` (use those strings exactly).
+Added after the original artboards, so there is no artboard for it: design it inside the current UI's patterns (navigation, headings, cards, chips, tokens). Contract: `api/ask.types.ts`. Behaviour: `specs/SPEC.md` C14. User-facing messages: `backend/ask.yaml` → `messages` (use those strings exactly).
 
 **What it does.** A reviewer asks a question about the data room. The backend answers one of three ways: **lookup** (a single fact: retrieved paragraphs, a model-drafted answer, every sentence verified against its quotes before it is sent); **relationship** (a fixed query over the asset model, rendered from templates; a sentence stating an absence carries `finding_id` instead of a citation); or **abstained** (the documents don't answer it, or it is off-topic). Answers are **not streamed**: they arrive whole after about 2–4 s because they are verified first. The five suggested questions always work. A free-form question returns `status: "unavailable"` unless live Ask is switched on at the server.
 

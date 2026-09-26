@@ -1,6 +1,6 @@
 # DataRoom Lens
 
-Diligence associate for one renewable-energy asset. `frontend/` is the React UI; `backend/` will hold the FastAPI service. `design/` is the source of truth for both.
+Diligence associate for one renewable-energy asset. `frontend/` is the React UI; `backend/` holds the FastAPI service; its spec and build prompts are in `specs/`. `design/` is the source of truth for both.
 
 ## Frontend rules
 - The UI spec is design/DESIGN_HANDOFF.md. The API contract is design/api/types.ts, plus design/api/ask.types.ts for Ask. Ask's user-facing messages come verbatim from backend/ask.yaml `messages`; never write your own.
@@ -37,3 +37,27 @@ The people using this are diligence lawyers and associates, not engineers. Deal 
 - `npm run dev` then open http://localhost:5173
 - `npm test` (vitest: data layer, plus Ask component tests in jsdom), `npm run typecheck`, `npm run build`
 - With the dev server running: `npm run a11y` (axe, light + dark), `node scripts/walkthrough.mjs` (keyboard-only demo loop), `node scripts/shots.mjs <dir>` (1440x900 screenshots)
+
+## Backend rules
+- The backend spec is specs/SPEC.md. The API contract is design/api/types.ts and
+  design/api/ask.types.ts. Expected output is backend/tests/contract/expected/ (read its
+  README) and, for Ask, evals/ask_golden.jsonl.
+- Never store or serve a fact or an answer sentence without a verified quote. Absence
+  statements link to the finding that established them instead. Rejected claims stay in
+  `claims`; dropped answer sentences are counted, never shown.
+- The model does three things only: extraction (pass 1), routing an Ask question, and
+  drafting a lookup answer. Verification, merging, checks, all finding/summary/RFI
+  wording, relationship answers and evals are deterministic Python.
+- Tests and CI run with no API key: LLM_MODE=replay, and Ask uses recordings. A missing
+  recording must raise, never fall back to the API.
+- Do not edit data/dataroom/pdf/, evals/golden.jsonl, evals/ask_golden.jsonl or
+  tests/contract/expected/ to make a test pass. If they look wrong, stop and say so.
+- Plain SQL via psycopg 3; no ORM. Pydantic 2 models at every boundary.
+- Keep backend/tools/check_dataroom.py, check_templates.py and check_ask.py green.
+
+## Backend commands (run in backend/, Python 3.12 via uv)
+- `uv sync`, then `docker compose up -d --wait db` from the repo root (set `LENS_DB_PORT` and
+  `DATABASE_URL` if 5432 is taken), `uv run lens migrate`, `uv run uvicorn app.main:app`
+- `uv run pytest` (database tests skip without Postgres; `LENS_REQUIRE_DB=1` makes them fail),
+  `uv run ruff check .`, `uv run mypy`
+- `uv run python tools/check_dataroom.py` (and `check_templates.py`, `check_ask.py`)

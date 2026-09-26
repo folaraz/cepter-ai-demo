@@ -1,0 +1,37 @@
+id: parties_consistent
+order: 7
+severity: medium
+headline_phrase: "the project company differs between key agreements"
+
+inputs:
+  - key: tenant
+    select: {edge: PARTY_TO, to: Lease, role: tenant}
+    role: "tenant"
+  - key: customer
+    select: {edge: PARTY_TO, to: GridConnection, role: customer}
+    role: "grid customer"
+  - key: generator
+    select: {edge: PARTY_TO, to: OfftakeAgreement, role: generator}
+    role: "generator"
+
+logic: |
+  if any input missing:                      missing_evidence
+  elif all three resolve to one Party node:  pass
+  else:                                      fail
+
+# corr-001 in evals/golden.jsonl comes from this check: an early version compared raw
+# names and flagged "Brackenfield Solar Ltd" vs "Limited". Legal-suffix normalisation
+# (specs/SPEC.md, "Name normalisation") fixed it, so the pipeline now agrees with the reviewer.
+
+context:
+  names: 'distinct party names when failing: "A, B and C"'
+
+title:
+  flagged: "Project company differs between agreements: {names}"
+  passed: "Tenant is the same entity in lease, grid offer and PPA"
+why: >-
+  Rights and obligations only benefit the project if the same company holds them all.
+how: >-
+  The tenant, grid customer and PPA generator are compared after name normalisation.
+
+rfi: null

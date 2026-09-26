@@ -1,0 +1,152 @@
+# DataRoom Lens ontology v1. Source of truth for extraction, verification and checks.
+#
+# The extractor may only emit these node types, properties and edge types. Anything else
+# fails schema validation and is dropped before the verifier sees it.
+#
+# verify: how pass 2 (the verifier) decides that a value is supported by its quote.
+#   The quote must ALWAYS be a verbatim substring of the cited paragraph (after
+#   whitespace and NFKC normalisation). "verify" adds a second test on the value:
+#   number    the number appears in the quote. "three" == 3, "49.9MW" contains 49.9,
+#             "£4,850,000" contains 4850000.
+#   date      a date in the quote parses to the same ISO date ("1 October 2029" == 2029-10-01).
+#   text      the value appears in the quote, case-insensitive, whitespace-normalised.
+#   name      the normalised name appears in the quote (see "Name normalisation" in specs/SPEC.md).
+#   keywords  the quote contains at least one keyword listed for the chosen enum value
+#             (case-insensitive). An empty keyword list means no value test.
+#   parcel    the parcel number appears in the quote as a whole number.
+#
+# The Asset is not extracted. There is one per data room, created from manifest.yaml.
+# Every other node belongs to it implicitly.
+
+version: 1
+
+nodes:
+  Asset:
+    extracted: false
+    properties:
+      technology:
+        type: enum
+        values: [solar_pv, bess, wind]
+        verify: keywords
+        keywords:
+          solar_pv: [solar, photovoltaic]
+          bess: [battery]
+          wind: [wind]
+        many: true          # a hybrid asset carries several values; no conflict between them
+      export_capacity_mw:
+        type: number
+        verify: number
+        note: >
+          v1 deliberately models every export figure as one Asset property, whichever
+          document states it. That is why planning (49.9), the PPA (49.9) and the grid
+          offer (45) conflict. The reviewer correction in the demo ("these are different
+          properties") is the case for splitting this in v2.
+
+  Party:
+    properties:
+      name: {type: string, verify: name}
+
+  LandParcel:
+    key: number             # nodes are merged by this property, not by name
+    properties:
+      number: {type: string, verify: parcel}
+
+  Lease:
+    properties:
+      start_date: {type: date, verify: date}
+      term_years: {type: number, verify: number}
+      signed_date: {type: date, verify: date}
+
+  Easement:
+    properties:
+      signed_date: {type: date, verify: date}
+
+  Permit:
+    properties:
+      reference: {type: string, verify: text}
+      decision_date: {type: date, verify: date}
+      authority: {type: string, verify: text}
+
+  Condition:
+    key: number
+    properties:
+      number: {type: number, verify: number}
+      condition_type:
+        type: enum
+        values: [time_limit, approved_plans, temporary_period, decommissioning, pre_commencement, other]
+        verify: keywords
+        keywords:
+          time_limit: [begun, commenced, "expiration of"]
+          approved_plans: [approved plans]
+          temporary_period: [limited period, temporary]
+          decommissioning: [removal, cessation, decommission]
+          pre_commencement: [shall commence until, "commence until", prior to commencement]
+          other: []
+      years: {type: number, verify: number}
+      requires: {type: string, verify: text}      # e.g. "Construction Traffic Management Plan"
+      discharged_on: {type: date, verify: date}
+
+  GridConnection:
+    properties:
+      reference: {type: string, verify: text}
+      connection_date: {type: date, verify: date}
+      max_import_capacity_mw: {type: number, verify: number}
+      substation: {type: string, verify: text}   # e.g. "Wickham Primary Substation"
+      voltage_kv: {type: number, verify: number}
+
+  OfftakeAgreement:
+    properties:
+      target_cod: {type: date, verify: date}
+      long_stop_date: {type: date, verify: date}
+      term_years: {type: number, verify: number}
+      price_gbp_per_mwh: {type: number, verify: number}
+      signed_date: {type: date, verify: date}
+
+edges:
+  PARTY_TO:
+    from: [Party]
+    to: [Lease, Easement, Permit, GridConnection, OfftakeAgreement]
+    properties:
+      role:
+        type: enum
+        values: [landlord, tenant, grantor, grantee, applicant, landowner, network_operator, customer, generator, buyer]
+        verify: keywords
+        keywords:
+          landlord: [landlord]
+          tenant: [tenant]
+          grantor: [grantor]
+          grantee: [grantee]
+          applicant: [applicant]
+          landowner: [landowner, owner]
+          network_operator: []   # empty list: no keyword test, only the name test
+          customer: []
+          generator: [generator]
+          buyer: [buyer]
+    verify_edge: name          # the source Party's name must appear in the quote
+  COVERS:
+    from: [Lease, Easement]
+    to: [LandParcel]
+    verify_edge: parcel        # the target parcel number must appear in the quote
+  SITE_INCLUDES:
+    from: [Asset]
+    to: [LandParcel]
+    verify_edge: parcel
+  CABLE_CROSSES:
+    from: [Asset]
+    to: [LandParcel]
+    verify_edge: parcel
+  HAS_CONDITION:
+    from: [Permit]
+    to: [Condition]
+    verify_edge: quote_only    # the quote must exist; no value test
+
+# Node identity during consolidation (pass 3)
+merge:
+  Party: name                  # see "Name normalisation" in specs/SPEC.md
+  LandParcel: number
+  Condition: number            # within one Permit
+  Lease: one_per_document
+  Easement: one_per_document
+  Permit: reference
+  GridConnection: reference
+  OfftakeAgreement: one_per_document
