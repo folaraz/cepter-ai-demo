@@ -53,6 +53,7 @@ def _report(result: PipelineResult) -> None:
     reasons = Counter(c.rejection_reason for c in result.claims if c.rejection_reason)
     for reason, count in sorted(reasons.items()):
         typer.echo(f"  rejected {reason}: {count}")
+    typer.echo(f"graph: {result.nodes} nodes, {result.edges} edges")
     typer.echo(f"run {result.run_id}")
 
 

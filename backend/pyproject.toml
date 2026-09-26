@@ -71,6 +71,7 @@ extra_checks = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 markers = ["db: needs a Postgres with pgvector at DATABASE_URL"]
 # PyMuPDF's SWIG bindings warn on import under Python 3.12.
 filterwarnings = ["ignore:builtin type .* has no __module__ attribute:DeprecationWarning"]
