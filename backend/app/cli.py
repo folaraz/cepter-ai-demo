@@ -1,10 +1,13 @@
 """The `lens` command."""
 
+from collections import Counter
+
 import typer
 
 from app.config import get_settings
 from app.db.migrate import migrate as apply_schema
 from app.db.pool import connect
+from app.domain.claims import Claim
 from app.domain.runs import RunKind
 from app.ingest.service import ingest_dataroom
 from app.llm.anthropic_client import AnthropicLLMClient
@@ -39,11 +42,17 @@ def ingest() -> None:
 
 
 def _report(result: PipelineResult) -> None:
-    for document_id, drafts in result.drafts.items():
-        properties = sum(d.kind == "property" for d in drafts)
+    by_doc: dict[str, list[Claim]] = {}
+    for claim in result.claims:
+        by_doc.setdefault(claim.document_id, []).append(claim)
+    for document_id, doc_claims in by_doc.items():
+        verified = sum(c.status == "verified" for c in doc_claims)
         typer.echo(
-            f"{document_id:<10} {properties:>3} properties  {len(drafts) - properties:>3} relations"
+            f"{document_id:<10} {verified:>3} verified  {len(doc_claims) - verified:>3} rejected"
         )
+    reasons = Counter(c.rejection_reason for c in result.claims if c.rejection_reason)
+    for reason, count in sorted(reasons.items()):
+        typer.echo(f"  rejected {reason}: {count}")
     typer.echo(f"run {result.run_id}")
 
 

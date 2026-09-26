@@ -8,6 +8,7 @@ import psycopg
 import pytest
 from pydantic import ValidationError
 
+from app.db.repositories import claims as claims_repo
 from app.domain.documents import Document, Paragraph
 from app.domain.extraction import ExtractionResult
 from app.domain.ontology import load_ontology
@@ -270,8 +271,18 @@ def test_run_replays_recorded_extraction_identically(
     first = run_pipeline(conn, replayer, mode="replay")
     second = run_pipeline(conn, replayer, mode="replay")
 
-    assert first.drafts == second.drafts == recorded.drafts
-    assert list(first.drafts) == ["grid", "lease", "planning", "ppa", "site"]
+    def comparable(claims: list[Any]) -> list[dict[str, Any]]:
+        return [c.model_dump(exclude={"id", "run_id"}) for c in claims]
+
+    assert comparable(first.claims) == comparable(second.claims) == comparable(recorded.claims)
+    documents = {c.document_id for c in first.claims}
+    assert documents == {"grid", "lease", "planning", "ppa", "site"}
+    # Pass 2 stored every claim. The canned answer cites grid-offer paragraphs, so it
+    # verifies for the grid offer and is rejected for every other document.
+    assert claims_repo.list_claims(conn, first.run_id) == first.claims
+    grid = {c.status for c in first.claims if c.document_id == "grid"}
+    others = {c.rejection_reason for c in first.claims if c.document_id != "grid"}
+    assert grid == {"verified"} and others == {"no_such_paragraph"}
     run = conn.execute(
         "SELECT status, prompt_versions FROM runs WHERE id = %s", (first.run_id,)
     ).fetchone()
@@ -279,7 +290,9 @@ def test_run_replays_recorded_extraction_identically(
     purposes = conn.execute(
         "SELECT purpose FROM llm_calls WHERE run_id = %s ORDER BY id", (first.run_id,)
     ).fetchall()
-    assert [p[0] for p in purposes] == [f"extract:{d}" for d in first.drafts]
+    assert [p[0] for p in purposes] == [
+        f"extract:{d}" for d in ["grid", "lease", "planning", "ppa", "site"]
+    ]
 
 
 @pytest.mark.db
