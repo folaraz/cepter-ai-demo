@@ -1,0 +1,61 @@
+name: backend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: lens
+          POSTGRES_PASSWORD: lens
+          POSTGRES_DB: lens
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lens -d lens"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql://lens:lens@localhost:5432/lens
+      LLM_MODE: replay
+      ASK_LIVE: "false"
+      EMBEDDING_CACHE_DIR: ${{ github.workspace }}/backend/.models
+      LENS_REQUIRE_DB: "1"
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - run: uv python install 3.12
+      - run: uv sync --frozen
+      - name: Cache embedding model
+        uses: actions/cache@v4
+        with:
+          path: backend/.models
+          key: embeddings-${{ hashFiles('backend/ask.yaml') }}
+      - name: Lint
+        run: uv run ruff check . && uv run ruff format --check .
+      - name: Types
+        run: uv run mypy
+      - name: Migrate
+        run: uv run lens migrate
+      - name: Tests
+        run: uv run pytest
+      - name: Data room reproduces the fixture citations
+        run: uv run python tools/check_dataroom.py
+      - name: Check templates reproduce the fixture wording
+        run: uv run python tools/check_templates.py
+      - name: Ask golden set agrees with the data room
+        run: uv run python tools/check_ask.py
+      # C11 adds the gate here: uv run lens eval --gate 0.90

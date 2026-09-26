@@ -9,3 +9,7 @@ __pycache__/
 frontend/screenshots/
 frontend/test-results/
 *.tsbuildinfo
+.models/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
