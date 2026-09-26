@@ -6,7 +6,7 @@ from pathlib import Path
 from psycopg import Connection
 
 from app.config import DATAROOM_DIR
-from app.db.repos import documents as repo
+from app.db.repositories import documents
 from app.domain.documents import Document
 from app.ingest.manifest import load_manifest
 from app.ingest.pdf import parse_pdf
@@ -34,12 +34,12 @@ def ingest_dataroom(conn: Connection, room: Path = DATAROOM_DIR) -> list[IngestR
             pages=parsed.pages,
             sha256=parsed.sha256,
         )
-        stored = repo.get_document(conn, entry.id)
+        stored = documents.get_document(conn, entry.id)
         if stored == doc:
             results.append(IngestResult(entry.id, len(parsed.paragraphs), changed=False))
             continue
         with conn.transaction():
-            repo.upsert_document(conn, doc)
-            repo.replace_paragraphs(conn, entry.id, parsed.paragraphs)
+            documents.upsert_document(conn, doc)
+            documents.replace_paragraphs(conn, entry.id, parsed.paragraphs)
         results.append(IngestResult(entry.id, len(parsed.paragraphs), changed=True))
     return results

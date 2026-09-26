@@ -6,6 +6,7 @@ from psycopg_pool import ConnectionPool
 
 from app.api.models import Health
 from app.config import ASK_YAML, RECORDINGS_DIR, get_settings
+from app.db.repositories import runs
 
 router = APIRouter()
 
@@ -18,10 +19,8 @@ def _embedding_model() -> str:
 
 def _published_run(pool: ConnectionPool) -> str | None:
     with pool.connection(timeout=2) as conn:
-        row = conn.execute(
-            "SELECT id FROM runs WHERE kind = 'published' AND status = 'succeeded'"
-        ).fetchone()
-    return row[0] if row else None
+        run = runs.get_published_run(conn)
+    return run.id if run else None
 
 
 @router.get("/health", response_model=Health)

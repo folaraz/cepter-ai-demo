@@ -2,15 +2,13 @@
 
 import re
 import sys
-from collections.abc import Iterator
 from pathlib import Path
 
 import psycopg
 import pytest
 
 from app.config import BACKEND_DIR, DATAROOM_DIR
-from app.db.migrate import migrate
-from app.db.repos import documents as repo
+from app.db.repositories import documents
 from app.domain.documents import Paragraph
 from app.ingest.manifest import load_manifest
 from app.ingest.pdf import parse_pdf
@@ -74,13 +72,6 @@ def test_ids_count_per_page_from_one(paragraphs: list[Paragraph]) -> None:
 # ---------- lens ingest ----------
 
 
-@pytest.fixture
-def conn(empty_database: str) -> Iterator[psycopg.Connection]:
-    migrate(empty_database)
-    with psycopg.connect(empty_database, autocommit=True) as conn:
-        yield conn
-
-
 @pytest.mark.db
 def test_ingest_stores_documents_and_paragraphs(
     conn: psycopg.Connection, paragraphs: list[Paragraph]
@@ -89,7 +80,7 @@ def test_ingest_stores_documents_and_paragraphs(
     assert {r.document_id: r.paragraphs for r in results} == EXPECTED_COUNTS
     assert all(r.changed for r in results)
 
-    docs = {d.id: d for d in repo.list_documents(conn)}
+    docs = {d.id: d for d in documents.list_documents(conn)}
     assert {d: docs[d].pages for d in docs} == {
         "lease": 3,
         "planning": 3,
@@ -98,7 +89,7 @@ def test_ingest_stores_documents_and_paragraphs(
         "site": 2,
     }
     assert all(re.fullmatch(r"[0-9a-f]{64}", d.sha256) for d in docs.values())
-    stored = repo.list_paragraphs(conn)
+    stored = documents.list_paragraphs(conn)
     assert sorted(stored, key=lambda p: p.id) == sorted(paragraphs, key=lambda p: p.id)
 
 
@@ -121,10 +112,10 @@ def test_ingest_redoes_a_document_whose_pdf_changed(conn: psycopg.Connection) ->
     changed = {r.document_id for r in ingest_dataroom(conn) if r.changed}
 
     assert changed == {"ppa"}
-    ppa = {p.id: p for p in repo.list_paragraphs(conn, "ppa")}
+    ppa = {p.id: p for p in documents.list_paragraphs(conn, "ppa")}
     assert "ppa:p9:¶1" not in ppa
     assert '"Long-Stop Date"' in ppa["ppa:p4:¶2"].text
-    doc = repo.get_document(conn, "ppa")
+    doc = documents.get_document(conn, "ppa")
     assert doc is not None and doc.sha256 != "stale"
 
 
