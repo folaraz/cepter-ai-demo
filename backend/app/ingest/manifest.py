@@ -21,3 +21,7 @@ def load_manifest(room: Path = DATAROOM_DIR) -> list[ManifestDocument]:
 def load_as_of(room: Path = DATAROOM_DIR) -> date:
     """The date checks treat as today, fixed so results never drift with the calendar."""
     return date.fromisoformat(str(_read(room)["run"]["as_of"]))
+
+
+def load_asset_name(room: Path = DATAROOM_DIR) -> str:
+    return str(_read(room)["asset"]["name"])

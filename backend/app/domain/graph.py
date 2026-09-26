@@ -55,3 +55,33 @@ class NewProvenance(BaseModel):
 
 class Provenance(NewProvenance):
     id: int
+
+
+class ValueSupport(BaseModel):
+    """One distinct value of a property, and the documents that state it."""
+
+    model_config = ConfigDict(frozen=True)
+
+    value: JsonValue
+    status: ProvenanceStatus
+    documents: list[str]  # in manifest order
+
+
+class PropertyGroup(BaseModel):
+    """Every verified value of one property of one node, as stored in Node.props.
+
+    One value: corroborated when two or more documents state it, otherwise verified.
+    Several values: the one held by strictly the most documents (at least two) is
+    corroborated and the rest conflict; on a tie they all conflict.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    values: list[ValueSupport]  # corroborated first, then by document count
+    conflict: bool
+
+    @property
+    def value(self) -> JsonValue:
+        """The value to use, or None when the documents disagree without a majority."""
+        best = self.values[0]
+        return None if best.status == "conflict" else best.value

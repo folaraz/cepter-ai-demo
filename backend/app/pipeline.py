@@ -1,7 +1,7 @@
 """One pipeline run: record it in `runs`, run the passes, mark it finished.
 
-Pass 1 (extraction) and pass 2 (verification) are here now. Consolidation (C6) and the
-checks (C7) join them as they are built.
+Pass 1 (extraction), pass 2 (verification) and pass 3 (consolidation) are here now. The
+checks (C7) join them next.
 """
 
 import uuid
@@ -10,13 +10,14 @@ from datetime import datetime
 
 from psycopg import Connection
 
+from app.consolidate.graph import consolidate, write_graph
 from app.db.repositories import claims, documents, runs
 from app.domain.claims import Claim
 from app.domain.ontology import load_ontology
 from app.domain.runs import RunKind
 from app.extract.pass1 import run_pass1
 from app.extract.prompt import PROMPT_VERSION
-from app.ingest.manifest import load_as_of
+from app.ingest.manifest import load_as_of, load_asset_name, load_manifest
 from app.llm.client import LLMClient, Mode
 from app.verify.verifier import verify_claims
 
@@ -25,6 +26,8 @@ from app.verify.verifier import verify_claims
 class PipelineResult:
     run_id: str
     claims: list[Claim]  # verified and rejected, in document order
+    nodes: int
+    edges: int
 
 
 def new_run_id(now: datetime | None = None) -> str:
@@ -49,6 +52,15 @@ def run_pipeline(
             (d for doc in drafts.values() for d in doc), paragraphs, load_ontology(), run.id
         )
         stored = claims.insert_claims(conn, checked)
+        graph = consolidate(
+            run.id,
+            stored,
+            paragraphs,
+            load_ontology(),
+            load_asset_name(),
+            [d.id for d in load_manifest()],
+        )
+        write_graph(conn, graph)
     except Exception as err:
         runs.finish_run(conn, run.id, "failed", f"{type(err).__name__}: {err}")
         raise
@@ -56,4 +68,4 @@ def run_pipeline(
         runs.publish_run(conn, run.id)
     else:
         runs.finish_run(conn, run.id, "succeeded")
-    return PipelineResult(run.id, stored)
+    return PipelineResult(run.id, stored, len(graph.nodes), len(graph.edges))
