@@ -50,6 +50,8 @@ jobs:
         run: uv run mypy
       - name: Migrate
         run: uv run lens migrate
+      - name: Ingest
+        run: uv run lens ingest
       - name: Tests
         run: uv run pytest
       - name: Data room reproduces the fixture citations
