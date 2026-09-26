@@ -1,10 +1,10 @@
 """The `lens` command."""
 
-import psycopg
 import typer
 
 from app.config import get_settings
 from app.db.migrate import migrate as apply_schema
+from app.db.pool import connect
 from app.ingest.service import ingest_dataroom
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
@@ -25,7 +25,7 @@ def migrate() -> None:
 @app.command()
 def ingest() -> None:
     """Load the data room's PDFs into documents and paragraphs (skips unchanged files)."""
-    with psycopg.connect(get_settings().database_url, autocommit=True) as conn:
+    with connect(get_settings().database_url) as conn:
         results = ingest_dataroom(conn)
     for r in results:
         state = "ingested" if r.changed else "unchanged"

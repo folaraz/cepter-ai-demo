@@ -78,7 +78,7 @@ backend/
     main.py  config.py  cli.py            # FastAPI app, settings, `lens` CLI (typer)
     api/        summary.py findings.py reviews.py rfi.py evals.py ask.py models.py session.py
     domain/     ontology.py extraction.py ask.py   # Pydantic models
-    db/         pool.py migrate.py repos/*.py
+    db/         pool.py migrate.py repositories/*.py
     llm/        client.py anthropic_client.py replay.py pricing.py
     ingest/     pdf.py                     # port of tools/check_dataroom.py
     extract/    prompt.py pass1.py
@@ -148,7 +148,7 @@ ppa 13, site 5), that two runs are identical, and the hyphen and header/footer c
 
 ### C2. Database access
 
-Thin repositories in `app/db/repos/`, one per table group, plain SQL with psycopg 3,
+Thin repositories in `app/db/repositories/`, one per table group, plain SQL with psycopg 3,
 returning Pydantic models. Register the pgvector adapter on the pool. No ORM.
 
 **Done when** a round-trip test writes and reads one row of every table.

@@ -36,7 +36,7 @@ Read specs/SPEC.md sections 1–4 (C0 and C2). Create the backend app in backend
 with the layout in section 3: FastAPI app with GET /api/health, pydantic-settings config
 with the variables listed in C0, a psycopg 3 connection pool with the pgvector adapter
 registered, `lens migrate` (typer CLI in app/cli.py, installed as the `lens` script via
-pyproject.toml) that applies backend/schema.sql, and thin repositories in app/db/repos/
+pyproject.toml) that applies backend/schema.sql, and thin repositories in app/db/repositories/
 for every table. Add docker-compose.yml with the pgvector/pgvector:pg16 image, ruff,
 mypy (strict for app/domain and app/verify), pytest, pre-commit, and a GitHub Actions
 workflow with a pgvector/pgvector:pg16 service container that caches

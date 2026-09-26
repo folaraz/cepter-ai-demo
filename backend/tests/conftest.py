@@ -14,6 +14,8 @@ from psycopg import sql
 from psycopg.conninfo import conninfo_to_dict, make_conninfo
 
 from app.config import get_settings
+from app.db.migrate import migrate
+from app.db.pool import connect
 
 
 def _admin_url() -> str:
@@ -47,3 +49,11 @@ def empty_database(db_server: str) -> Iterator[str]:
             conn.execute(
                 sql.SQL("DROP DATABASE IF EXISTS {} WITH (FORCE)").format(sql.Identifier(name))
             )
+
+
+@pytest.fixture
+def conn(empty_database: str) -> Iterator[psycopg.Connection]:
+    """An autocommit connection to a new database with the schema applied."""
+    migrate(empty_database)
+    with connect(empty_database) as conn:
+        yield conn
