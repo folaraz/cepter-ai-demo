@@ -32,6 +32,7 @@ If port 5432 is taken, start the database with `LENS_DB_PORT=5433` and set
 | `EMBEDDING_CACHE_DIR` | `./.models` |
 | `COOKIE_SECURE` | `false` |
 | `EVAL_GATE` | `0.90` |
+| `GBP_PER_USD` | `0.75`: placeholder; model prices are in USD, `llm_calls.cost_gbp` is GBP |
 
 ## Checks
 
@@ -43,6 +44,15 @@ uv run python tools/check_dataroom.py
 uv run python tools/check_templates.py
 uv run python tools/check_ask.py
 ```
+
+## Model calls
+
+`app/llm/` is the only code that talks to Claude. Each call runs in a mode: `replay`
+(default; reads `fixtures/llm/{key}.json` and raises `MissingRecording` if it is absent),
+`record` (calls the API and writes the file), `live` (calls without writing) or
+`replay_first` (Ask only). Every call writes an `llm_calls` row. No temperature is sent:
+`claude-sonnet-5` rejects non-default sampling parameters, and replay is what makes runs
+repeatable.
 
 PyMuPDF is AGPL, which is fine for a demo; a commercial build would swap it for
 pypdfium2 or pdfplumber.

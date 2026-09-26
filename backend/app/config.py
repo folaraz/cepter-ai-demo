@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     embedding_cache_dir: Path = Path("./.models")
     cookie_secure: bool = False
     eval_gate: float = Field(default=0.90, ge=0.0, le=1.0)
+    # Model prices are in USD; llm_calls stores GBP. Placeholder rate: confirm before
+    # quoting costs.
+    gbp_per_usd: float = Field(default=0.75, gt=0.0)
 
 
 @lru_cache
