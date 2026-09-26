@@ -7,19 +7,21 @@ from app.db.repositories import params
 from app.domain.reviews import NewReview, Review
 
 
-def insert_review(conn: Connection, review: NewReview) -> Review:
+def insert_review(conn: Connection, review: NewReview, created_at: str | None = None) -> Review:
+    """`created_at` defaults to now; seed reviews pass their recorded time."""
     with conn.cursor(row_factory=class_row(Review)) as cur:
         cur.execute(
             """
             INSERT INTO reviews (session_id, finding_id, check_id, action, corrected_result,
                                  reason, evidence_fingerprint, golden_item_id, reviewer,
-                                 undo_token)
+                                 undo_token, created_at)
             VALUES (%(session_id)s, %(finding_id)s, %(check_id)s, %(action)s,
                     %(corrected_result)s, %(reason)s, %(evidence_fingerprint)s,
-                    %(golden_item_id)s, %(reviewer)s, %(undo_token)s)
+                    %(golden_item_id)s, %(reviewer)s, %(undo_token)s,
+                    coalesce(%(created_at)s::timestamptz, now()))
             RETURNING *
             """,
-            params(review),
+            {**params(review), "created_at": created_at},
         )
         row = cur.fetchone()
     assert row is not None

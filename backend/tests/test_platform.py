@@ -1,14 +1,11 @@
 """C0: settings, migrations and /api/health."""
 
-from collections.abc import Callable, Iterator
-
 import psycopg
 import pytest
-from fastapi.testclient import TestClient
 
-from app.config import RECORDINGS_DIR, Settings, get_settings
+from app.config import RECORDINGS_DIR, Settings
 from app.db.migrate import migrate
-from app.main import app
+from tests.conftest import ClientFor
 
 TABLES = {
     "documents",
@@ -43,20 +40,6 @@ def test_settings_reject_unknown_llm_mode(monkeypatch: pytest.MonkeyPatch) -> No
     monkeypatch.setenv("LLM_MODE", "sometimes")
     with pytest.raises(ValueError):
         Settings(_env_file=None)
-
-
-ClientFor = Callable[[str], TestClient]
-
-
-@pytest.fixture
-def client_for(monkeypatch: pytest.MonkeyPatch) -> Iterator[ClientFor]:
-    def make(database_url: str) -> TestClient:
-        monkeypatch.setenv("DATABASE_URL", database_url)
-        get_settings.cache_clear()
-        return TestClient(app)
-
-    yield make
-    get_settings.cache_clear()
 
 
 def test_health_degraded_without_database(client_for: ClientFor) -> None:

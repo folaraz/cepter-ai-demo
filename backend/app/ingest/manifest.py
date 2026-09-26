@@ -25,3 +25,9 @@ def load_as_of(room: Path = DATAROOM_DIR) -> date:
 
 def load_asset_name(room: Path = DATAROOM_DIR) -> str:
     return str(_read(room)["asset"]["name"])
+
+
+def load_asset(room: Path = DATAROOM_DIR) -> dict[str, Any]:
+    """{name, subtitle, synthetic} from the manifest."""
+    asset: dict[str, Any] = _read(room)["asset"]
+    return asset

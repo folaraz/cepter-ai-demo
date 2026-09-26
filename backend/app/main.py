@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api import health
+from app.api import findings, health, rfi, summary
 from app.config import get_settings
 from app.db.pool import create_pool
 
@@ -20,4 +20,5 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DataRoom Lens", lifespan=lifespan)
-app.include_router(health.router, prefix="/api")
+for router in (health.router, summary.router, findings.router, rfi.router):
+    app.include_router(router, prefix="/api")

@@ -6,10 +6,11 @@ they skip when Postgres isn't running; in CI (LENS_REQUIRE_DB=1) they fail inste
 
 import os
 import uuid
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 
 import psycopg
 import pytest
+from fastapi.testclient import TestClient
 from psycopg import sql
 from psycopg.conninfo import conninfo_to_dict, make_conninfo
 
@@ -57,3 +58,20 @@ def conn(empty_database: str) -> Iterator[psycopg.Connection]:
     migrate(empty_database)
     with connect(empty_database) as conn:
         yield conn
+
+
+ClientFor = Callable[[str], TestClient]
+
+
+@pytest.fixture
+def client_for(monkeypatch: pytest.MonkeyPatch) -> Iterator[ClientFor]:
+    """Makes an API client whose app talks to the given database."""
+    from app.main import app
+
+    def make(database_url: str) -> TestClient:
+        monkeypatch.setenv("DATABASE_URL", database_url)
+        get_settings.cache_clear()
+        return TestClient(app)
+
+    yield make
+    get_settings.cache_clear()
