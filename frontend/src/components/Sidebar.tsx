@@ -1,12 +1,16 @@
 import { useMemo } from 'react';
+import { FileQuestionMark, FileSearch, FileText, LayoutList, MessageCircleQuestion, MessageSquareText, type LucideIcon } from 'lucide-react';
 import { useActions, useSelectedRow, useStore, useSummary, type View } from '../state/store';
 import { EVAL } from '../lib/status';
-import { gbp, percent } from '../lib/format';
+import { findingName, gbp, percent } from '../lib/format';
 import { cn } from '../lib/cn';
-import { Button, Glyph, Tag } from './ui';
+import { Button, Count, Icon, Tag } from './ui';
 
 const navItem =
-  'grid h-9 w-full grid-cols-[30px_minmax(0,1fr)_auto] items-center rounded-pill border-none px-3.5 text-left text-md font-medium transition-[background-color] duration-120';
+  'grid h-9 w-full grid-cols-[24px_minmax(0,1fr)_auto] items-center rounded-inner border-none px-2.5 text-left text-md font-medium transition-[background-color] duration-120';
+
+const groupHeading = 'px-2.5 text-sm font-semibold text-ink';
+const subHeading = 'px-2.5 text-xs font-medium text-muted';
 
 export function Sidebar() {
   const { state } = useStore();
@@ -14,23 +18,40 @@ export function Sidebar() {
   const selected = useSelectedRow();
   const { setView, openEvidence, runEval } = useActions();
 
-  const nav: { view: View; num: string; label: string; meta: string }[] = [
-    { view: 'summary', num: '01.', label: 'Summary', meta: summary ? String(summary.findings.length) : '' },
-    { view: 'evidence', num: '02.', label: 'Evidence', meta: state.selectedId ?? '' },
-    { view: 'rfi', num: '03.', label: 'Requests', meta: state.rfi.status === 'ready' ? String(state.rfi.data.length) : '' },
+  const nav: { view: View; icon: LucideIcon; label: string; count?: number }[] = [
+    { view: 'summary', icon: LayoutList, label: 'Summary', count: summary?.findings.length },
+    { view: 'evidence', icon: FileSearch, label: 'Evidence' },
+    { view: 'rfi', icon: MessageSquareText, label: 'Seller questions', count: state.rfi.status === 'ready' ? state.rfi.data.length : undefined },
+    { view: 'ask', icon: MessageCircleQuestion, label: 'Ask' },
   ];
 
-  const cited = useMemo(() => new Set(selected?.source_titles ?? []), [selected]);
+  // On Ask, the dots follow the answer whose sources are open; elsewhere, the selected finding.
+  const askAnswer = useMemo(() => {
+    if (state.view !== 'ask' || !state.askViewing) return null;
+    const e = state.askEntries.find((x) => x.key === state.askViewing!.entryKey);
+    return e?.status === 'done' ? e.response : null;
+  }, [state.view, state.askViewing, state.askEntries]);
+  const cited = useMemo(
+    () =>
+      new Set(
+        askAnswer
+          ? askAnswer.sentences.flatMap((s) => s.citations.map((c) => c.document_title))
+          : state.view === 'ask'
+            ? []
+            : (selected?.source_titles ?? []),
+      ),
+    [askAnswer, selected, state.view],
+  );
+  const citedBy = askAnswer ? 'this answer' : selected && state.view !== 'ask' ? findingName(selected.id) : null;
   const ev = summary?.eval;
   const running = ev?.state === 'running';
 
   return (
     <nav
       aria-label="Diligence"
-      className="flex w-(--sidebar-w) shrink-0 flex-col gap-6 overflow-y-auto border-r border-hairline bg-canvas-soft px-3 pt-5 pb-4 max-md:w-auto max-md:overflow-visible max-md:border-r-0 max-md:border-b"
+      className="flex w-(--sidebar-w) shrink-0 flex-col gap-7 overflow-y-auto border-r border-hairline bg-canvas-soft px-3 pt-5 pb-4 max-md:w-auto max-md:overflow-visible max-md:border-r-0 max-md:border-b"
     >
-      <div className="flex flex-col gap-1.5 px-2.5">
-        <span className="t-label">Asset</span>
+      <div className="flex flex-col gap-0.5 px-2.5">
         <span className="text-lg leading-[1.3] font-semibold tracking-tight">{summary?.asset.name ?? ' '}</span>
         <span className="text-sm text-muted">{summary?.asset.subtitle ?? ' '}</span>
       </div>
@@ -43,84 +64,120 @@ export function Sidebar() {
               <button
                 type="button"
                 aria-current={on ? 'page' : undefined}
-                className={cn(navItem, on ? 'bg-surface text-ink shadow-[0_0_0_1px_var(--hairline)]' : 'bg-transparent text-body hover:bg-surface-strong')}
+                className={cn(
+                  navItem,
+                  on ? 'bg-surface text-ink shadow-[0_0_0_1px_var(--hairline),0_1px_2px_rgba(0,0,0,0.04)]' : 'bg-transparent text-body hover:bg-surface-strong',
+                )}
                 onClick={() => (n.view === 'evidence' ? openEvidence() : setView(n.view))}
               >
-                <span className="t-ref text-muted">{n.num}</span>
+                <Icon icon={n.icon} size={15} className={on ? 'text-ink' : 'text-muted'} />
                 <span>{n.label}</span>
-                <span className="t-ref text-muted">{n.meta}</span>
+                {n.count !== undefined ? <Count>{n.count}</Count> : <span />}
               </button>
             </li>
           );
         })}
       </ul>
 
-      <div className="flex flex-col gap-0.5">
-        <h2 className="t-label px-2.5 pb-2">Documents · {summary?.documents.length ?? 0}</h2>
+      <section aria-labelledby="docs-h" className="flex flex-col gap-3">
+        <h2 id="docs-h" className={groupHeading}>
+          Documents
+        </h2>
+        <div className="flex flex-col">
+        <h3 className={subHeading}>In the data room</h3>
+        {/* Legend for the dots: follows the selected finding, so it's clear why the list changes. */}
+        <p className="flex items-center gap-1.5 px-2.5 pt-0.5 pb-2 text-xs text-muted">
+          {citedBy ? (
+            <>
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-ink" />
+              Quoted in {citedBy}
+            </>
+          ) : (
+            ' '
+          )}
+        </p>
         <ul role="list">
           {summary?.documents.map((d) => {
             const on = cited.has(d.title);
             return (
               <li
                 key={d.id}
-                className={cn('grid h-[30px] grid-cols-[30px_minmax(0,1fr)_auto] items-center px-2.5 text-md', on ? 'font-medium text-ink' : 'text-body')}
+                title={`${d.title}, ${d.pages} pages`}
+                className={cn(
+                  'grid h-[30px] grid-cols-[24px_minmax(0,1fr)_auto] items-center px-2.5 text-md',
+                  on ? 'font-medium text-ink' : 'text-body',
+                )}
               >
-                <Glyph className={on ? 'text-ink' : 'text-muted'}>{on ? '●' : '·'}</Glyph>
-                <span className="truncate" title={d.file_name}>
-                  {d.title}
-                  {on && <span className="sr-only"> (cited by {selected?.id})</span>}
-                </span>
-                <span className="t-ref font-normal text-muted">{d.pages}p</span>
+                <Icon icon={FileText} size={14} className={on ? 'text-ink' : 'text-muted'} />
+                <span className="truncate">{d.title}</span>
+                {on ? (
+                  <span className="ml-2 size-1.5 rounded-full bg-ink">
+                    <span className="sr-only">, quoted in {citedBy}</span>
+                  </span>
+                ) : (
+                  <span />
+                )}
               </li>
             );
           })}
         </ul>
-        {summary?.missing_documents.map((m) => (
-          <button
-            key={m.label}
-            type="button"
-            className="mt-1 grid w-full grid-cols-[30px_minmax(0,1fr)] items-start rounded-inner px-2.5 py-1.5 text-left text-md font-medium transition-[background-color] duration-120 hover:bg-surface-strong"
-            onClick={() => openEvidence(m.finding_id)}
-          >
-            <Glyph className="pt-0.5 text-missing">○</Glyph>
-            <span className="flex flex-col gap-px">
-              <span className="text-missing">{m.label}</span>
-              <span className="text-xs font-normal text-muted">Expected, not found · {m.rfi_id}</span>
-            </span>
-          </button>
-        ))}
-      </div>
+        </div>
+
+      {summary && summary.missing_documents.length > 0 && (
+        <div className="flex flex-col gap-1">
+          <h3 className={subHeading}>Missing</h3>
+          {summary.missing_documents.map((m) => (
+            <button
+              key={m.label}
+              type="button"
+              className="grid w-full grid-cols-[24px_minmax(0,1fr)] items-start rounded-inner px-2.5 py-1.5 text-left text-md font-medium transition-[background-color] duration-120 hover:bg-surface-strong"
+              onClick={() => openEvidence(m.finding_id)}
+            >
+              <Icon icon={FileQuestionMark} size={14} className="mt-0.5 text-missing" />
+              <span className="flex flex-col gap-px">
+                <span className="text-missing">{m.label}</span>
+                <span className="text-xs font-normal text-muted">Requested from the seller</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+      </section>
 
       <div className="grow max-md:hidden" />
 
-      <section aria-labelledby="eval-h" data-part="eval-gate" className="flex flex-col gap-2.5 border-t border-hairline px-2.5 pt-3">
-        <div className="flex items-center justify-between">
-          <h2 id="eval-h" className="t-label">
-            Eval gate
+      <section
+        aria-labelledby="eval-h"
+        data-part="eval-gate"
+        className="flex flex-col gap-3 rounded-card border border-hairline bg-surface p-3.5"
+      >
+        <div className="flex items-center justify-between gap-2">
+          <h2 id="eval-h" className="text-sm font-semibold text-ink">
+            Accuracy check
           </h2>
           {ev && (
             <span role="status">
-              <Tag def={EVAL[ev.state]} />
+              <Tag def={EVAL[ev.state]} small />
             </span>
           )}
         </div>
         {ev && (
-          <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-sm [&_dd]:text-right [&_dd]:font-medium [&_dt]:text-muted">
-            <dt>Golden set</dt>
-            <dd>{ev.golden_count} items</dd>
-            <dt>Corrections held</dt>
+          <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1.5 text-sm [&_dd]:text-right [&_dd]:font-medium [&_dd]:tabular-nums [&_dt]:text-muted">
+            <dt>Examples tested</dt>
+            <dd>{ev.golden_count}</dd>
+            <dt>Your corrections</dt>
             <dd>
               {ev.corrections_held} of {ev.corrections_total}
-              {ev.state === 'stale' || (running && ev.corrections_held < ev.corrections_total) ? ' checked' : ''}
+              {ev.corrections_held < ev.corrections_total ? ' re-checked' : ' hold'}
             </dd>
-            <dt>Citation validity</dt>
+            <dt>Quote accuracy</dt>
             <dd>{percent(ev.citation_validity)}</dd>
-            <dt>Cost, this room</dt>
+            <dt>AI cost, this deal</dt>
             <dd>{gbp(ev.cost_gbp)}</dd>
           </dl>
         )}
         <Button size="eval" onClick={runEval} aria-disabled={!ev || running} data-focus="run-eval">
-          {running ? 'Running eval…' : 'Run eval'}
+          {running ? 'Re-checking…' : 'Re-check now'}
         </Button>
       </section>
     </nav>

@@ -6,7 +6,7 @@
   "result": "fail",
   "review": "lawyer_verified",
   "why": "Land control ends in 2060 but the permission runs to about 2069. Nine years of permitted operation have no land rights, which affects valuation and debt tenor.",
-  "how": "Lease end (1 Jan 2026 + 35 years) is compared with first export (grid connection, 2029) + 40 years.",
+  "how": "The lease runs 35 years from 1 January 2026, so it ends in 2060. Planning permission lasts 40 years from first export, expected in 2029, so it runs to about 2069.",
   "evidence": [
     {
       "kind": "quote",

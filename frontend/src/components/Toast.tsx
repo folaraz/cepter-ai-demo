@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import { useActions, useStore } from '../state/store';
+import { Icon } from './ui';
 
 const AUTO_DISMISS_MS = 8000;
 
@@ -46,7 +48,7 @@ export function Toast() {
             </button>
           )}
           <button type="button" className="size-9 rounded-pill border-none bg-transparent text-xl" aria-label="Dismiss" onClick={dismissToast}>
-            <span aria-hidden="true">×</span>
+            <Icon icon={X} size={16} />
           </button>
         </div>
       )}

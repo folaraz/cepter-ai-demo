@@ -1,0 +1,40 @@
+id: grid_before_cod
+order: 2
+severity: high
+headline_phrase: "the grid connection lands after the date the PPA expects power"
+
+inputs:
+  - key: connection_date
+    select: {property: GridConnection.connection_date}
+    role: "connection date"
+  - key: target_cod
+    select: {property: OfftakeAgreement.target_cod}
+    role: "target COD"
+  - key: long_stop_date
+    select: {property: OfftakeAgreement.long_stop_date}
+    required: false            # improves the wording when present; never blocks the check
+    evidence: false
+
+logic: |
+  if connection_date > target_cod: fail
+  else:                            pass
+
+context:
+  days: "(connection_date - target_cod).days, e.g. 184"
+  slack_days: "(long_stop_date - connection_date).days, e.g. 91"
+  connection_date_short: 'short date "1 Oct 2029"'
+  target_cod_short: 'short date "31 Mar 2029"'
+
+title:
+  flagged: "Grid connection falls {days} days after the PPA target COD"
+  passed: "Grid connection on or before the PPA target COD"
+why: >-
+  The plant cannot export, and so cannot earn under the PPA, before it is connected.
+  The connection lands {slack_days} days before the PPA long-stop date, after which the
+  buyer may terminate.
+how: >-
+  Both dates verified verbatim. The check fails if connection_date > target_cod.
+  {connection_date_short} is {days} days after {target_cod_short}.
+
+# A plain fail raises no RFI: the facts are known, the question is commercial.
+rfi: null

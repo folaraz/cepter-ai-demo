@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useActions, useStore, useSummary } from '../state/store';
-import { Button, Glyph, Kbd } from './ui';
+import { ChevronRight, Keyboard, Moon, Sun } from 'lucide-react';
+import { BrandMark, Icon, IconButton } from './ui';
+import { findingName } from '../lib/format';
 
 type Theme = 'light' | 'dark';
 
@@ -31,45 +33,49 @@ function useTheme(): [Theme, () => void] {
   return [theme, toggle];
 }
 
-const CRUMB = { summary: 'Summary', evidence: 'Evidence', rfi: 'Requests' } as const;
+const CRUMB = { summary: 'Summary', evidence: 'Evidence', rfi: 'Seller questions', ask: 'Ask' } as const;
 
 export function TopBar() {
   const { state } = useStore();
   const summary = useSummary();
   const { setHelp } = useActions();
   const [theme, toggleTheme] = useTheme();
-  const crumb = state.view === 'evidence' && state.selectedId ? `Evidence · ${state.selectedId}` : CRUMB[state.view];
+  const crumb = state.view === 'evidence' && state.selectedId ? `Evidence · ${findingName(state.selectedId)}` : CRUMB[state.view];
 
   return (
     <header className="flex h-(--topbar-h) shrink-0 items-center gap-4 border-b border-hairline bg-surface px-4">
-      <div className="flex w-[216px] shrink-0 items-center gap-2 max-md:w-auto">
-        <span aria-hidden="true" className="inline-flex size-5 items-center justify-center rounded-pill bg-primary">
-          <span className="size-1.5 rounded-[3px] bg-on-primary" />
-        </span>
-        <span className="text-lg font-medium tracking-tight">DataRoom Lens</span>
+      <div className="flex w-[216px] shrink-0 items-center gap-2.5 max-md:w-auto">
+        <BrandMark />
+        <span className="text-lg font-semibold tracking-tight">DataRoom Lens</span>
       </div>
       <nav aria-label="Breadcrumb" className="max-md:hidden">
-        <ol className="flex items-center gap-2 whitespace-nowrap text-md text-muted">
+        <ol className="flex items-center gap-1.5 whitespace-nowrap text-md text-muted">
           <li>{summary?.asset.name ?? 'Brackenfield Solar & Storage'}</li>
-          <li aria-current="page" className="font-medium text-ink before:mr-2 before:font-normal before:text-muted before:content-['/']">
+          <li aria-hidden="true">
+            <Icon icon={ChevronRight} size={14} />
+          </li>
+          <li aria-current="page" className="font-medium text-ink">
             {crumb}
           </li>
         </ol>
       </nav>
       <div className="grow" />
       {(summary?.asset.synthetic ?? true) && (
-        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-muted max-lg:hidden">
-          <Glyph>◇</Glyph>Synthetic data room · offline replay
+        <span
+          title="This is a sample deal with made-up documents, for demonstration."
+          className="inline-flex h-6 items-center rounded-pill bg-surface-strong px-2.5 text-xs font-medium text-body max-lg:hidden"
+        >
+          Demo data
         </span>
       )}
-      <Button size="sm" onClick={toggleTheme} aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}>
-        <Glyph>{theme === 'dark' ? '○' : '●'}</Glyph>
-        <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
-      </Button>
-      <Button size="sm" onClick={() => setHelp(true)} aria-label="Keyboard shortcuts">
-        <Kbd>?</Kbd>
-        <span>Shortcuts</span>
-      </Button>
+      <div className="flex items-center gap-1.5">
+        <IconButton
+          icon={theme === 'dark' ? Sun : Moon}
+          onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+        />
+        <IconButton icon={Keyboard} onClick={() => setHelp(true)} aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)" />
+      </div>
     </header>
   );
 }

@@ -1,5 +1,6 @@
 // Shared primitives. Styling is Tailwind utilities over the design tokens only.
 import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import type { StatusDef } from '../lib/status';
 import { cn } from '../lib/cn';
 
@@ -50,14 +51,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   );
 });
 
-/** Uppercase text link: "← Summary", "View finding →". */
+/** Quiet inline link-button: "View finding". */
 export function TextLink({ className, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       type="button"
       className={cn(
-        'min-h-6 border-none bg-transparent px-0 py-1 font-body text-xs font-semibold uppercase tracking-label text-ink',
-        'underline decoration-transparent underline-offset-3 transition-[text-decoration-color] duration-120 hover:decoration-ink',
+        'inline-flex min-h-6 items-center gap-1 border-none bg-transparent px-0 py-1 text-md font-medium text-ink',
+        'underline decoration-hairline underline-offset-4 transition-[text-decoration-color] duration-120 hover:decoration-ink',
         className,
       )}
       {...rest}
@@ -67,20 +68,40 @@ export function TextLink({ className, ...rest }: ButtonHTMLAttributes<HTMLButton
 
 // ---------------------------------------------------------------- status
 
-/** Decorative status glyph; the word next to it carries the meaning. */
-export function Glyph({ children, className, style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
+/** Decorative icon sized to sit on the text baseline; the word next to it carries the meaning. */
+export function Icon({
+  icon: I,
+  size = 13,
+  filled,
+  spin,
+  className,
+  style,
+}: {
+  icon: LucideIcon;
+  size?: number;
+  filled?: boolean;
+  spin?: boolean;
+  className?: string;
+  style?: CSSProperties;
+}) {
   return (
-    <span aria-hidden="true" className={cn('inline-block w-3 shrink-0 text-center font-mono text-xs tracking-none', className)} style={style}>
-      {children}
-    </span>
+    <I
+      aria-hidden="true"
+      focusable="false"
+      size={size}
+      strokeWidth={filled ? 0 : 2}
+      fill={filled ? 'currentColor' : 'none'}
+      className={cn('shrink-0', spin && 'animate-spin', className)}
+      style={style}
+    />
   );
 }
 
-/** Glyph + word in the status colour. */
+/** Icon + word in the status colour. */
 export function Tag({ def, small, className, children }: { def: StatusDef; small?: boolean; className?: string; children?: ReactNode }) {
   return (
     <span className={cn('inline-flex items-center gap-1.5 whitespace-nowrap font-medium', small ? 'text-xs' : 'text-sm', className)} style={{ color: def.color }}>
-      <Glyph>{def.glyph}</Glyph>
+      <Icon icon={def.icon} filled={def.filled} spin={def.spin} size={def.filled ? (small ? 8 : 9) : small ? 12 : 13} />
       {children ?? def.word}
     </span>
   );
@@ -96,7 +117,7 @@ export function ResultPill({ def }: { def: StatusDef }) {
       )}
       style={{ color: def.color }}
     >
-      <Glyph>{def.glyph}</Glyph>
+      <Icon icon={def.icon} size={13} />
       {def.word}
     </span>
   );
@@ -130,3 +151,88 @@ export function Sk({ className, style }: { className?: string; style?: CSSProper
 export const hit = 'transition-[background-color] duration-120 hover:bg-surface-strong';
 
 export const srOnly = 'sr-only';
+
+// ---------------------------------------------------------------- structure
+
+/** Small neutral count, e.g. next to a heading or nav item. */
+export function Count({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex h-5 min-w-5 items-center justify-center rounded-pill bg-surface-strong px-1.5 text-xs font-medium text-body tabular-nums',
+        className,
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+/** Section heading: sentence case, optional count, optional one-line description and trailing slot. */
+export function SectionHeading({
+  id,
+  title,
+  count,
+  description,
+  children,
+  as: H = 'h2',
+  className,
+}: {
+  id?: string;
+  title: ReactNode;
+  count?: ReactNode;
+  description?: ReactNode;
+  children?: ReactNode;
+  as?: 'h2' | 'h3';
+  className?: string;
+}) {
+  return (
+    <div className={cn('flex flex-wrap items-baseline gap-x-3 gap-y-0.5', className)}>
+      <H id={id} className="flex items-center gap-2 text-lg font-semibold tracking-tight text-ink">
+        {title}
+        {count !== undefined && <Count>{count}</Count>}
+      </H>
+      {description && <p className="text-sm text-muted">{description}</p>}
+      {children && <div className="ml-auto flex items-center gap-2">{children}</div>}
+    </div>
+  );
+}
+
+/** Square icon-only button. Always pass an aria-label; the title doubles as the tooltip. */
+export const IconButton = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { icon: LucideIcon; size?: 'sm' | 'md' }>(
+  function IconButton({ icon, size = 'md', className, title, type = 'button', ...rest }, ref) {
+    return (
+      <button
+        ref={ref}
+        type={type}
+        title={title ?? rest['aria-label']}
+        className={cn(
+          'inline-flex shrink-0 items-center justify-center rounded-pill border border-control bg-transparent text-ink transition-[background-color] duration-120',
+          'hover:not-disabled:bg-surface-strong disabled:border-hairline disabled:text-disabled',
+          size === 'md' ? 'size-8' : 'size-7',
+          className,
+        )}
+        {...rest}
+      >
+        <Icon icon={icon} size={size === 'md' ? 16 : 15} />
+      </button>
+    );
+  },
+);
+
+/** The DataRoom Lens mark: two overlapping circles whose intersection forms a lens. */
+export function BrandMark({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 22 22" aria-hidden="true" focusable="false" className="shrink-0">
+      <defs>
+        <clipPath id="lens-left">
+          <circle cx="8.5" cy="11" r="5" />
+        </clipPath>
+      </defs>
+      <rect width="22" height="22" rx="6" fill="var(--primary)" />
+      <circle cx="8.5" cy="11" r="5" fill="none" stroke="var(--on-primary)" strokeWidth="1.4" opacity="0.55" />
+      <circle cx="13.5" cy="11" r="5" fill="none" stroke="var(--on-primary)" strokeWidth="1.4" opacity="0.55" />
+      <circle cx="13.5" cy="11" r="5" fill="var(--on-primary)" clipPath="url(#lens-left)" />
+    </svg>
+  );
+}

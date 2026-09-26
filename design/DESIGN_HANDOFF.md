@@ -12,6 +12,7 @@ This folder is the source of truth for the frontend. Build the UI to match it ex
 | `CLAUDE_CODE_PROMPTS.md` | The build, split into small tasks, in order. |
 | `tokens.css` | Every colour, font, radius and size as CSS variables, light and dark. |
 | `api/types.ts` | The API contract. The UI and the FastAPI backend both follow it. |
+| `api/ask.types.ts` | The Ask contract. Reuses `QuoteEvidence` from `types.ts`. |
 | `api/fixtures/` | Realistic data in exactly those shapes, so the UI can be built before the backend exists. |
 | `artboards/*.dc.html` | Design source files. Read them for exact spacing, copy and structure. They need the design tool's runtime to render, so use the live link above to see them. |
 
@@ -86,7 +87,32 @@ Selecting a source card, or Previous/Next, swaps the page. Opening a finding alw
 
 ## View 3: Requests
 
-Label `03. Requests for information`, headline "Three questions for the seller, each tied to the check it unblocks." in `.t-display`, a one-line explanation, and **Export Markdown** (the ink pill for this view) on the right. Then a single card with one row per RFI: DM Mono ID column, title + severity tag + "View finding →" link, request (14px, max ~680px), and a small definition list: Why · Documents · Unblocks (check id in DM Mono). Export downloads `GET /api/rfi.md` (fixture mode: build the Markdown client-side from `rfi.json`) and shows a toast.
+Label `03. Requests for information`, headline "Three questions for the seller, each tied to the check it unblocks." in `.t-display`, a one-line explanation, and **Download questions** (the ink pill for this view) on the right. Then a single card with one row per RFI: DM Mono ID column, title + severity tag + "View finding →" link, request (14px, max ~680px), and a small definition list: Why · Documents · Unblocks (check id in DM Mono). Export downloads `GET /api/rfi.md` (fixture mode: build the Markdown client-side from `rfi.json`) and shows a toast.
+
+## View 4: Ask
+
+Added after the original artboards, so there is no artboard for it: design it inside the current UI's patterns (navigation, headings, cards, chips, tokens). Contract: `api/ask.types.ts`. Behaviour: `backend/SPEC.md` C14. User-facing messages: `backend/ask.yaml` → `messages` (use those strings exactly).
+
+**What it does.** A reviewer asks a question about the data room. The backend answers one of three ways: **lookup** (a single fact: retrieved paragraphs, a model-drafted answer, every sentence verified against its quotes before it is sent); **relationship** (a fixed query over the asset model, rendered from templates; a sentence stating an absence carries `finding_id` instead of a citation); or **abstained** (the documents don't answer it, or it is off-topic). Answers are **not streamed**: they arrive whole after about 2–4 s because they are verified first. The five suggested questions always work. A free-form question returns `status: "unavailable"` unless live Ask is switched on at the server.
+
+**Behaviour.**
+1. **Input:** a labelled textarea, 3–500 characters, inline error outside that range (`aria-invalid` plus message, cleared on edit). Enter submits, Shift+Enter adds a line. **Ask** is this view's one ink pill.
+2. **Suggestions** from `GET /api/ask/suggestions`: shown before the first question and after an unavailable response, as buttons that submit immediately.
+3. **Pending:** keep the question visible, disable submit, show a quiet status in an `aria-live="polite"` region ("Searching the documents…", then "Checking every quote…" after about 1 s). Cancellable (AbortController).
+4. **Answered:** sentences as one readable paragraph, each followed by its citation chips (document short title + paragraph ID in DM Mono). A chip opens the Evidence view on that `QuoteEvidence`, quote highlighted, exactly like a finding's source. A sentence with `finding_id` gets a finding chip that opens the finding. A meta line gives the route in plain words ("Looked up in the documents" / "From the asset model"), latency, and "Replayed" / "Cached" / "Live" from `mode`. A verified marker in the status vocabulary: "✓ Every sentence cites a verified quote". If `dropped_sentences > 0`, a quiet note: "1 sentence was removed because its quote couldn't be verified." (pluralised). If `related_finding_id` / `related_rfi_id` are set, a "Related" line linking to them.
+5. **Abstained:** a designed state, never styled as an error: the `message`, related links if any, and a link to Requests ("Ask the seller instead").
+6. **Unavailable:** the `message` and the suggestions.
+7. **Errors** (network, 5xx, 400): scoped inline error with Retry; the question stays in the input.
+8. **History:** this session's questions and answers in memory, newest first, each keeping its own state.
+9. **Keyboard:** one shortcut to focus the Ask input, added to the table below and the shortcuts dialog. After an answer arrives, keep focus in the input and announce the result through the live region.
+10. **Accessibility:** citation chips are real buttons with labels like "Open source: Grid connection offer, paragraph grid_offer:p2:¶3".
+
+**As built (frontend, fixture mode).** Where the build differs from the text above, on purpose:
+- Ask has its own two-pane page (sidebar item "Ask", after Seller questions): question, suggestions and this session's answers on the left; the same document viewer as Evidence on the right. A citation chip opens its passage in that viewer, beside the answer, instead of navigating to Evidence (Evidence is built around a finding and its review actions). Finding chips and the Related finding link do open Evidence; the Related request and "Ask the seller instead" open Seller questions.
+- Chips read "Grid offer, p. 2" (short document name and page); the accessible label is "Open source: Grid connection offer, page 2". No paragraph IDs, no monospace (see CLAUDE.md, Visual style and Writing for the reviewer).
+- The meta line is the route in plain words plus the time taken ("From the asset model", "1.8 s"). The replay/cache/live mode is not shown.
+- The verified marker reads "Every sentence is backed by an exact quote", or "…by an exact quote or a finding" when a sentence links to a finding.
+- The focus shortcut is "/". The first citation of a new answer opens automatically; focus stays in the input and the outcome is announced in a polite live region.
 
 ## Overlays
 
@@ -110,14 +136,17 @@ Single-key shortcuts never fire while focus is in an input, select or textarea.
 
 ## Status vocabulary (use exactly these)
 
+Revised for plain language (see "Writing for the reviewer" in CLAUDE.md). The API enum values are unchanged; only the words shown to people changed.
+
 | Axis | Values (glyph, word, colour token) |
 |---|---|
 | Severity | ◆ Critical `--critical` · ▲ High `--high` · ● Medium `--medium` · ○ Low `--low` |
-| Result | ✕ Fail `--critical` · ≠ Conflict `--conflict` · ○ Missing evidence `--missing` · ✓ Pass `--ok` |
-| Review | ◇ AI-extracted `--body` · ! Needs review `--high` · ✓ Lawyer-verified `--ok` · ✎ Corrected `--missing` · ✕ Rejected `--muted` |
-| Quote | ✓ Verified quote `--ok` · ✓✓ Corroborated `--ok` · ≠ Conflicting value `--conflict` |
+| Result | ✕ Issue found `--critical` · ≠ Documents disagree `--conflict` · ○ Document missing `--missing` · ✓ No issue `--ok` |
+| Review | ◇ Not reviewed `--body` · ! Needs review `--high` · ✓ Confirmed `--ok` · ✎ Corrected `--missing` · ✕ Dismissed `--muted` |
+| Quote | ✓ Exact quote `--ok` · ✓✓ Found in 2+ documents `--ok` · ≠ Documents disagree `--conflict` |
+| Accuracy check | ✓ Up to date `--ok` · ! Re-check needed `--high` · ◌ Checking… `--body` · ✕ Problems found `--critical` |
 
-Glyphs are `aria-hidden`; the word carries the meaning. Never colour alone.
+The glyphs above describe the shape; the UI draws them as Lucide icons (filled diamond / triangle / dot for severity, circle-x, not-equal, file-question, circle-check, dashed circle, circle-alert, pencil, ban, check, double check, spinner), defined once in `frontend/src/lib/status.ts`. Icons are `aria-hidden`; the word carries the meaning. Never colour alone. Internal ids (check ids, paragraph ids, run ids, golden item ids) are never shown in the UI, and neither are shorthand units like "31p": write "31 pages" or "Page 4 of 31".
 
 ## Review loop behaviour (the demo's key moment)
 

@@ -1,0 +1,60 @@
+id: cable_route_rights
+order: 1                      # finding ID is F-{order:02d}, stable across runs
+severity: critical
+headline_phrase: "nothing gives the project rights to reach the grid"
+
+inputs:
+  # Evidence cards appear in this order. One card per paragraph (deduplicated).
+  - key: cable_route
+    select: {edge: CABLE_CROSSES, from: Asset}
+    role: "what needs rights"
+  - key: land_rights
+    select: {edge: COVERS, from: [Lease, Easement]}
+    role: "what the lease covers"
+  - key: substation
+    select: {property: GridConnection.substation}
+    evidence: false            # used in wording only, no evidence card
+
+logic: |
+  crossed   = parcel numbers reached by cable_route
+  covered   = parcel numbers reached by land_rights
+  uncovered = crossed - covered
+  if not crossed:  missing_evidence    (the cable route itself is not evidenced)
+  elif uncovered:  missing_evidence    (absence of an easement is not proof there is none)
+  else:            pass
+
+# Keys the check code must put in the template context.
+context:
+  crossed_parcels: 'parcel list as prose: "Parcels 14 and 15", "Parcel 14", "Parcels 14, 15 and 16"'
+  covered_parcels_short: 'covered numbers; consecutive runs as "9 to 11", otherwise "9, 10 and 12"'
+  uncovered_range: 'uncovered numbers with an en dash for runs: "14–15"'
+  substation: "GridConnection.substation"
+  rfi_id: "assigned by the RFI generator"
+
+title:
+  flagged: "No rights for the export cable across {crossed_parcels}"
+  passed: "Rights secured for every parcel on the cable route"
+why: >-
+  The cable from the site to {substation} crosses land the lease does not cover.
+  Without an easement the project cannot physically connect, whatever the grid offer says.
+how: >-
+  The check needs an easement edge from the Asset to every parcel the cable route crosses.
+  The site plan names {crossed_parcels}; the lease covers {covered_parcels_short}; no
+  easement document exists. The result is missing evidence, not fail: nothing assumes
+  the rights do not exist.
+
+missing:
+  label: "Deed of easement, Parcels {uncovered_range}"
+  note: "Expected by cable_route_rights. Not in the data room. Raised as {rfi_id}."
+  document_label: "Cable route easement"     # shown under "Expected, not found" in the sidebar
+
+rfi:
+  title: "Cable route rights"
+  request: >-
+    Please provide the executed deed(s) of easement for the export cable across
+    {crossed_parcels} to {substation}.
+  why: "Without these rights the site cannot physically connect to the grid."
+  documents_expected:
+    - "Deed of easement"
+    - "Title plans for {crossed_parcels}"
+    - "HM Land Registry registration"

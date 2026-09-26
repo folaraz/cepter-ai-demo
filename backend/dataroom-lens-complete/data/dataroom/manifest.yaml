@@ -1,0 +1,57 @@
+# Synthetic data room for DataRoom Lens. Every document here is invented.
+#
+# id                short key used in the API (Citation.document_id, Summary.documents[].id)
+# paragraph_prefix  prefix of paragraph IDs: "{paragraph_prefix}:p{page}:¶{n}"
+#                   (kept separate from id so IDs match design/api/fixtures exactly)
+# noun              how templates refer to the document in running text
+# kind              ontology type of the main agreement or instrument in the document
+
+asset:
+  name: "Brackenfield Solar & Storage"
+  subtitle: "49.9 MW PV + BESS · Wickham, UK"
+  synthetic: true
+
+run:
+  # Date the checks treat as "today". Fixed so results never drift with the calendar.
+  as_of: "2026-09-21"
+
+documents:
+  - id: lease
+    file: lease.pdf
+    source: src/lease.md
+    title: "Lease, Bracken Farm"
+    paragraph_prefix: lease
+    noun: "the lease"
+    kind: Lease
+
+  - id: planning
+    file: planning_decision.pdf
+    source: src/planning_decision.md
+    title: "Planning decision"
+    paragraph_prefix: planning
+    noun: "planning"
+    kind: Permit
+
+  - id: grid
+    file: grid_offer.pdf
+    source: src/grid_offer.md
+    title: "Grid connection offer"
+    paragraph_prefix: grid_offer
+    noun: "the grid offer"
+    kind: GridConnection
+
+  - id: ppa
+    file: ppa.pdf
+    source: src/ppa.md
+    title: "Power purchase agreement"
+    paragraph_prefix: ppa
+    noun: "the PPA"
+    kind: OfftakeAgreement
+
+  - id: site
+    file: site_plan.pdf
+    source: src/site_plan.md
+    title: "Site and cable route plan"
+    paragraph_prefix: site_plan
+    noun: "the site plan"
+    kind: SitePlan

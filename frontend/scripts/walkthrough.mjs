@@ -28,7 +28,7 @@ step('J / ↓ move selection and focus to F-03');
 
 await page.keyboard.press('Enter');
 await page.waitForSelector('article mark');
-assert.match(await text('nav[aria-label=Breadcrumb] [aria-current=page]'), /Evidence · F-03/);
+assert.match(await text('nav[aria-label=Breadcrumb] [aria-current=page]'), /Evidence · Finding 3/);
 assert.match(await text('[data-part=source-toolbar]'), /Source 1 of 3/);
 step('Enter opens Evidence at source 1');
 
@@ -54,66 +54,66 @@ assert.equal(await focusIs('review-select'), 'review-select');
 await page.keyboard.press('Tab');
 await page.keyboard.press('Control+Enter');
 assert.equal(await page.getAttribute('textarea', 'aria-invalid'), 'true');
-assert.match(await text('[data-part=reason-error]'), /Add a reason\. It becomes the test's description\./);
+assert.match(await text('[data-part=reason-error]'), /Add a short reason so your team knows why\./);
 step('Saving without a reason shows the error and keeps focus in the field');
 
 await page.keyboard.type('Planning limit (49.9 MW) and grid export limit (45 MW) are different properties. This is a capacity mismatch: fail, not conflict.');
 await page.keyboard.press('Control+Enter');
 await page.waitForSelector('[data-part=toast]');
-assert.match(await text('[data-part=toast]'), /Saved as corr-002 in the golden set/);
+assert.match(await text('[data-part=toast]'), /Correction saved\. We'll re-check it on every run\./);
 assert.match(await text('[data-part=finding-status]'), /Corrected/);
-assert.match(await text('[data-part=finding-status]'), /Fail/);
-assert.match(await text('[data-part=eval-gate]'), /Re-run needed/);
-assert.match(await text('[data-part=eval-gate]'), /1 of 2 checked/);
-assert.match(await text('[data-part=eval-gate]'), /21 items/);
-step('Correct → corr-002, row Corrected + Fail, eval Re-run needed, 1 of 2 checked, golden 21');
+assert.match(await text('[data-part=finding-status]'), /Issue found/);
+assert.match(await text('[data-part=eval-gate]'), /Re-check needed/);
+assert.match(await text('[data-part=eval-gate]'), /1 of 2 re-checked/);
+assert.match(await text('[data-part=eval-gate]'), /Examples tested\s+21/);
+step('Correct → toast, finding Corrected + Issue found, Re-check needed, 1 of 2 re-checked, 21 examples');
 
 // Undo restores everything and returns focus.
 await page.getByRole('button', { name: 'Undo' }).click();
 await page.waitForFunction(() => document.querySelector('[data-part=toast]')?.textContent?.includes('Undone'));
 assert.match(await text('[data-part=finding-status]'), /Needs review/);
-assert.match(await text('[data-part=eval-gate]'), /Passing/);
-assert.match(await text('[data-part=eval-gate]'), /20 items/);
+assert.match(await text('[data-part=eval-gate]'), /Up to date/);
+assert.match(await text('[data-part=eval-gate]'), /Examples tested\s+20/);
 assert.equal(await focusIs('review-accept'), 'review-accept');
-step('Undo restores the finding and the eval, focus returns to the review buttons');
+step('Undo restores the finding and the accuracy check, focus returns to the review buttons');
 
 // Redo the correction via the buttons, then run the eval.
 await page.keyboard.press('c');
 await page.waitForSelector('select');
 await page.selectOption('select', 'fail');
 await page.fill('textarea', 'Capacity mismatch: fail, not conflict.');
-await page.getByRole('button', { name: 'Save to golden set' }).click();
-await page.waitForFunction(() => document.querySelector('[data-part=toast]')?.textContent?.includes('corr-002'));
-await page.getByRole('button', { name: 'Run eval' }).focus();
+await page.getByRole('button', { name: 'Save correction' }).click();
+await page.waitForFunction(() => document.querySelector('[data-part=toast]')?.textContent?.includes('Correction saved'));
+await page.getByRole('button', { name: 'Re-check now' }).focus();
 await page.keyboard.press('Enter');
-assert.match(await text('[data-part=eval-gate]'), /Running…/);
-assert.match(await text('[data-focus=run-eval]'), /Running eval…/);
-await page.waitForFunction(() => document.querySelector('[data-part=eval-gate]')?.textContent?.includes('Passing'), null, { timeout: 5000 });
-assert.match(await text('[data-part=eval-gate]'), /2 of 2/);
-assert.match(await text('[data-part=toast]'), /Eval passed · 96% · all corrections still hold/);
-step('Run eval: Running… then Passing, corrections 2 of 2, toast');
+assert.match(await text('[data-part=eval-gate]'), /Checking…/);
+assert.match(await text('[data-focus=run-eval]'), /Re-checking…/);
+await page.waitForFunction(() => document.querySelector('[data-part=eval-gate]')?.textContent?.includes('Up to date'), null, { timeout: 5000 });
+assert.match(await text('[data-part=eval-gate]'), /2 of 2 hold/);
+assert.match(await text('[data-part=toast]'), /Re-check complete\. All your corrections still hold\./);
+step('Re-check now: Checking… then Up to date, 2 of 2 corrections hold, toast');
 
 // Summary reflects the correction.
 await page.getByRole('button', { name: /Summary/ }).first().click();
 const row = page.locator('[data-focus="row-F-03"]');
 assert.match(await row.innerText(), /Corrected/);
-assert.match(await row.innerText(), /Fail/);
-step('Summary row shows ✎ Corrected and ✕ Fail');
+assert.match(await row.innerText(), /Issue found/);
+step('Summary row shows ✎ Corrected and ✕ Issue found');
 
 // Accept from the grid with A.
 await row.focus();
 await page.keyboard.press('k');
 await page.keyboard.press('a');
-await page.waitForFunction(() => document.querySelector('[data-part=toast]')?.textContent?.includes('F-02 accepted'));
-assert.match(await page.locator('[data-focus="row-F-02"]').innerText(), /Lawyer-verified/);
+await page.waitForFunction(() => document.querySelector('[data-part=toast]')?.textContent?.includes('Finding 2 confirmed'));
+assert.match(await page.locator('[data-focus="row-F-02"]').innerText(), /Confirmed/);
 step('A accepts the selected finding with a toast');
 
 // Export RFIs.
-await page.getByRole('button', { name: /Requests/ }).click();
-const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Export Markdown' }).click()]);
+await page.getByRole('button', { name: /Seller questions/ }).click();
+const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download questions' }).click()]);
 assert.equal(download.suggestedFilename(), 'brackenfield-rfis.md');
-assert.match(await text('[data-part=toast]'), /Exported 3 requests/);
-step('Export Markdown downloads brackenfield-rfis.md and toasts');
+assert.match(await text('[data-part=toast]'), /Downloaded 3 seller questions/);
+step('Download questions saves brackenfield-rfis.md and toasts');
 
 // Shortcuts dialog: ? opens, Esc closes, focus returns.
 await page.getByRole('button', { name: 'Keyboard shortcuts' }).focus();
@@ -123,6 +123,23 @@ await page.keyboard.press('Escape');
 await page.waitForSelector('dialog:not([open])', { state: 'attached' });
 assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), 'Keyboard shortcuts');
 step('Shortcuts dialog opens, Esc closes, focus returns to the opener');
+
+// Ask: "/" opens Ask, a suggested question answers, a citation opens its passage beside it.
+await page.locator('body').focus();
+await page.evaluate(() => (document.activeElement)?.blur());
+await page.keyboard.press('/');
+await page.waitForFunction(() => document.activeElement?.id === 'ask-input');
+await page.keyboard.type('Do the documents agree on the export capacity?');
+await page.keyboard.press('Enter');
+await page.locator('article', { hasText: 'Searching the documents…' }).waitFor();
+await page.getByText('Every sentence is backed', { exact: false }).first().waitFor({ timeout: 6000 });
+assert.equal(await page.evaluate(() => document.activeElement?.id), 'ask-input', 'focus stays in the Ask input');
+const chip = page.getByRole('button', { name: 'Open source: Grid connection offer, page 2' });
+await chip.focus();
+await page.keyboard.press('Enter');
+assert.equal(await chip.getAttribute('aria-pressed'), 'true');
+assert.match(await text('article mark'), /Maximum Export Capacity at the Point of Connection shall be 45 MW/);
+step('"/" opens Ask; a question answers with chips; a citation opens its highlighted passage');
 
 // Shortcuts do not fire while typing.
 await page.getByRole('button', { name: /Evidence/ }).first().click();

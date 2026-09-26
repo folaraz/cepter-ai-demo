@@ -59,6 +59,8 @@ describe('fixture client: RFI export', () => {
     const md = await getRfiMarkdown();
     expect(md).toContain('### RFI-01: Cable route rights (Critical)');
     expect(md).toContain('### RFI-03: Confirm export capacity (High)');
-    expect(md).toContain('**Blocks check.** `pre_commencement_conditions`');
+    // Written for the seller: no internal check names.
+    expect(md).toContain('**Documents expected.**');
+    expect(md).not.toMatch(/cable_route_rights|pre_commencement_conditions|Blocks check/);
   });
 });

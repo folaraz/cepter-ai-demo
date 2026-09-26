@@ -1,0 +1,108 @@
+# How GET /api/summary is assembled from the graph and the check results.
+# Everything here is deterministic: no LLM is involved after extraction.
+
+headline:
+  # count_word: number of flagged checks as a capitalised word ("Five"); "One finding." when 1.
+  # With no flagged checks: "All {checks_total} checks passed."
+  template: "{count_word} findings.{critical_clause}"
+  critical_clause:
+    none: ""
+    one: " One critical gap: {phrase}."            # phrase = the critical check's headline_phrase
+    many: " {n_word} critical gaps: {phrases}."    # phrases joined "a; b"
+
+facts:
+  # value formats: date_short -> "1 Oct 2029"; name_display -> legal suffix removed, title case
+  - key: export_capacity
+    label: "Export capacity"
+    source: {property_group: Asset.export_capacity_mw}
+    format: 'distinct values, majority first, joined " / ", suffix " MW": "49.9 / 45 MW"'
+    finding: export_capacity_consistent
+  - key: grid_connection
+    label: "Grid connection"
+    source: {property: GridConnection.connection_date}
+    format: date_short
+    finding: grid_before_cod
+  - key: target_cod
+    label: "Target COD"
+    source: {property: OfftakeAgreement.target_cod}
+    format: date_short
+    finding: grid_before_cod
+  - key: lease_term
+    label: "Lease term"
+    source: {property: [Lease.term_years, Lease.start_date]}
+    format: '"{term_years} years from {start_year}": "35 years from 2026"'
+    finding: lease_covers_operating_life
+  - key: landowner
+    label: "Landowner"
+    source: {party_role: landlord, on: Lease}
+    format: name_display          # "JOHN HARTLEY" -> "John Hartley"
+    finding: lease_covers_operating_life
+  - key: offtaker
+    label: "Offtaker"
+    source: {party_role: buyer, on: OfftakeAgreement}
+    format: name_display          # "Northwind Energy Supply Limited" -> "Northwind Energy Supply"
+    finding: grid_before_cod
+  - key: network_operator
+    label: "Network operator"
+    source: {party_role: network_operator, on: GridConnection}
+    format: name_display          # -> "Fenland Distribution Networks"
+    finding: grid_before_cod
+  - key: planning_ref
+    label: "Planning ref."
+    source: {property: Permit.reference}
+    format: as_is
+    finding: pre_commencement_conditions
+
+# Fact status (QuoteStatus): "conflict" if the property group has a conflict;
+# "corroborated" if the value (or, for a Party, the merged node) is evidenced by two or
+# more documents; otherwise "verified". A fact with no verified quote is omitted, never
+# shown with a guessed value.
+
+dates:
+  - key: planning_granted
+    label: "Planning granted"
+    source: {property: Permit.decision_date}
+    tone: neutral
+    finding: pre_commencement_conditions
+  - key: lease_start
+    label: "Lease starts"
+    source: {property: Lease.start_date}
+    tone: neutral
+    finding: lease_covers_operating_life
+  - key: commencement_deadline
+    label: "Commencement deadline"
+    source: {derived: "Permit.decision_date + Condition(time_limit).years"}
+    tone: neutral
+    finding: pre_commencement_conditions
+  - key: target_cod
+    label: "Target COD · PPA"
+    source: {property: OfftakeAgreement.target_cod}
+    tone: {clash_if_fails: grid_before_cod, else: neutral}
+    finding: grid_before_cod
+  - key: grid_connection
+    label: "Grid connection"
+    source: {property: GridConnection.connection_date}
+    tone: {clash_if_fails: grid_before_cod, else: neutral}
+    finding: grid_before_cod
+  - key: ppa_long_stop
+    label: "PPA long-stop"
+    source: {property: OfftakeAgreement.long_stop_date}
+    tone: {warning_if_fails: grid_before_cod, else: neutral}
+    finding: grid_before_cod
+
+date_window: "from 1 Jan of the earliest date's year to 30 Jun of the year after the latest date"
+
+clash:
+  when_fails: grid_before_cod
+  from_key: target_cod
+  to_key: grid_connection
+  label: "Grid connects {days} days after target COD"
+
+long_horizon:
+  when_fails: lease_covers_operating_life     # text and flag come from that check's long_horizon block
+
+missing_documents:
+  rule: "one entry per missing-evidence finding whose check defines missing.document_label"
+  order: "by finding ID"
+
+documents: "from manifest.yaml, with pages = the ingested PDF's page count"

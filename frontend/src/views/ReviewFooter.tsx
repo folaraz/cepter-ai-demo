@@ -2,7 +2,8 @@ import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import type { CheckResult, Finding } from '../api/types';
 import { RESULT, RESULT_ORDER } from '../lib/status';
 import { useActions, useStore } from '../state/store';
-import { Button, Glyph, Kbd } from '../components/ui';
+import { Check, CircleAlert } from 'lucide-react';
+import { Button, Icon } from '../components/ui';
 
 export function ReviewFooter({ finding }: { finding: Finding }) {
   const { state } = useStore();
@@ -54,20 +55,21 @@ export function ReviewFooter({ finding }: { finding: Finding }) {
   return (
     <div className="flex shrink-0 flex-col gap-2.5 border-t border-hairline bg-surface px-7 pt-4 pb-5">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="t-label">Your review</h2>
-        <span className="text-sm text-muted">Corrections are saved as regression tests</span>
+        <h2 className="text-sm font-semibold text-ink">Your review</h2>
+        <span className="text-sm text-muted">Corrections are remembered and re-checked on every run</span>
       </div>
 
       {mode === 'idle' ? (
         <div className="flex gap-2">
-          <Button tone="ink" grow data-focus="review-accept" aria-disabled={state.saving} onClick={() => review('accept')}>
-            Accept <Kbd>A</Kbd>
+          <Button tone="ink" grow data-focus="review-accept" title="Accept (A)" aria-disabled={state.saving} onClick={() => review('accept')}>
+            <Icon icon={Check} size={15} />
+            Accept
           </Button>
-          <Button grow data-focus="review-reject" onClick={() => setMode('reject')}>
-            Reject <Kbd>R</Kbd>
+          <Button grow data-focus="review-reject" title="Reject (R)" onClick={() => setMode('reject')}>
+            Reject
           </Button>
-          <Button grow data-focus="review-correct" onClick={() => setMode('correct')}>
-            Correct <Kbd>C</Kbd>
+          <Button grow data-focus="review-correct" title="Correct (C)" onClick={() => setMode('correct')}>
+            Correct
           </Button>
         </div>
       ) : (
@@ -82,7 +84,7 @@ export function ReviewFooter({ finding }: { finding: Finding }) {
         >
           {mode === 'correct' && (
             <label className="grid grid-cols-[110px_1fr] items-center gap-2.5 text-md text-body">
-              <span>Correct result</span>
+              <span>Right result</span>
               <select
                 className="h-(--input-h) rounded-input border border-control bg-surface px-3 text-base text-ink"
                 data-focus="review-select"
@@ -91,14 +93,14 @@ export function ReviewFooter({ finding }: { finding: Finding }) {
               >
                 {RESULT_ORDER.map((r) => (
                   <option key={r} value={r}>
-                    {RESULT[r].glyph} {RESULT[r].word}
+                    {RESULT[r].word}
                   </option>
                 ))}
               </select>
             </label>
           )}
           <label htmlFor="review-reason" className="text-md text-body">
-            {mode === 'correct' ? 'Why is this the correct reading?' : 'Why is this finding wrong?'}
+            {mode === 'correct' ? 'Why? Your team will see this.' : 'Why is this finding wrong? Your team will see this.'}
           </label>
           <textarea
             id="review-reason"
@@ -112,7 +114,7 @@ export function ReviewFooter({ finding }: { finding: Finding }) {
             aria-describedby={invalid ? errId : undefined}
             placeholder={
               mode === 'correct'
-                ? 'e.g. The planning limit and the grid export limit are different properties: fail, not conflict.'
+                ? 'e.g. The planning limit and the grid limit are different things, so this is a real shortfall, not a disagreement.'
                 : 'e.g. The lease plan annex already grants these rights.'
             }
             onChange={(e) => {
@@ -122,13 +124,13 @@ export function ReviewFooter({ finding }: { finding: Finding }) {
           />
           {invalid && (
             <span id={errId} data-part="reason-error" className="inline-flex items-center gap-1.5 text-sm font-medium text-critical">
-              <Glyph>!</Glyph>Add a reason. It becomes the test's description.
+              <Icon icon={CircleAlert} size={13} />Add a short reason so your team knows why.
             </span>
           )}
           <div className="flex gap-2">
             <Button onClick={cancel}>Cancel</Button>
             <Button type="submit" tone="ink" grow aria-disabled={state.saving}>
-              {state.saving ? 'Saving…' : 'Save to golden set'}
+              {state.saving ? 'Saving…' : mode === 'correct' ? 'Save correction' : 'Dismiss finding'}
             </Button>
           </div>
         </form>

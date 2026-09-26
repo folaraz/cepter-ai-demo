@@ -1,0 +1,42 @@
+[
+  {
+    "id": "RFI-01",
+    "finding_id": "F-01",
+    "check_id": "cable_route_rights",
+    "title": "Cable route rights",
+    "severity": "critical",
+    "request": "Please provide the executed deed(s) of easement for the export cable across Parcels 14 and 15 to Wickham Primary Substation.",
+    "why": "Without these rights the site cannot physically connect to the grid.",
+    "documents_expected": [
+      "Deed of easement",
+      "Title plans for Parcels 14 and 15",
+      "HM Land Registry registration"
+    ]
+  },
+  {
+    "id": "RFI-02",
+    "finding_id": "F-05",
+    "check_id": "pre_commencement_conditions",
+    "title": "Discharge of Condition 5",
+    "severity": "medium",
+    "request": "Please provide the Local Planning Authority’s written approval of the Construction Traffic Management Plan required by Condition 5.",
+    "why": "Commencing before discharge risks invalidating the permission.",
+    "documents_expected": [
+      "Discharge of condition notice",
+      "Approved Construction Traffic Management Plan"
+    ]
+  },
+  {
+    "id": "RFI-03",
+    "finding_id": "F-03",
+    "check_id": "export_capacity_consistent",
+    "title": "Confirm export capacity",
+    "severity": "high",
+    "request": "Please confirm the intended export capacity and whether an increase to the 45 MW Maximum Export Capacity has been applied for.",
+    "why": "Planning and the PPA assume 49.9 MW; the grid offer permits 45 MW.",
+    "documents_expected": [
+      "Any variation to the connection offer",
+      "Correspondence with the network operator on capacity"
+    ]
+  }
+]

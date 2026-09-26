@@ -1,0 +1,141 @@
+# Ask configuration: retrieval, routing, graph queries, limits.
+# Everything a user reads in a relationship answer comes from the templates below.
+# Lookup answers are written by the model, then every sentence is verified (SPEC C14).
+
+retrieval:
+  embedding_model: "BAAI/bge-small-en-v1.5"   # via fastembed, runs locally on CPU; 384 dimensions
+  dimensions: 384
+  # What gets embedded and indexed for each paragraph (one chunk per paragraph):
+  chunk_text: "{document_title} — {heading}: {text}"
+  candidates_per_method: 20      # top N from vector search and from keyword search
+  rrf_k: 60                      # reciprocal rank fusion: score = sum(1 / (rrf_k + rank))
+  top_k: 6                       # paragraphs given to the answer model
+  # Cheap early exit only: abstain without calling the answer model when the best cosine
+  # similarity is below this AND keyword search found nothing. It is NOT the main
+  # abstention guard: "How large is the decommissioning bond?" retrieves Condition 4 at
+  # rank 1 by keyword, so the answer step must abstain; "weather in Wickham" matches
+  # Wickham paragraphs, so the router must call it out_of_scope. Calibrate with
+  # `lens ask calibrate` (prints similarities for every golden question).
+  min_similarity: 0.45
+  # Keyword half: an OR query over the English tsvector, so natural questions match on
+  # any content word (plainto_tsquery alone ANDs every word and usually returns nothing):
+  #   replace(plainto_tsquery('english', :q)::text, '&', '|')::tsquery
+  # Measured on the committed data room with keyword search alone:
+  #   a01–a06 (questions sharing words with the text): 6/6, each at rank 1
+  #   a07 "How long does the project control the land for?": MISS (not in the top 6)
+  #   a08 "Who buys the electricity the plant generates?": rank 3
+  # That is why retrieval is hybrid: vector search has to carry the paraphrases. Vector
+  # and hybrid recall are measured by `lens eval` (recall@6 target: 8/8).
+  # Paragraphs go into the prompt in document order, not score order, so the recording
+  # key depends only on which paragraphs were retrieved (SPEC C14, "Replay").
+  prompt_order: document
+
+routing:
+  prompt_version: "ask.route.v1"
+  routes: [lookup, relationship, out_of_scope]
+
+answer:
+  prompt_version: "ask.answer.v1"
+  max_sentences: 4
+
+limits:
+  question_chars: {min: 3, max: 500}
+  live_questions_per_session_per_day: 20
+  live_daily_budget_gbp: 5.00        # summed from llm_calls where purpose starts with "ask:"
+  cache_hours: 24                    # same normalised question + same published run -> cached answer
+
+messages:
+  abstain_not_found: "The data room doesn't answer this. No paragraph states it, so there is no figure to give."
+  abstain_unverified: "The data room doesn't answer this reliably: no sentence of the draft answer could be verified against the documents."
+  out_of_scope: "That isn't something the documents in this data room cover."
+  unavailable_live_off: "Free-form questions are switched off in this demo. Try one of the suggested questions."
+  unavailable_limit: "Free-form questions are paused for now. Suggested questions still work."
+
+# ---------------------------------------------------------------------------------------
+# Relationship answers: a closed set of graph queries. The router may only choose one of
+# these IDs and fill the listed params from their allowed values. Execution is plain
+# Python over the published graph. No model writes these sentences.
+#
+# Sentence fields:
+#   text       str.format template over the query's context
+#   cite       input keys whose provenance becomes the sentence's citations
+#   finding    check_id whose finding this sentence links to (absence statements only)
+#   when       render only if this context key is truthy
+#   each       render once per item of this context list (item fields are in scope)
+# ---------------------------------------------------------------------------------------
+
+graph_queries:
+  cable_route_rights:
+    description: "Which parcels the export cable crosses and whether land rights cover them."
+    params: {}
+    context_from_check: cable_route_rights      # reuses that check's inputs and context
+    related_finding: cable_route_rights
+    sentences:
+      - text: "The export cable crosses {crossed_parcels}."
+        cite: [cable_route]
+      - text: "The lease covers Parcels {covered_parcels_short}."
+        cite: [land_rights]
+      - text: "No easement covers Parcels {uncovered_range}, so rights over them are missing evidence, raised as {rfi_id}."
+        when: uncovered_range
+        finding: cable_route_rights
+      - text: "Every parcel on the cable route is covered by a lease or easement."
+        when: all_covered
+        cite: [land_rights]
+
+  parties:
+    description: "Who the parties are and their roles, optionally for one agreement."
+    params:
+      agreement: {allowed: [Lease, Permit, GridConnection, OfftakeAgreement, null]}
+    context: 'parties = PARTY_TO edges (filtered by agreement), each {party, role_label, agreement_phrase}'
+    role_labels:
+      landlord: "landlord"
+      tenant: "tenant"
+      applicant: "applicant"
+      landowner: "landowner"
+      network_operator: "network operator"
+      customer: "customer"
+      generator: "generator"
+      buyer: "buyer"
+      grantor: "grantor"
+      grantee: "grantee"
+    agreement_phrases:
+      Lease: "under the lease"
+      Permit: "on the planning decision"
+      GridConnection: "under the grid offer"
+      OfftakeAgreement: "under the PPA"
+      Easement: "under the easement"
+    order: "agreement order above, then contracting roles before mentions"
+    sentences:
+      - each: parties
+        text: "{party} is the {role_label} {agreement_phrase}."
+        cite: [edge]                               # the PARTY_TO provenance quote
+
+  pre_commencement_conditions:
+    description: "Which planning conditions must be discharged before work starts, and whether they are."
+    params: {}
+    context_from_check: pre_commencement_conditions
+    related_finding: pre_commencement_conditions
+    sentences:
+      - text: "Condition {condition_number} must be discharged before development starts: it requires the {condition_subject} to be approved in writing by the Local Planning Authority."
+        cite: [conditions]
+      - text: "No discharge of Condition {condition_number} is on file, raised as {rfi_id}."
+        when: rfi_id
+        finding: pre_commencement_conditions
+
+  property_sources:
+    description: "Where a key value is stated, by which document, and whether the documents agree."
+    params:
+      property:
+        allowed:
+          Asset.export_capacity_mw: {unit: "MW", format: number, check: export_capacity_consistent}
+          GridConnection.connection_date: {unit: "", format: date_short, check: grid_before_cod}
+          OfftakeAgreement.target_cod: {unit: "", format: date_short, check: grid_before_cod}
+          Lease.term_years: {unit: "years", format: number, check: lease_covers_operating_life}
+    context: 'values = one item per (document, value), corroborated first, each {document_title, value_text}'
+    sentences:
+      - each: values
+        text: "The {document_title_lower} states {value_text}."
+        cite: [provenance]
+      - text: "These values conflict, so the check reports a conflict rather than picking one."
+        when: conflict
+        finding: "{param.check}"

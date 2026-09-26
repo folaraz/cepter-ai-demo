@@ -1,6 +1,6 @@
 import type { View } from '../state/store';
 
-const VIEW_PATH: Record<View, string> = { summary: 'summary', evidence: 'evidence', rfi: 'requests' };
+const VIEW_PATH: Record<View, string> = { summary: 'summary', evidence: 'evidence', rfi: 'requests', ask: 'ask' };
 
 /** "#/evidence/F-03" -> { view: "evidence", id: "F-03" } */
 export function parseHash(hash: string): { view: View; id?: string } | null {
@@ -10,5 +10,5 @@ export function parseHash(hash: string): { view: View; id?: string } | null {
 }
 
 export function toHash(view: View, id: string | null): string {
-  return `#/${VIEW_PATH[view]}${view !== 'rfi' && id ? `/${id}` : ''}`;
+  return `#/${VIEW_PATH[view]}${(view === 'summary' || view === 'evidence') && id ? `/${id}` : ''}`;
 }

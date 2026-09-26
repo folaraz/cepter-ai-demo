@@ -1,16 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { useActions, useStore } from '../state/store';
-import { Button, Kbd, panel } from './ui';
+import { X } from 'lucide-react';
+import { Button, Icon, Kbd, panel } from './ui';
 import { cn } from '../lib/cn';
 
 const SHORTCUTS: { what: string; keys: string[] }[] = [
   { what: 'Next / previous finding', keys: ['J', 'K'] },
   { what: 'Open evidence', keys: ['↵'] },
-  { what: 'Accept finding', keys: ['A'] },
-  { what: 'Correct finding', keys: ['C'] },
-  { what: 'Reject finding', keys: ['R'] },
-  { what: 'Resize panes (separator focused)', keys: ['←', '→'] },
-  { what: 'This sheet', keys: ['?'] },
+  { what: 'Accept a finding', keys: ['A'] },
+  { what: 'Correct a finding', keys: ['C'] },
+  { what: 'Reject a finding', keys: ['R'] },
+  { what: 'Resize the two panels (divider selected)', keys: ['←', '→'] },
+  { what: 'Ask a question', keys: ['/'] },
+  { what: 'Show these shortcuts', keys: ['?'] },
   { what: 'Close dialog or form', keys: ['Esc'] },
 ];
 
@@ -36,8 +38,12 @@ export function ShortcutsDialog() {
     setHelp(false);
     const back = opener.current;
     opener.current = null;
+    // Chrome fires "close" a moment after the dialog shuts. If focus has already moved on
+    // (e.g. "/" jumped to the Ask input), leave it there instead of pulling it back.
+    const active = document.activeElement;
+    const focusIsFree = !active || active === document.body || ref.current?.contains(active);
     // The opener may be body when ? was pressed with nothing focused.
-    if (back && back !== document.body && back.isConnected) back.focus();
+    if (focusIsFree && back && back !== document.body && back.isConnected) back.focus();
   };
 
   return (
@@ -55,7 +61,7 @@ export function ShortcutsDialog() {
           Keyboard shortcuts
         </h2>
         <Button size="icon" aria-label="Close" onClick={() => setHelp(false)} autoFocus>
-          <span aria-hidden="true">×</span>
+          <Icon icon={X} size={16} />
         </Button>
       </div>
       <dl className="flex flex-col gap-2.5 text-md">

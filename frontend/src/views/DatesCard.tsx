@@ -3,7 +3,8 @@ import type { DateMark, Summary } from '../api/types';
 import { formatDate } from '../lib/format';
 import { placeMarks, ROW_GEOMETRY, yearTicks } from '../lib/timeline';
 import { useActions } from '../state/store';
-import { Glyph, hit, panel, Sk } from '../components/ui';
+import { CircleX } from 'lucide-react';
+import { hit, Icon, panel, SectionHeading, Sk } from '../components/ui';
 import { cn } from '../lib/cn';
 
 const TONE_COLOR: Record<DateMark['tone'], string> = {
@@ -16,8 +17,8 @@ const TONE_COLOR: Record<DateMark['tone'], string> = {
 const labelWidthPct = (m: DateMark) => (Math.max(m.label.length * 6, formatDate(m.date).length * 7.2) / 1030) * 100;
 
 // Below 900px the plot keeps its desktop width and the card scrolls sideways.
-const card = cn(panel, 'relative px-6 pt-3.5 pb-4 max-md:overflow-x-auto');
-const plot = 'relative mt-2 h-[172px] max-md:min-w-[820px]';
+const card = cn(panel, 'relative px-6 pt-4 pb-4 max-md:overflow-x-auto');
+const plot = 'relative mt-3 h-[172px] max-md:min-w-[820px]';
 const beyond = cn(
   hit,
   'mt-1 flex min-h-9 w-full items-center gap-3 rounded-[6px] border-none bg-transparent px-2.5 py-2 text-left text-md max-md:min-w-[820px]',
@@ -25,12 +26,7 @@ const beyond = cn(
 
 function Head({ scale }: { scale?: string }) {
   return (
-    <div className="-mx-2 -mt-0.5 flex items-baseline justify-between">
-      <h2 id="dates-h" className="t-label">
-        Critical dates
-      </h2>
-      {scale && <span className="text-sm text-muted">{scale}</span>}
-    </div>
+    <SectionHeading id="dates-h" title="Critical dates" description={scale} />
   );
 }
 
@@ -63,7 +59,7 @@ export function DatesCard({ summary }: { summary: Summary | null }) {
 
   return (
     <section aria-labelledby="dates-h" className={card}>
-      <Head scale={`${w.from.slice(0, 4)} – ${toYear} to scale`} />
+      <Head scale={`${w.from.slice(0, 4)} to ${toYear}, drawn to scale. Select a date to see its source.`} />
       <div className={plot}>
         <Axis />
         {clashFrom && clashTo && (
@@ -110,22 +106,22 @@ export function DatesCard({ summary }: { summary: Summary | null }) {
             style={{ right: `${100 - clashTo.pct}%` }}
             onClick={() => openEvidence(summary.clash.finding_id)}
           >
-            <Glyph>✕</Glyph>
+            <Icon icon={CircleX} size={13} />
             {summary.clash.label}
           </button>
         )}
         {yearTicks(w).map((y) => (
-          <span key={y.year} aria-hidden="true" className="t-ref absolute top-[156px] w-7 text-center text-muted" style={{ left: `calc(${y.pct}% - 14px)` }}>
+          <span key={y.year} aria-hidden="true" className="absolute top-[156px] w-7 text-center text-xs text-muted tabular-nums" style={{ left: `calc(${y.pct}% - 14px)` }}>
             {y.year}
           </span>
         ))}
       </div>
       <button type="button" className={beyond} onClick={() => openEvidence(lh.finding_id)}>
-        <span className="t-label">Beyond {toYear}</span>
+        <span className="shrink-0 font-semibold text-ink">After {toYear}</span>
         <span>{lh.text}</span>
         <span className="grow" />
         <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-critical">
-          <Glyph>✕</Glyph>
+          <Icon icon={CircleX} size={13} />
           {lh.flag}
         </span>
       </button>

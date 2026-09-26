@@ -6,7 +6,7 @@
   "result": "fail",
   "review": "ai_extracted",
   "why": "The plant cannot export, and so cannot earn under the PPA, before it is connected. The connection lands 91 days before the PPA long-stop date, after which the buyer may terminate.",
-  "how": "Both dates verified verbatim. The check fails if connection_date > target_cod. 1 Oct 2029 is 184 days after 31 Mar 2029.",
+  "how": "Both dates are quoted directly from the documents. Grid connection on 1 Oct 2029 comes 184 days after the target date for commercial operation, 31 Mar 2029.",
   "evidence": [
     {
       "kind": "quote",

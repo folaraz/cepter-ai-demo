@@ -1,0 +1,6 @@
+# Only for the tools in this folder. Not needed by the app at runtime
+# (the app lists its own dependencies in pyproject.toml).
+markdown>=3.5
+weasyprint>=62
+pymupdf>=1.24
+pyyaml>=6

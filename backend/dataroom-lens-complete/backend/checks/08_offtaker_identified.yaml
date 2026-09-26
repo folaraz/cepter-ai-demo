@@ -1,0 +1,39 @@
+id: offtaker_identified
+order: 8
+severity: high
+headline_phrase: "no signed offtake agreement is evidenced"
+
+inputs:
+  - key: buyer
+    select: {edge: PARTY_TO, to: OfftakeAgreement, role: buyer}
+    role: "buyer"
+  - key: signed
+    select: {property: OfftakeAgreement.signed_date}
+    role: "execution"
+
+logic: |
+  if buyer and signed: pass
+  else:                missing_evidence
+
+context:
+  buyer_name: '"Northwind Energy Supply"'
+
+title:
+  flagged: "No signed offtake agreement evidenced"
+  passed: "Offtaker identified with a signed agreement"
+why: >-
+  Without a signed offtake agreement the project has no contracted revenue.
+how: >-
+  The check needs a buyer party on an offtake agreement and a verified signing date.
+
+missing:
+  label: "Signed power purchase agreement"
+  note: "Expected by offtaker_identified. Not found. Raised as {rfi_id}."
+  document_label: "Signed power purchase agreement"
+
+rfi:
+  title: "Signed offtake agreement"
+  request: "Please provide the executed power purchase agreement, including all schedules."
+  why: "The revenue case depends on a signed offtake agreement."
+  documents_expected:
+    - "Executed power purchase agreement"

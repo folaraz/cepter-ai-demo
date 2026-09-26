@@ -1,0 +1,52 @@
+id: lease_covers_operating_life
+order: 4
+severity: medium
+headline_phrase: "the lease ends before the permitted operating life"
+
+inputs:
+  - key: lease_term
+    select: {property: [Lease.start_date, Lease.term_years]}   # usually one clause
+    role: "lease term"
+  - key: operating_period
+    select: {property: Condition.years, where: {condition_type: temporary_period}}
+    role: "condition {condition_number}"
+  - key: first_export_proxy
+    select: {property: GridConnection.connection_date}
+    evidence: false            # stated as an assumption in "how", not shown as a card
+
+logic: |
+  lease_end     = start_date + term_years - 1 day          (a term "from and including")
+  operating_end = connection_date + operating_period years (first export ~= grid connection)
+  if lease_end < operating_end: fail
+  else:                         pass
+
+context:
+  condition_number: "3"
+  lease_start_short: '"1 Jan 2026"'
+  term_years: '"35"'
+  first_export_year: '"2029"'
+  operating_years: '"40"'
+  lease_end_year: '"2060"'
+  operating_end_year: '"2069"'
+  shortfall_years_word: 'round((operating_end - lease_end).days / 365.25) as a word: "nine"'
+  shortfall_years_word_cap: 'the same word capitalised: "Nine"'
+  shortfall_years: '"9"'
+  lease_end_short: '"31 Dec 2060"'
+
+title:
+  flagged: "Lease ends about {shortfall_years_word} years before the permitted operating life"
+  passed: "Lease covers the permitted operating life"
+why: >-
+  Land control ends in {lease_end_year} but the permission runs to about
+  {operating_end_year}. {shortfall_years_word_cap} years of permitted operation have no
+  land rights, which affects valuation and debt tenor.
+how: >-
+  Lease end ({lease_start_short} + {term_years} years) is compared with first export
+  (grid connection, {first_export_year}) + {operating_years} years.
+
+# Shown on the Summary timeline under "Beyond 2030".
+long_horizon:
+  text: "Lease ends {lease_end_short} · permission runs {operating_years} years from first export, to ~{operating_end_year}"
+  flag: "~{shortfall_years}-year shortfall"
+
+rfi: null

@@ -1,0 +1,47 @@
+id: pre_commencement_conditions
+order: 5
+severity: medium
+headline_phrase: "a pre-commencement planning condition has no discharge on file"
+
+inputs:
+  - key: conditions
+    select: {node: Condition, where: {condition_type: pre_commencement}}
+    role: "condition {condition_number}"
+  - key: discharges
+    select: {property: Condition.discharged_on, where: {condition_type: pre_commencement}}
+    required: false
+
+logic: |
+  undischarged = pre-commencement conditions without a verified discharged_on
+  if undischarged: missing_evidence   (one finding; the first undischarged condition drives the wording)
+  else:            pass
+
+context:
+  condition_number: '"5"'
+  condition_subject: 'Condition.requires: "Construction Traffic Management Plan"'
+  rfi_id: "assigned by the RFI generator"
+
+title:
+  flagged: "Pre-commencement Condition {condition_number} has no discharge on file"
+  passed: "Every pre-commencement condition is discharged"
+why: >-
+  Starting work before a pre-commencement condition is discharged can invalidate the
+  permission.
+how: >-
+  The condition is verified; the check looks for a discharge document linked to it and
+  finds none.
+
+missing:
+  label: "Discharge of Condition {condition_number}"
+  note: "Expected by pre_commencement_conditions. Not found. Raised as {rfi_id}."
+  document_label: "Discharge of Condition {condition_number}"
+
+rfi:
+  title: "Discharge of Condition {condition_number}"
+  request: >-
+    Please provide the Local Planning Authority’s written approval of the
+    {condition_subject} required by Condition {condition_number}.
+  why: "Commencing before discharge risks invalidating the permission."
+  documents_expected:
+    - "Discharge of condition notice"
+    - "Approved {condition_subject}"

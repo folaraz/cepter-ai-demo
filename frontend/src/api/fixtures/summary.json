@@ -56,7 +56,7 @@
     {
       "key": "network_operator",
       "label": "Network operator",
-      "value": "Fenland Distribution",
+      "value": "Fenland Distribution Networks",
       "status": "verified",
       "finding_id": "F-02"
     },
@@ -219,31 +219,31 @@
       "id": "lease",
       "title": "Lease, Bracken Farm",
       "file_name": "lease.pdf",
-      "pages": 14
+      "pages": 3
     },
     {
       "id": "planning",
       "title": "Planning decision",
       "file_name": "planning_decision.pdf",
-      "pages": 6
+      "pages": 3
     },
     {
       "id": "grid",
       "title": "Grid connection offer",
       "file_name": "grid_offer.pdf",
-      "pages": 22
+      "pages": 3
     },
     {
       "id": "ppa",
       "title": "Power purchase agreement",
       "file_name": "ppa.pdf",
-      "pages": 31
+      "pages": 5
     },
     {
       "id": "site",
       "title": "Site and cable route plan",
       "file_name": "site_plan.pdf",
-      "pages": 3
+      "pages": 2
     }
   ],
   "missing_documents": [
@@ -252,6 +252,12 @@
       "expected_by": "cable_route_rights",
       "rfi_id": "RFI-01",
       "finding_id": "F-01"
+    },
+    {
+      "label": "Discharge of Condition 5",
+      "expected_by": "pre_commencement_conditions",
+      "rfi_id": "RFI-02",
+      "finding_id": "F-05"
     }
   ],
   "eval": {

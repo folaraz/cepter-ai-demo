@@ -1,0 +1,20 @@
+{"id": "g-f01", "kind": "fact", "node": "Asset", "property": "export_capacity_mw", "value": 49.9, "paragraph_id": "planning:p1:¶4"}
+{"id": "g-f02", "kind": "fact", "node": "Asset", "property": "export_capacity_mw", "value": 49.9, "paragraph_id": "ppa:p1:¶2"}
+{"id": "g-f03", "kind": "fact", "node": "Asset", "property": "export_capacity_mw", "value": 45, "paragraph_id": "grid_offer:p2:¶3"}
+{"id": "g-f04", "kind": "fact", "node": "GridConnection", "property": "connection_date", "value": "2029-10-01", "paragraph_id": "grid_offer:p2:¶3"}
+{"id": "g-f05", "kind": "fact", "node": "OfftakeAgreement", "property": "target_cod", "value": "2029-03-31", "paragraph_id": "ppa:p4:¶1"}
+{"id": "g-f06", "kind": "fact", "node": "OfftakeAgreement", "property": "long_stop_date", "value": "2029-12-31", "paragraph_id": "ppa:p4:¶2"}
+{"id": "g-f07", "kind": "fact", "node": "Lease", "property": "term_years", "value": 35, "paragraph_id": "lease:p1:¶5"}
+{"id": "g-f08", "kind": "fact", "node": "Lease", "property": "start_date", "value": "2026-01-01", "paragraph_id": "lease:p1:¶5"}
+{"id": "g-f09", "kind": "fact", "node": "Permit", "property": "reference", "value": "24/00318/FUL", "paragraph_id": "planning:p1:¶1"}
+{"id": "g-f10", "kind": "fact", "node": "Permit", "property": "decision_date", "value": "2024-06-12", "paragraph_id": "planning:p1:¶3"}
+{"id": "g-f11", "kind": "fact", "node": "Condition", "key": 3, "property": "years", "value": 40, "paragraph_id": "planning:p3:¶2"}
+{"id": "g-e01", "kind": "edge", "type": "PARTY_TO", "from": {"Party": "John Hartley"}, "to": "Lease", "role": "landlord", "paragraph_id": "lease:p1:¶1"}
+{"id": "g-e02", "kind": "edge", "type": "COVERS", "from": "Lease", "to": {"LandParcel": ["9", "10", "11"]}, "paragraph_id": "lease:p1:¶3"}
+{"id": "g-e03", "kind": "edge", "type": "CABLE_CROSSES", "from": "Asset", "to": {"LandParcel": ["14", "15"]}, "paragraph_id": "site_plan:p1:¶2"}
+{"id": "g-e04", "kind": "edge", "type": "PARTY_TO", "from": {"Party": "Northwind Energy Supply Limited"}, "to": "OfftakeAgreement", "role": "buyer", "paragraph_id": "ppa:p1:¶1"}
+{"id": "g-k01", "kind": "conflict", "property": "Asset.export_capacity_mw", "values": {"49.9": ["planning", "ppa"], "45": ["grid"]}}
+{"id": "g-c01", "kind": "check", "check_id": "cable_route_rights", "expect": "missing_evidence"}
+{"id": "g-c02", "kind": "check", "check_id": "pre_commencement_conditions", "expect": "missing_evidence"}
+{"id": "g-c03", "kind": "check", "check_id": "grid_before_cod", "expect": "fail"}
+{"id": "corr-001", "kind": "correction", "check_id": "parties_consistent", "finding_id": "F-07", "expect": "pass", "was": "fail", "reason": "\"Brackenfield Solar Ltd\" in the planning decision and \"Brackenfield Solar Limited\" elsewhere are the same company; Ltd and Limited are interchangeable.", "source": "reviewer", "reviewer": "Demo reviewer", "created_at": "2026-09-19T10:14:00Z", "evidence_fingerprint": "sha256:2526cff95de683d7e93428b0f5d7202a56c5cbe9d2431902b1fefd704a57f472"}

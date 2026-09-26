@@ -1,0 +1,34 @@
+id: permission_in_force
+order: 6
+severity: high
+headline_phrase: "the planning permission may have lapsed"
+
+inputs:
+  - key: decision_date
+    select: {property: Permit.decision_date}
+    role: "decision date"
+  - key: time_limit
+    select: {property: Condition.years, where: {condition_type: time_limit}}
+    role: "condition {condition_number}"
+
+logic: |
+  deadline = decision_date + time_limit years
+  if as_of < deadline: pass     (as_of comes from manifest.yaml run.as_of)
+  else:                fail     (no evidence of commencement exists in this data room)
+
+context:
+  condition_number: '"1"'
+  deadline_short: '"12 Jun 2027"'
+
+title:
+  flagged: "Planning permission may have lapsed: works had to begin by {deadline_short}"
+  passed: "Planning permission in force; commencement deadline not passed"
+why: >-
+  If development did not begin before the deadline the permission has expired and a new
+  application is needed.
+how: >-
+  Decision date plus the Condition {condition_number} time limit gives a commencement
+  deadline of {deadline_short}, compared with the run date.
+
+# Also feeds the Summary timeline mark "Commencement deadline".
+rfi: null

@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DataRoom Lens — Brackenfield diligence</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&amp;family=Inter:wght@400;500;600&amp;family=DM+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:'Inter',-apple-system,'Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased}
+.theme-light{--bg:#F5F5F5;--canvas-soft:#FAFAFA;--surface:#FFFFFF;--surface-2:#F0EFED;--ink:#0C0A09;--ink-2:#4E4E4E;--ink-3:#6B6660;--border:#E7E5E4;--border-strong:#8A8580;--primary:#292524;--on-primary:#FFFFFF;--link:#2B4FAE;--focus:#2B4FAE;--crit:#B42318;--high:#A14A00;--med:#7A5F00;--low:#4B5B72;--ok:#166534;--conf:#8A5A00;--miss:#2B4FAE;--crit-soft:#FBECEA;--conf-soft:#FAF1E2;--miss-soft:#EEF2FB;--ok-soft:#EAF3ED;--mark:#FCE7A0;--shadow:none;--shadow-lg:0 4px 16px rgba(0,0,0,.04);--scrim:rgba(12,10,9,.28);--orb:rgba(168,200,232,.35);--orb0:rgba(168,200,232,0)}
+.theme-dark{--bg:#0C0A09;--canvas-soft:#0C0A09;--surface:#1C1917;--surface-2:#292524;--ink:#FAFAF9;--ink-2:#D6D3D1;--ink-3:#A8A29E;--border:#292524;--border-strong:#78716C;--primary:#FAFAF9;--on-primary:#0C0A09;--link:#93AEEF;--focus:#93AEEF;--crit:#F28B7D;--high:#E9A25C;--med:#D8BD5B;--low:#A9B8CE;--ok:#6CC98F;--conf:#E0AE58;--miss:#93AEEF;--crit-soft:#33201D;--conf-soft:#30261A;--miss-soft:#1E2436;--ok-soft:#1B2B21;--mark:#4F4212;--shadow:none;--shadow-lg:0 4px 16px rgba(0,0,0,.5);--scrim:rgba(0,0,0,.55);--orb:rgba(168,200,232,.10);--orb0:rgba(168,200,232,0)}
+.app{background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.app button,.app select,.app textarea{font-family:inherit;color:inherit;letter-spacing:inherit}
+.app button{cursor:pointer}
+.app :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.display{font-family:'Newsreader',Georgia,serif;font-weight:300;letter-spacing:-.02em}
+.mono{font-family:'DM Mono',ui-monospace,monospace;letter-spacing:0}
+.label{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px}
+.more{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:none;border:none;padding:4px 0;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:text-decoration-color 120ms}
+.more:hover{text-decoration-color:var(--ink)}
+.btn{height:36px;padding:0 18px;border-radius:9999px;border:1px solid var(--border-strong);background:transparent;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:8px;transition:background 120ms}
+.btn:hover{background:var(--surface-2)}
+.btn-ink{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.btn-ink:hover{background:var(--primary);opacity:.88}
+.kbd{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;border-radius:4px;border:1px solid var(--border-strong);font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-2);line-height:1;letter-spacing:0}
+.btn-ink .kbd{border-color:currentColor;color:inherit;opacity:.7}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;white-space:nowrap}
+.g{font-family:'DM Mono',monospace;font-size:11px;width:12px;text-align:center;letter-spacing:0}
+.nav{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;height:36px;padding:0 14px;border:none;border-radius:9999px;background:transparent;text-align:left;font-size:13px;font-weight:500;color:var(--ink-2);transition:background 120ms}
+.nav:hover{background:var(--surface-2)}
+.nav.on{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--border)}
+.row{display:grid;grid-template-columns:34px minmax(0,1fr) 96px 158px 136px 144px;column-gap:16px;align-items:center;min-height:44px;padding:12px 20px;border-top:1px solid var(--border);cursor:default;transition:background 100ms}
+.row:hover{background:var(--surface-2)}
+.row.sel{background:var(--surface-2);box-shadow:inset 2px 0 0 var(--ink)}
+.hit{transition:background 120ms}.hit:hover{background:var(--surface-2)}
+.res{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:9999px;border:1px solid currentColor;font-size:12px;font-weight:500;white-space:nowrap;position:relative}
+.res::before{content:"";position:absolute;inset:0;border-radius:9999px;background:currentColor;opacity:.08}
+.mark{background:var(--mark);box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:1px 0;border-radius:2px}
+@media (prefers-reduced-motion:reduce){.app *{transition:none!important}}
+</style>
+</helmet>
+<div class="app {{themeClass}}" style="width: 1440px; height: 900px; box-sizing: border-box; position: relative; overflow: hidden; display: flex; flex-direction: column">
+
+<a href="#main" style="position: absolute; left: 12px; top: -48px; z-index: 9; padding: 8px 16px; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border-strong); font-size: 13px; color: var(--ink)">Skip to main content</a>
+
+<header style="height: 56px; flex-shrink: 0; box-sizing: border-box; padding: 0 16px; display: flex; align-items: center; gap: 16px; background: var(--surface); border-bottom: 1px solid var(--border)">
+<div style="width: 216px; display: flex; align-items: center; gap: 8px">
+<span style="width: 20px; height: 20px; border-radius: 9999px; background: var(--primary); display: inline-flex; align-items: center; justify-content: center"><span style="width: 6px; height: 6px; border-radius: 3px; background: var(--on-primary)"></span></span>
+<span style="font-size: 15px; font-weight: 500; letter-spacing: -0.01em">DataRoom Lens</span>
+</div>
+<nav aria-label="Breadcrumb" style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3)"><span>Brackenfield Solar &amp; Storage</span><span aria-hidden="true">/</span><span style="color: var(--ink); font-weight: 500">{{crumb}}</span></nav>
+<div style="flex-grow: 1"></div>
+<span class="tag" style="color: var(--ink-3)"><span class="g" aria-hidden="true">◇</span>Synthetic data room · offline replay</span>
+<button type="button" class="btn" onClick="{{openHelp}}" aria-label="Keyboard shortcuts" style="height: 32px; padding: 0 14px"><span class="kbd">?</span><span style="font-size: 12px">Shortcuts</span></button>
+</header>
+
+<div style="flex-grow: 1; min-height: 0; display: flex">
+
+<nav aria-label="Diligence" style="width: 248px; flex-shrink: 0; box-sizing: border-box; background: var(--canvas-soft); padding: 20px 12px 16px; display: flex; flex-direction: column; gap: 24px; border-right: 1px solid var(--border)">
+<div style="padding: 0 10px; display: flex; flex-direction: column; gap: 6px">
+<span class="label">Asset</span>
+<span style="font-size: 15px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3">Brackenfield Solar &amp; Storage</span>
+<span style="font-size: 12px; color: var(--ink-3)">49.9 MW PV + BESS · Wickham, UK</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="3">
+<button type="button" class="nav {{n.cls}}" onClick="{{n.pick}}" aria-current="{{n.current}}"><span class="mono" style="font-size: 11px; color: var(--ink-3)">{{n.num}}</span><span>{{n.label}}</span><span class="mono" style="font-size: 11px; color: var(--ink-3)">{{n.meta}}</span></button>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span class="label" style="padding: 0 10px 8px">Documents · 5</span>
+<sc-for list="{{docs}}" as="d" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; height: 30px; padding: 0 10px; font-size: 13px; {{d.style}}"><span class="g" aria-hidden="true" style="{{d.gStyle}}">{{d.glyph}}</span><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{d.title}}</span><span class="mono" style="font-size: 11px; color: var(--ink-3)">{{d.pages}}</span></div>
+</sc-for>
+<button type="button" class="nav" onClick="{{pickCable}}" style="grid-template-columns: 30px minmax(0, 1fr); height: auto; padding: 6px 10px; align-items: start; margin-top: 4px"><span class="g" aria-hidden="true" style="color: var(--miss); padding-top: 2px">○</span><span style="display: flex; flex-direction: column; gap: 1px"><span style="color: var(--miss)">Cable route easement</span><span style="font-size: 11px; font-weight: 400; color: var(--ink-3)">Expected, not found · RFI-01</span></span></button>
+</div>
+<div style="flex-grow: 1"></div>
+<div style="padding: 12px 10px 0; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; justify-content: space-between"><span class="label">Eval gate</span><span class="tag" style="{{evalTagStyle}}"><span class="g" aria-hidden="true">{{evalGlyph}}</span>{{evalTag}}</span></div>
+<dl style="margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 12px">
+<dt style="color: var(--ink-3)">Golden set</dt><dd style="margin: 0; font-weight: 500">{{goldenCount}} items</dd>
+<dt style="color: var(--ink-3)">Corrections held</dt><dd style="margin: 0; font-weight: 500">{{heldText}}</dd>
+<dt style="color: var(--ink-3)">Citation validity</dt><dd style="margin: 0; font-weight: 500">100%</dd>
+<dt style="color: var(--ink-3)">Cost, this room</dt><dd style="margin: 0; font-weight: 500">£0.42</dd>
+</dl>
+<button type="button" class="btn" onClick="{{runEval}}" style="justify-content: center; height: 30px; font-size: 12px">{{runLabel}}</button>
+</div>
+</nav>
+
+<main id="main" tabIndex="-1" style="flex-grow: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column">
+
+<sc-if value="{{isSummary}}" hint-placeholder-val="{{true}}">
+<div style="flex-grow: 1; overflow-y: auto; box-sizing: border-box; padding: 32px 40px 48px; display: flex; flex-direction: column; gap: 28px; position: relative">
+<div aria-hidden="true" style="position: absolute; left: 34%; top: -130px; width: 620px; height: 300px; background: radial-gradient(closest-side, var(--orb), var(--orb0)); pointer-events: none"></div>
+<div style="position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 720px">
+<span class="label">01. Diligence summary</span>
+<h1 class="display" style="margin: 0; font-size: 36px; line-height: 1.12; text-wrap: pretty">Five findings. One critical gap: nothing gives the project rights to reach the grid.</h1>
+</div>
+<span style="font-size: 12px; color: var(--ink-3); white-space: nowrap">8 checks · run r-0921-a · 21 Sep 14:02</span>
+</div>
+
+<section aria-labelledby="facts-h" class="panel" style="overflow: hidden">
+<h2 id="facts-h" class="label" style="margin: 0; padding: 12px 16px; border-bottom: 1px solid var(--border)">Asset facts · every value is a verified quote</h2>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr))">
+<sc-for list="{{facts}}" as="f" hint-placeholder-count="8">
+<button type="button" class="hit" onClick="{{f.pick}}" style="text-align: left; border: none; background: transparent; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; {{f.edge}}">
+<span style="font-size: 12px; color: var(--ink-3)">{{f.label}}</span>
+<span style="font-size: 15px; font-weight: 500">{{f.value}}</span>
+<span class="tag" style="font-size: 11px; {{f.vStyle}}"><span class="g" aria-hidden="true">{{f.vGlyph}}</span>{{f.vLabel}}</span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="dates-h" class="panel" style="padding: 14px 24px 16px">
+<div style="display: flex; align-items: baseline; justify-content: space-between; margin: -2px -8px 0">
+<h2 id="dates-h" class="label" style="margin: 0">Critical dates</h2>
+<span style="font-size: 12px; color: var(--ink-3)">2024 – 2030 to scale</span>
+</div>
+<div style="position: relative; height: 172px; margin-top: 8px">
+<div style="position: absolute; left: 0; right: 0; top: 82px; height: 1px; background: var(--border-strong)"></div>
+<button type="button" onClick="{{pickClash}}" aria-label="Clash: grid connection 184 days after target COD" style="position: absolute; top: 79px; height: 7px; left: 80.7%; width: 7.7%; padding: 0; border: none; border-radius: 2px; background: var(--crit); opacity: .35"></button>
+<sc-for list="{{marks}}" as="m" hint-placeholder-count="6">
+<div style="position: absolute; width: 1px; background: var(--border-strong); {{m.stem}}"></div>
+<div style="position: absolute; top: 78px; width: 9px; height: 9px; border-radius: 5px; box-sizing: border-box; border: 2px solid var(--surface); {{m.dot}}"></div>
+<button type="button" onClick="{{m.pick}}" style="position: absolute; padding: 0; border: none; background: none; display: flex; flex-direction: column; gap: 1px; white-space: nowrap; {{m.pos}}">
+<span style="font-size: 13px; font-weight: 600; {{m.dateStyle}}">{{m.date}}</span>
+<span style="font-size: 11px; color: var(--ink-3)">{{m.label}}</span>
+</button>
+</sc-for>
+<button type="button" onClick="{{pickClash}}" class="tag" style="position: absolute; top: 130px; right: 11.6%; padding: 0; border: none; background: none; color: var(--crit)"><span class="g" aria-hidden="true">✕</span>Grid connects 184 days after target COD</button>
+<sc-for list="{{years}}" as="y" hint-placeholder-count="7">
+<span class="mono" style="position: absolute; top: 156px; font-size: 11px; color: var(--ink-3); {{y.style}}">{{y.label}}</span>
+</sc-for>
+</div>
+<button type="button" class="hit" onClick="{{pickLease}}" style="width: 100%; margin-top: 4px; padding: 8px 10px; border: none; border-radius: 6px; background: transparent; display: flex; align-items: center; gap: 12px; text-align: left; font-size: 13px">
+<span class="label">Beyond 2030</span><span>Lease ends 31 Dec 2060 · permission runs 40 years from first export, to ~2069</span><span style="flex-grow: 1"></span><span class="tag" style="color: var(--crit)"><span class="g" aria-hidden="true">✕</span>~9-year shortfall</span>
+</button>
+</section>
+
+<section aria-labelledby="reg-h" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 id="reg-h" class="label" style="margin: 0">Findings · sorted by severity</h2>
+<span style="font-size: 12px; color: var(--ink-3); display: flex; align-items: center; gap: 6px"><span class="kbd">J</span><span class="kbd">K</span> move <span class="kbd">↵</span> evidence <span class="kbd">A</span> accept <span class="kbd">C</span> correct</span>
+</div>
+<div role="grid" aria-label="Findings" aria-rowcount="{{rowCount}}" class="panel" onKeyDown="{{onGridKey}}" style="overflow: hidden">
+<div role="row" class="row" style="border-top: none; padding-top: 10px; padding-bottom: 10px">
+<span role="columnheader" class="label">#</span>
+<span role="columnheader" class="label">Finding</span>
+<span role="columnheader" class="label" aria-sort="descending">Severity ↓</span>
+<span role="columnheader" class="label">Result</span>
+<span role="columnheader" class="label">Evidence</span>
+<span role="columnheader" class="label">Review</span>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+<div role="row" class="row {{r.cls}}" aria-selected="{{r.selected}}" tabIndex="{{r.tab}}" onClick="{{r.select}}" onDoubleClick="{{r.open}}">
+<span role="gridcell" class="mono" style="font-size: 11px; color: var(--ink-3)">{{r.num}}</span>
+<span role="gridcell" style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-size: 14px; font-weight: 500; line-height: 1.35">{{r.title}}</span>
+<span style="font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><span class="mono">{{r.check}}</span> · {{r.sourceLine}}</span>
+</span>
+<span role="gridcell" class="tag" style="{{r.sevStyle}}"><span class="g" aria-hidden="true">{{r.sevGlyph}}</span>{{r.severity}}</span>
+<span role="gridcell"><span class="res" style="{{r.resStyle}}"><span class="g" aria-hidden="true">{{r.resGlyph}}</span>{{r.result}}</span></span>
+<span role="gridcell" style="font-size: 12px; color: var(--ink-2)">{{r.evidence}}</span>
+<span role="gridcell" class="tag" style="{{r.revStyle}}"><span class="g" aria-hidden="true">{{r.revGlyph}}</span>{{r.review}}</span>
+</div>
+</sc-for>
+<button type="button" class="hit" onClick="{{togglePassed}}" style="width: 100%; padding: 12px 16px 12px 66px; border: none; border-top: 1px solid var(--border); background: transparent; text-align: left; font-size: 13px; color: var(--ok); display: flex; align-items: center; gap: 8px"><span class="g" aria-hidden="true">✓</span>{{passedLabel}}</button>
+<sc-if value="{{showPassed}}" hint-placeholder-val="{{false}}">
+<ul style="margin: 0; padding: 0 16px 14px 86px; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--ink-2)">
+<sc-for list="{{passed}}" as="p" hint-placeholder-count="3"><li>{{p.title}} <span class="mono" style="font-size: 11px; color: var(--ink-3)">{{p.check}}</span></li></sc-for>
+</ul>
+</sc-if>
+</div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{isEvidence}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; min-height: 0; display: flex">
+<section aria-labelledby="ev-h" style="width: {{leftW}}px; flex-shrink: 0; min-height: 0; display: flex; flex-direction: column; background: var(--surface)">
+<div style="flex-grow: 1; overflow-y: auto; box-sizing: border-box; padding: 24px 28px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<button type="button" class="more" onClick="{{goSummary}}">← Summary</button>
+<span style="display: flex; gap: 6px"><button type="button" class="btn" onClick="{{prevFinding}}" aria-label="Previous finding" style="height: 28px; padding: 0 8px"><span class="kbd">K</span></button><button type="button" class="btn" onClick="{{nextFinding}}" aria-label="Next finding" style="height: 28px; padding: 0 8px"><span class="kbd">J</span></button></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span class="label">{{cur.num}}. {{cur.check}}</span>
+<h1 id="ev-h" class="display" style="margin: 0; font-size: 26px; line-height: 1.2; letter-spacing: -0.01em; text-wrap: pretty">{{cur.title}}</h1>
+<div style="display: flex; flex-wrap: wrap; gap: 14px">
+<span class="tag" style="{{cur.sevStyle}}"><span class="g" aria-hidden="true">{{cur.sevGlyph}}</span>{{cur.severity}}</span>
+<span class="res" style="{{cur.resStyle}}"><span class="g" aria-hidden="true">{{cur.resGlyph}}</span>{{cur.result}}</span>
+<span class="tag" style="{{cur.revStyle}}"><span class="g" aria-hidden="true">{{cur.revGlyph}}</span>{{cur.review}}</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span class="label">Why it matters</span>
+<p style="margin: 0; font-size: 14px; line-height: 1.6; text-wrap: pretty">{{cur.why}}</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span class="label">How the check decided</span>
+<p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--ink-2); text-wrap: pretty">{{cur.how}}</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span class="label">Evidence · {{cur.nSources}}</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{cur.sources}}" as="s" hint-placeholder-count="3">
+<li>
+<sc-if value="{{s.isSource}}" hint-placeholder-val="{{true}}">
+<button type="button" onClick="{{s.pick}}" class="hit" style="width: 100%; text-align: left; padding: 12px 14px; border-radius: 12px; border: 1px solid; display: flex; flex-direction: column; gap: 3px; {{s.style}}">
+<span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 13px; font-weight: 500">{{s.doc}}</span><span class="tag" style="font-size: 11px; {{s.vStyle}}"><span class="g" aria-hidden="true">{{s.vGlyph}}</span>{{s.vLabel}}</span></span>
+<span style="font-size: 12px; color: var(--ink-3)"><span class="mono">{{s.pid}}</span> · {{s.role}}</span>
+</button>
+</sc-if>
+<sc-if value="{{s.isMissing}}" hint-placeholder-val="{{false}}">
+<div style="padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--miss); background: var(--miss-soft); display: flex; flex-direction: column; gap: 3px">
+<span class="tag" style="color: var(--miss)"><span class="g" aria-hidden="true">○</span>{{s.label}}</span>
+<span style="font-size: 12px; color: var(--ink-2)">{{s.note}}</span>
+</div>
+</sc-if>
+</li>
+</sc-for>
+</ol>
+</div>
+</div>
+
+<div style="flex-shrink: 0; box-sizing: border-box; padding: 16px 28px 20px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span class="label">Your review</span><span style="font-size: 12px; color: var(--ink-3)">Corrections are saved as regression tests</span></div>
+<sc-if value="{{notForm}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; gap: 8px">
+<button type="button" class="btn btn-ink" onClick="{{accept}}" style="flex-grow: 1; justify-content: center">Accept <span class="kbd">A</span></button>
+<button type="button" class="btn" onClick="{{openReject}}" style="flex-grow: 1; justify-content: center">Reject <span class="kbd">R</span></button>
+<button type="button" class="btn" onClick="{{openCorrect}}" style="flex-grow: 1; justify-content: center">Correct <span class="kbd">C</span></button>
+</div>
+</sc-if>
+<sc-if value="{{isForm}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<sc-if value="{{isCorrect}}" hint-placeholder-val="{{true}}">
+<label style="display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 10px; font-size: 13px"><span style="color: var(--ink-2)">Correct result</span>
+<select value="{{corrected}}" onChange="{{onCorrected}}" style="height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface); font-size: 14px"><option value="fail">✕ Fail</option><option value="conflict">≠ Conflict</option><option value="missing">○ Missing evidence</option><option value="pass">✓ Pass</option></select></label>
+</sc-if>
+<label for="reason" style="font-size: 13px; color: var(--ink-2)">{{formLabel}}</label>
+<textarea id="reason" rows="3" value="{{reason}}" onChange="{{onReason}}" aria-invalid="{{err}}" aria-describedby="reason-err" placeholder="Planning limit (49.9 MW) and grid export limit (45 MW) are different properties. This is a capacity mismatch: fail, not conflict." style="box-sizing: border-box; width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface); font-size: 14px; line-height: 1.5; resize: none"></textarea>
+<sc-if value="{{err}}" hint-placeholder-val="{{false}}"><span id="reason-err" class="tag" style="color: var(--crit)"><span class="g" aria-hidden="true">!</span>Add a reason. It becomes the test's description.</span></sc-if>
+<div style="display: flex; gap: 8px"><button type="button" class="btn" onClick="{{cancel}}">Cancel</button><button type="button" class="btn btn-ink" onClick="{{save}}" style="flex-grow: 1; justify-content: center">{{saveLabel}}</button></div>
+</div>
+</sc-if>
+</div>
+</section>
+
+<div role="separator" aria-orientation="vertical" aria-label="Resize evidence panes" aria-valuemin="400" aria-valuemax="760" aria-valuenow="{{leftW}}" tabIndex="0" onKeyDown="{{onSepKey}}" style="width: 9px; flex-shrink: 0; cursor: col-resize; display: flex; align-items: center; justify-content: center; border-left: 1px solid var(--border); border-right: 1px solid var(--border); background: var(--bg)"><span style="width: 3px; height: 32px; border-radius: 2px; background: var(--border-strong)"></span></div>
+
+<section aria-label="Source document" style="flex-grow: 1; min-width: 0; min-height: 0; overflow-y: auto; box-sizing: border-box; padding: 16px 32px 32px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--ink-2)">
+<span style="font-weight: 500; color: var(--ink)">{{src.file}}</span><span class="mono">{{src.pid}}</span><span style="flex-grow: 1"></span>
+<span class="mono">{{srcPos}}</span>
+<button type="button" class="btn" onClick="{{prevSrc}}" style="height: 28px">Previous</button><button type="button" class="btn" onClick="{{nextSrc}}" style="height: 28px">Next source</button>
+</div>
+<article aria-label="Document page, cited passage highlighted" style="background: #FFFFFF; color: #0C0A09; border: 1px solid var(--border); border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,.04); padding: 56px 64px; min-height: 640px; display: flex; flex-direction: column; gap: 16px; font-family: 'Newsreader', Georgia, serif; font-weight: 400; font-size: 15px; line-height: 1.7; letter-spacing: 0">
+<div style="display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: #6B6660"><span>{{src.header}}</span><span>Page {{src.page}}</span></div>
+<p style="margin: 0; color: #6B6660">{{src.ctxBefore}}</p>
+<h3 style="margin: 6px 0 0; font-size: 19px; font-weight: 300; letter-spacing: -0.01em">{{src.heading}}</h3>
+<p style="margin: 0">{{src.before}}<mark class="mark" style="color: #0C0A09">{{src.quote}}</mark>{{src.after}}</p>
+<p style="margin: 0; color: #6B6660">{{src.ctxAfter}}</p>
+<div style="margin-top: auto; padding-top: 14px; border-top: 1px solid #E7E5E4; font-family: 'Inter', sans-serif; font-size: 12px; color: #4E4E4E; display: flex; gap: 8px; align-items: center"><span class="g" aria-hidden="true" style="{{src.vStyle}}">{{src.vGlyph}}</span><span>{{src.vNote}}</span></div>
+</article>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{isRfi}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; overflow-y: auto; box-sizing: border-box; padding: 32px 40px 48px; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 700px">
+<span class="label">03. Requests for information</span>
+<h1 class="display" style="margin: 0; font-size: 36px; line-height: 1.12">Three questions for the seller, each tied to the check it unblocks.</h1>
+<p style="margin: 0; font-size: 14px; color: var(--ink-2); max-width: 600px">Wording comes from the check definitions, not free generation, so the same gap always produces the same request.</p>
+</div>
+<button type="button" class="btn btn-ink" onClick="{{exportMd}}">Export Markdown</button>
+</div>
+<ol class="panel" style="margin: 0; padding: 0; list-style: none; overflow: hidden">
+<sc-for list="{{rfis}}" as="r" hint-placeholder-count="3">
+<li style="padding: 20px 24px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 16px; {{r.edge}}">
+<span class="mono" style="font-size: 12px; color: var(--ink-3); padding-top: 2px">{{r.id}}</span>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 14px"><span style="font-size: 15px; font-weight: 600">{{r.title}}</span><span class="tag" style="{{r.sevStyle}}"><span class="g" aria-hidden="true">{{r.sevGlyph}}</span>{{r.severity}}</span><span style="flex-grow: 1"></span><button type="button" class="more" onClick="{{r.pick}}">View finding →</button></div>
+<p style="margin: 0; font-size: 14px; line-height: 1.6; max-width: 680px">{{r.request}}</p>
+<dl style="margin: 0; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 4px 12px; font-size: 13px; color: var(--ink-2)">
+<dt style="color: var(--ink-3)">Why</dt><dd style="margin: 0">{{r.why}}</dd>
+<dt style="color: var(--ink-3)">Documents</dt><dd style="margin: 0">{{r.docs}}</dd>
+<dt style="color: var(--ink-3)">Unblocks</dt><dd class="mono" style="margin: 0; font-size: 12px; color: var(--ink)">{{r.check}}</dd>
+</dl>
+</div>
+</li>
+</sc-for>
+</ol>
+</div>
+</sc-if>
+
+</main>
+</div>
+
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{false}}">
+<div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 6px 0 20px; border-radius: 9999px; background: var(--primary); color: var(--on-primary); font-size: 13px; box-shadow: var(--shadow-lg)">
+<span>{{toastText}}</span>
+<sc-if value="{{toastUndo}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{undo}}" style="height: 36px; padding: 0 16px; border-radius: 9999px; border: 1px solid currentColor; background: transparent; color: inherit; font-size: 13px; font-weight: 500">Undo</button></sc-if>
+<button type="button" onClick="{{closeToast}}" aria-label="Dismiss" style="height: 36px; width: 36px; border: none; border-radius: 9999px; background: transparent; color: inherit; font-size: 16px">×</button>
+</div>
+</sc-if>
+
+<sc-if value="{{helpOn}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; background: var(--scrim); display: flex; align-items: center; justify-content: center">
+<div role="dialog" aria-modal="true" aria-labelledby="help-h" class="panel" style="width: 480px; padding: 28px 32px; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; justify-content: space-between"><h2 id="help-h" class="display" style="margin: 0; font-size: 22px">Keyboard shortcuts</h2><button type="button" class="btn" onClick="{{closeHelp}}" aria-label="Close" style="width: 32px; padding: 0; justify-content: center">×</button></div>
+<dl style="margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 10px 24px; font-size: 13px">
+<sc-for list="{{shortcuts}}" as="s" hint-placeholder-count="7"><dt style="color: var(--ink-2)">{{s.what}}</dt><dd style="margin: 0"><span class="kbd" style="height: 22px; min-width: 22px; font-size: 11px">{{s.key}}</span></dd></sc-for>
+</dl>
+<span style="font-size: 12px; color: var(--ink-3)">Single-key shortcuts never fire while you are typing in a field.</span>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { view: 'summary', sel: 'F-03', srcIdx: 0, review: {}, result: {}, mode: 'idle', action: 'correct', corrected: 'fail', reason: '', err: false, toast: null, undoInfo: null, help: false, leftW: 500, golden: 20, pending: [], held: 1, evalState: 'passed', showPassed: false };
+  }
+  renderVals() {
+    const st = this.state;
+    const theme = this.props.theme ?? 'light';
+    const SEV = { Critical: { g: '◆', c: 'var(--crit)' }, High: { g: '▲', c: 'var(--high)' }, Medium: { g: '●', c: 'var(--med)' }, Low: { g: '○', c: 'var(--low)' } };
+    const RES = { fail: { l: 'Fail', g: '✕', c: 'var(--crit)' }, conflict: { l: 'Conflict', g: '≠', c: 'var(--conf)' }, missing: { l: 'Missing evidence', g: '○', c: 'var(--miss)' }, pass: { l: 'Pass', g: '✓', c: 'var(--ok)' } };
+    const REV = { ai: { l: 'AI-extracted', g: '◇', c: 'var(--ink-2)' }, review: { l: 'Needs review', g: '!', c: 'var(--high)' }, verified: { l: 'Lawyer-verified', g: '✓', c: 'var(--ok)' }, corrected: { l: 'Corrected', g: '✎', c: 'var(--link)' }, rejected: { l: 'Rejected', g: '✕', c: 'var(--ink-3)' } };
+    const VER = { verified: { l: 'Verified quote', g: '✓', c: 'var(--ok)', note: 'Quote found verbatim in this paragraph by the verifier. Not model-asserted.' }, corroborated: { l: 'Corroborated', g: '✓✓', c: 'var(--ok)', note: 'Same value found verbatim in two or more documents.' }, conflict: { l: 'Conflicting value', g: '≠', c: 'var(--conf)', note: 'Quote verified, but its value disagrees with another document.' } };
+    const col = (c) => 'color:' + c;
+    const DOCS = {
+      lease: { title: 'Lease, Bracken Farm', file: 'lease.pdf', pages: '14p' },
+      planning: { title: 'Planning decision', file: 'planning_decision.pdf', pages: '6p' },
+      grid: { title: 'Grid connection offer', file: 'grid_offer.pdf', pages: '22p' },
+      ppa: { title: 'Power purchase agreement', file: 'ppa.pdf', pages: '31p' },
+      site: { title: 'Site and cable route plan', file: 'site_plan.pdf', pages: '3p' }
+    };
+    const S = (doc, pid, page, role, heading, before, quote, after, v) => ({ isSource: true, isMissing: false, doc, pid, page, role, heading, before, quote, after, v });
+    const M = (label, note) => ({ isSource: false, isMissing: true, label, note });
+    const F = [
+      { id: 'F-01', severity: 'Critical', result: 'missing', review: 'review', check: 'cable_route_rights', title: 'No rights for the export cable across Parcels 14 and 15',
+        why: 'The cable from the site to Wickham Primary Substation crosses land the lease does not cover. Without an easement the project cannot physically connect, whatever the grid offer says.',
+        how: 'The check needs an easement edge from the Asset to every parcel the cable route crosses. The site plan names Parcels 14 and 15; the lease covers 9 to 11; no easement document exists. The result is missing evidence, not fail: nothing assumes the rights do not exist.',
+        sources: [ S('site', 'site_plan:p1:¶2', 1, 'what needs rights', 'Export cable route', '', 'The export cable shall run from the Site to Wickham Primary Substation across Parcels 14 and 15', ', as shown dashed blue on Drawing SP-02.', 'verified'),
+                   S('lease', 'lease:p1:¶3', 1, 'what the lease covers', '1. The Property', '', 'The Property comprises Parcels 9, 10 and 11', ' as shown edged red on Plan 1 annexed to this Lease.', 'verified'),
+                   M('Deed of easement, Parcels 14–15', 'Expected by cable_route_rights. Not in the data room. Raised as RFI-01.') ] },
+      { id: 'F-02', severity: 'High', result: 'fail', review: 'ai', check: 'grid_before_cod', title: 'Grid connection falls 184 days after the PPA target COD',
+        why: 'The plant cannot export, and so cannot earn under the PPA, before it is connected. The connection lands 91 days before the PPA long-stop date, after which the buyer may terminate.',
+        how: 'Both dates verified verbatim. The check fails if connection_date > target_cod. 1 Oct 2029 is 184 days after 31 Mar 2029.',
+        sources: [ S('grid', 'grid_offer:p2:¶3', 2, 'connection date', '4. Connection', 'The Maximum Export Capacity at the Point of Connection shall be 45 MW. ', 'The Connection Date shall be 1 October 2029', ', subject to completion of Reinforcement Works at Wickham Primary Substation.', 'verified'),
+                   S('ppa', 'ppa:p4:¶1', 4, 'target COD', '6. Commercial Operation', 'The Generator shall use reasonable endeavours to achieve ', 'Commercial Operation on or before 31 March 2029', ' (the "Target COD").', 'verified') ] },
+      { id: 'F-03', severity: 'High', result: 'conflict', review: 'review', check: 'export_capacity_consistent', title: 'Export capacity is 49.9 MW in two documents and 45 MW in the grid offer',
+        why: 'Revenue modelled on 49.9 MW may be overstated by about 10% if the grid only accepts 45 MW.',
+        how: 'Three verified values for the same property disagree. The system does not pick a winner: it returns conflict with every source and routes it to a reviewer. A lawyer may decide these are different properties, which is exactly what a correction records.',
+        sources: [ S('planning', 'planning:p1:¶4', 1, 'permitted capacity', 'Description of development', 'Installation of a ground-mounted solar photovoltaic array and battery energy storage system ', 'with a maximum export capacity of 49.9MW', ', together with associated infrastructure.', 'corroborated'),
+                   S('ppa', 'ppa:p1:¶2', 1, 'contracted capacity', 'Schedule 1: Facility', 'Contracted Capacity: ', '49.9 MW', ' (AC), measured at the Delivery Point.', 'corroborated'),
+                   S('grid', 'grid_offer:p2:¶3', 2, 'grid export limit', '4. Connection', '', 'The Maximum Export Capacity at the Point of Connection shall be 45 MW', '. The Connection Date shall be 1 October 2029, subject to completion of Reinforcement Works.', 'conflict') ] },
+      { id: 'F-04', severity: 'Medium', result: 'fail', review: 'verified', check: 'lease_covers_operating_life', title: 'Lease ends about nine years before the permitted operating life',
+        why: 'Land control ends in 2060 but the permission runs to about 2069. Nine years of permitted operation have no land rights, which affects valuation and debt tenor.',
+        how: 'Lease end (1 Jan 2026 + 35 years) is compared with first export (grid connection, 2029) + 40 years.',
+        sources: [ S('lease', 'lease:p1:¶5', 1, 'lease term', '3. Term', 'The Landlord lets the Property to the Tenant ', 'for a term of 35 years from and including 1 January 2026', '.', 'verified'),
+                   S('planning', 'planning:p3:¶2', 3, 'condition 3', 'Condition 3: Temporary permission', '', 'The permission hereby granted shall be for a limited period of 40 years from the date of First Export', ', after which the site shall be restored.', 'verified') ] },
+      { id: 'F-05', severity: 'Medium', result: 'missing', review: 'ai', check: 'pre_commencement_conditions', title: 'Pre-commencement Condition 5 has no discharge on file',
+        why: 'Starting work before a pre-commencement condition is discharged can invalidate the permission.',
+        how: 'The condition is verified; the check looks for a discharge document linked to it and finds none.',
+        sources: [ S('planning', 'planning:p3:¶6', 3, 'condition 5', 'Condition 5: Construction traffic', '', 'No development shall commence until a Construction Traffic Management Plan has been submitted to and approved in writing by the Local Planning Authority', '.', 'verified'),
+                   M('Discharge of Condition 5', 'Expected by pre_commencement_conditions. Not found. Raised as RFI-02.') ] }
+    ];
+    const idx = F.findIndex((f) => f.id === st.sel);
+    const revOf = (f) => st.review[f.id] || f.review;
+    const resOf = (f) => st.result[f.id] || f.result;
+    const deco = (f, i) => {
+      const s = SEV[f.severity], r = RES[resOf(f)], v = REV[revOf(f)];
+      const quotes = f.sources.filter((x) => x.isSource).length, gaps = f.sources.length - quotes;
+      return { num: String(i + 1).padStart(2, '0'), title: f.title, check: f.check, severity: f.severity, sevGlyph: s.g, sevStyle: col(s.c), result: r.l, resGlyph: r.g, resStyle: col(r.c), review: v.l, revGlyph: v.g, revStyle: col(v.c),
+        evidence: quotes + ' verified quote' + (quotes > 1 ? 's' : '') + (gaps ? ' · ' + gaps + ' gap' : ''),
+        sourceLine: f.sources.filter((x) => x.isSource).map((x) => DOCS[x.doc].title).join(', ') };
+    };
+    const pick = (id) => () => this.setState({ sel: id, srcIdx: 0, mode: 'idle', reason: '', err: false });
+    const open = (id) => () => this.setState({ view: 'evidence', sel: id, srcIdx: 0, mode: 'idle', reason: '', err: false });
+    const rows = F.map((f, i) => Object.assign(deco(f, i), { selected: st.sel === f.id ? 'true' : 'false', cls: st.sel === f.id ? 'sel' : '', tab: st.sel === f.id ? 0 : -1, select: pick(f.id), open: open(f.id) }));
+    const curF = F[idx];
+    const srcs = curF.sources.filter((x) => x.isSource);
+    const si = Math.min(st.srcIdx, srcs.length - 1);
+    const s0 = srcs[si];
+    const de = s0.doc;
+    const src = { file: DOCS[de].file, pid: s0.pid, page: s0.page, header: DOCS[de].title, heading: s0.heading, before: s0.before, quote: s0.quote, after: s0.after,
+      ctxBefore: 'The following provisions apply for the duration of this agreement and bind the parties and their permitted successors and assigns.',
+      ctxAfter: 'Any variation of this agreement must be in writing and signed by or on behalf of each party.',
+      vGlyph: VER[s0.v].g, vStyle: col(VER[s0.v].c), vNote: VER[s0.v].l + '. ' + VER[s0.v].note };
+    let k = 0;
+    const cur = Object.assign(deco(curF, idx), { why: curF.why, how: curF.how, nSources: curF.sources.length + ' items',
+      sources: curF.sources.map((x) => { if (!x.isSource) return x; const my = k++; const v = VER[x.v];
+        return Object.assign({}, x, { doc: DOCS[x.doc].title, vLabel: v.l, vGlyph: v.g, vStyle: col(v.c), pick: () => this.setState({ srcIdx: my }),
+          style: my === si ? 'border-color:var(--ink);background:var(--surface)' : 'border-color:var(--border);background:var(--surface)' }); }) });
+    const citedDocs = {}; srcs.forEach((x) => { citedDocs[x.doc] = true; });
+    const docs = Object.keys(DOCS).map((d) => ({ title: DOCS[d].title, pages: DOCS[d].pages, glyph: citedDocs[d] ? '●' : '·', gStyle: citedDocs[d] ? 'color:var(--ink)' : 'color:var(--ink-3)', style: citedDocs[d] ? 'color:var(--ink);font-weight:500' : 'color:var(--ink-2)' }));
+
+    const toast = (text, undoInfo) => this.setState({ toast: text, undoInfo: undoInfo || null });
+    const setReview = (id, rv, extra, msg) => {
+      const prevRev = st.review[id], prevRes = st.result[id], prevPending = st.pending, prevGolden = st.golden;
+      const review = Object.assign({}, st.review); review[id] = rv;
+      const upd = Object.assign({ review, mode: 'idle', reason: '', err: false }, extra || {});
+      this.setState(Object.assign(upd, { toast: msg, undoInfo: { id, prevRev, prevRes, prevPending, prevGolden } }));
+    };
+    const undo = () => {
+      const u = st.undoInfo; if (!u) return;
+      const review = Object.assign({}, st.review), result = Object.assign({}, st.result);
+      if (u.prevRev === undefined) delete review[u.id]; else review[u.id] = u.prevRev;
+      if (u.prevRes === undefined) delete result[u.id]; else result[u.id] = u.prevRes;
+      this.setState({ review, result, pending: u.prevPending, golden: u.prevGolden, toast: 'Undone', undoInfo: null });
+    };
+    const doAccept = () => setReview(st.sel, 'verified', null, st.sel + ' accepted as lawyer-verified');
+    const move = (d) => { const n = Math.max(0, Math.min(F.length - 1, idx + d)); this.setState({ sel: F[n].id, srcIdx: 0, mode: 'idle' }); };
+    const save = () => {
+      if (!st.reason || !st.reason.trim()) { this.setState({ err: true }); return; }
+      const corrId = 'corr-' + String(st.held + st.pending.length + 1).padStart(3, '0');
+      if (st.action === 'correct') {
+        const result = Object.assign({}, st.result); result[st.sel] = st.corrected;
+        setReview(st.sel, 'corrected', { result, pending: st.pending.concat([corrId]), golden: st.golden + 1, evalState: 'stale' }, 'Saved as ' + corrId + ' in the golden set');
+      } else {
+        setReview(st.sel, 'rejected', { pending: st.pending.concat([corrId]), golden: st.golden + 1, evalState: 'stale' }, st.sel + ' rejected · saved as ' + corrId);
+      }
+    };
+    const runEval = () => {
+      if (st.evalState === 'running') return;
+      this.setState({ evalState: 'running' });
+      setTimeout(() => this.setState((p) => ({ evalState: 'passed', held: p.held + p.pending.length, pending: [], toast: 'Eval passed · 96% · all corrections still hold', undoInfo: null })), 1100);
+    };
+    const onGridKey = (e) => {
+      const t = (e.target && e.target.tagName) || '';
+      if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') return;
+      if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+      else if (e.key === 'k' || e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+      else if (e.key === 'Enter') { e.preventDefault(); this.setState({ view: 'evidence', srcIdx: 0 }); }
+      else if (e.key === 'a') doAccept();
+      else if (e.key === 'c') this.setState({ view: 'evidence', mode: 'form', action: 'correct' });
+      else if (e.key === '?') this.setState({ help: true });
+    };
+    const onSepKey = (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); this.setState({ leftW: Math.max(400, st.leftW - 20) }); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); this.setState({ leftW: Math.min(760, st.leftW + 20) }); }
+    };
+
+    const factDefs = [ ['Export capacity', '49.9 / 45 MW', 'conflict', 'F-03'], ['Grid connection', '1 Oct 2029', 'verified', 'F-02'], ['Target COD', '31 Mar 2029', 'verified', 'F-02'], ['Lease term', '35 years from 2026', 'verified', 'F-04'],
+      ['Landowner', 'John Hartley', 'corroborated', 'F-04'], ['Offtaker', 'Northwind Energy Supply', 'verified', 'F-02'], ['Network operator', 'Fenland Distribution', 'verified', 'F-02'], ['Planning ref.', '24/00318/FUL', 'verified', 'F-05'] ];
+    const facts = factDefs.map((f, i) => { const v = VER[f[2]]; return { label: f[0], value: f[1], vLabel: v.l, vGlyph: v.g, vStyle: col(v.c), pick: open(f[3]),
+      edge: (i % 4 ? 'border-left:1px solid var(--border);' : '') + (i > 3 ? 'border-top:1px solid var(--border);' : '') }; });
+    const pct = (y) => (y - 2024) / 6.5 * 100;
+    const MK = [ ['Planning granted', '12 Jun 2024', 2024.445, 'an', 'l', 'var(--ink)', 'F-05'], ['Lease starts', '1 Jan 2026', 2026.0, 'bn', 'l', 'var(--ink)', 'F-04'], ['Commencement deadline', '12 Jun 2027', 2027.445, 'bn', 'l', 'var(--ink)', 'F-05'],
+      ['Target COD · PPA', '31 Mar 2029', 2029.247, 'an', 'r', 'var(--crit)', 'F-02'], ['Grid connection', '1 Oct 2029', 2029.748, 'bn', 'r', 'var(--crit)', 'F-02'], ['PPA long-stop', '31 Dec 2029', 2030.0, 'af', 'r', 'var(--conf)', 'F-02'] ];
+    const ROW = { af: { top: 0, st: 34, sh: 48 }, an: { top: 38, st: 72, sh: 10 }, bn: { top: 96, st: 83, sh: 13 } };
+    const marks = MK.map((m) => { const L = pct(m[2]).toFixed(1), r = ROW[m[3]];
+      return { label: m[0], date: m[1], pick: open(m[6]), dateStyle: 'color:' + m[5],
+        pos: 'top:' + r.top + 'px;' + (m[4] === 'l' ? 'left:' + L + '%;text-align:left;align-items:flex-start' : 'right:' + (100 - L).toFixed(1) + '%;text-align:right;align-items:flex-end'),
+        stem: 'left:' + L + '%;top:' + r.st + 'px;height:' + r.sh + 'px', dot: 'left:calc(' + L + '% - 4px);background:' + m[5] }; });
+    const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030].map((y) => ({ label: String(y), style: 'left:calc(' + pct(y).toFixed(1) + '% - 14px)' }));
+
+    const rfiDefs = [
+      { id: 'RFI-01', f: 'F-01', title: 'Cable route rights', severity: 'Critical', check: 'cable_route_rights', request: 'Please provide the executed deed(s) of easement for the export cable across Parcels 14 and 15 to Wickham Primary Substation.', why: 'Without these rights the site cannot physically connect to the grid.', docs: 'Deed of easement; title plans for Parcels 14 and 15; HM Land Registry registration.' },
+      { id: 'RFI-02', f: 'F-05', title: 'Discharge of Condition 5', severity: 'Medium', check: 'pre_commencement_conditions', request: 'Please provide the Local Planning Authority\u2019s written approval of the Construction Traffic Management Plan required by Condition 5.', why: 'Commencing before discharge risks invalidating the permission.', docs: 'Discharge of condition notice; approved Construction Traffic Management Plan.' },
+      { id: 'RFI-03', f: 'F-03', title: 'Confirm export capacity', severity: 'High', check: 'export_capacity_consistent', request: 'Please confirm the intended export capacity and whether an increase to the 45 MW Maximum Export Capacity has been applied for.', why: 'Planning and the PPA assume 49.9 MW; the grid offer permits 45 MW.', docs: 'Any variation to the connection offer; correspondence with the network operator on capacity.' } ];
+    const rfis = rfiDefs.map((r, i) => Object.assign({}, r, { sevGlyph: SEV[r.severity].g, sevStyle: col(SEV[r.severity].c), pick: open(r.f), edge: i === 0 ? 'border-top:none' : '' }));
+
+    const NAV = [ ['summary', '01.', 'Summary', '5'], ['evidence', '02.', 'Evidence', st.sel], ['rfi', '03.', 'Requests', '3'] ];
+    const nav = NAV.map((n) => ({ num: n[1], label: n[2], meta: n[3], pick: () => this.setState({ view: n[0] }), cls: st.view === n[0] ? 'on' : '', current: st.view === n[0] ? 'page' : 'false' }));
+    const CRUMB = { summary: 'Summary', evidence: 'Evidence · ' + st.sel, rfi: 'Requests' };
+    const ES = { passed: { t: 'Passing', g: '✓', c: 'var(--ok)' }, stale: { t: 'Re-run needed', g: '!', c: 'var(--high)' }, running: { t: 'Running…', g: '◌', c: 'var(--ink-2)' } }[st.evalState];
+    const isForm = st.mode === 'form';
+    return {
+      themeClass: 'theme-' + theme, crumb: CRUMB[st.view], nav, docs,
+      isSummary: st.view === 'summary', isEvidence: st.view === 'evidence', isRfi: st.view === 'rfi',
+      facts, marks, years, rows, rowCount: F.length + 1, cur, src, srcPos: 'Source ' + (si + 1) + ' of ' + srcs.length,
+      passed: [ { title: 'Planning permission in force; commencement deadline not passed', check: 'permission_in_force' }, { title: 'Tenant is the same entity in lease, grid offer and PPA', check: 'parties_consistent' }, { title: 'Offtaker identified with a signed agreement', check: 'offtaker_identified' } ],
+      showPassed: st.showPassed, passedLabel: '3 checks passed · ' + (st.showPassed ? 'hide' : 'show'), togglePassed: () => this.setState({ showPassed: !st.showPassed }),
+      rfis, leftW: st.leftW, onGridKey, onSepKey,
+      goSummary: () => this.setState({ view: 'summary' }), pickClash: open('F-02'), pickLease: open('F-04'), pickCable: open('F-01'),
+      prevFinding: () => move(-1), nextFinding: () => move(1),
+      prevSrc: () => this.setState({ srcIdx: (si - 1 + srcs.length) % srcs.length }), nextSrc: () => this.setState({ srcIdx: (si + 1) % srcs.length }),
+      notForm: !isForm, isForm, isCorrect: st.action === 'correct', corrected: st.corrected, onCorrected: (e) => this.setState({ corrected: e.target.value }),
+      formLabel: st.action === 'correct' ? 'Why is this the correct reading?' : 'Why is this finding wrong?',
+      saveLabel: 'Save to golden set', reason: st.reason, err: st.err ? 'true' : 'false',
+      onReason: (e) => this.setState({ reason: e.target.value, err: false }),
+      accept: doAccept, openReject: () => this.setState({ mode: 'form', action: 'reject' }), openCorrect: () => this.setState({ mode: 'form', action: 'correct' }),
+      cancel: () => this.setState({ mode: 'idle', reason: '', err: false }), save,
+      goldenCount: st.golden, heldText: st.pending.length ? st.held + ' of ' + (st.held + st.pending.length) + ' checked' : st.held + ' of ' + st.held,
+      evalTag: ES.t, evalGlyph: ES.g, evalTagStyle: col(ES.c), runEval, runLabel: st.evalState === 'running' ? 'Running eval…' : 'Run eval',
+      exportMd: () => toast('RFI list copied as Markdown', null),
+      toastOn: !!st.toast, toastText: st.toast || '', toastUndo: !!st.undoInfo, undo, closeToast: () => this.setState({ toast: null }),
+      helpOn: st.help, openHelp: () => this.setState({ help: true }), closeHelp: () => this.setState({ help: false }),
+      shortcuts: [ { what: 'Next / previous finding', key: 'J K' }, { what: 'Open evidence', key: '↵' }, { what: 'Accept finding', key: 'A' }, { what: 'Correct finding', key: 'C' }, { what: 'Reject finding', key: 'R' }, { what: 'Resize panes (separator focused)', key: '← →' }, { what: 'This sheet', key: '?' } ]
+    };
+  }
+}
+</script>
+</body>
+</html>

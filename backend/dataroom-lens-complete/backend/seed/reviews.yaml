@@ -1,0 +1,30 @@
+# Reviews applied at deploy so the demo opens in the state the UI fixtures show.
+# session_id is NULL for these rows: every visitor sees them.
+
+reviews:
+  - finding_id: F-04
+    check_id: lease_covers_operating_life
+    action: accept
+    reviewer: "Demo reviewer"
+    created_at: "2026-09-20T16:40:00Z"
+    note: "Makes F-04 show as Lawyer-verified, matching the fixture."
+
+  - finding_id: F-07
+    check_id: parties_consistent
+    action: correct
+    corrected_result: pass
+    reason: >-
+      "Brackenfield Solar Ltd" in the planning decision and "Brackenfield Solar Limited"
+      elsewhere are the same company; Ltd and Limited are interchangeable.
+    golden_item_id: corr-001
+    reviewer: "Demo reviewer"
+    created_at: "2026-09-19T10:14:00Z"
+    note: >-
+      Already in evals/golden.jsonl. Name normalisation now makes the pipeline agree,
+      so this correction is both held and learned.
+
+# Initial review state for every other finding (no review row):
+#   needs_review   if severity is critical or the result is conflict
+#                  (Cepter's rule: lawyers review everything flagged as critical)
+#   ai_extracted   otherwise
+# That gives F-01 and F-03 "Needs review", F-02 and F-05 "AI-extracted", as in the fixtures.

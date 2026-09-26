@@ -6,7 +6,7 @@
   "result": "missing_evidence",
   "review": "needs_review",
   "why": "The cable from the site to Wickham Primary Substation crosses land the lease does not cover. Without an easement the project cannot physically connect, whatever the grid offer says.",
-  "how": "The check needs an easement edge from the Asset to every parcel the cable route crosses. The site plan names Parcels 14 and 15; the lease covers 9 to 11; no easement document exists. The result is missing evidence, not fail: nothing assumes the rights do not exist.",
+  "how": "The cable route crosses Parcels 14 and 15, but the lease only covers Parcels 9 to 11, and there is no easement for the other two in the data room. We've marked the document as missing rather than calling this a failure: the rights may exist, we just haven't seen them.",
   "evidence": [
     {
       "kind": "quote",
@@ -45,7 +45,7 @@
     {
       "kind": "missing",
       "label": "Deed of easement, Parcels 14–15",
-      "note": "Expected by cable_route_rights. Not in the data room. Raised as RFI-01.",
+      "note": "Not in the data room. Added to the seller questions as RFI-01.",
       "expected_by": "cable_route_rights",
       "rfi_id": "RFI-01"
     }

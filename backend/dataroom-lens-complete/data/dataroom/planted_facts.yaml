@@ -1,0 +1,130 @@
+# Answer key for the synthetic data room. Written by hand, never generated.
+#
+# Used by:
+#   - evals/golden.jsonl         (the fact, edge, conflict and check items are derived from this)
+#   - backend/tools/check_templates.py   (the "context" blocks render the fixture wording)
+#   - tests that assert the pipeline finds every planted issue
+#
+# Paragraph IDs were produced by backend/tools/check_dataroom.py on the committed PDFs.
+
+facts:
+  - {node: Asset, property: export_capacity_mw, value: 49.9, paragraph: "planning:p1:¶4"}
+  - {node: Asset, property: export_capacity_mw, value: 49.9, paragraph: "ppa:p1:¶2"}
+  - {node: Asset, property: export_capacity_mw, value: 45, paragraph: "grid_offer:p2:¶3"}
+  - {node: Asset, property: technology, value: [solar_pv, bess], paragraph: "planning:p1:¶4"}
+  - {node: Lease, property: start_date, value: "2026-01-01", paragraph: "lease:p1:¶5"}
+  - {node: Lease, property: term_years, value: 35, paragraph: "lease:p1:¶5"}
+  - {node: Permit, property: reference, value: "24/00318/FUL", paragraph: "planning:p1:¶1"}
+  - {node: Permit, property: decision_date, value: "2024-06-12", paragraph: "planning:p1:¶3"}
+  - {node: "Condition 1", property: condition_type, value: time_limit, paragraph: "planning:p2:¶2"}
+  - {node: "Condition 1", property: years, value: 3, paragraph: "planning:p2:¶2"}
+  - {node: "Condition 3", property: condition_type, value: temporary_period, paragraph: "planning:p3:¶2"}
+  - {node: "Condition 3", property: years, value: 40, paragraph: "planning:p3:¶2"}
+  - {node: "Condition 5", property: condition_type, value: pre_commencement, paragraph: "planning:p3:¶6"}
+  - {node: "Condition 5", property: requires, value: "Construction Traffic Management Plan", paragraph: "planning:p3:¶6"}
+  - {node: GridConnection, property: connection_date, value: "2029-10-01", paragraph: "grid_offer:p2:¶3"}
+  - {node: GridConnection, property: substation, value: "Wickham Primary Substation", paragraph: "grid_offer:p2:¶1"}
+  - {node: GridConnection, property: max_import_capacity_mw, value: 20, paragraph: "grid_offer:p2:¶4"}
+  - {node: OfftakeAgreement, property: target_cod, value: "2029-03-31", paragraph: "ppa:p4:¶1"}
+  - {node: OfftakeAgreement, property: long_stop_date, value: "2029-12-31", paragraph: "ppa:p4:¶2"}
+  - {node: OfftakeAgreement, property: signed_date, value: "2025-03-03", paragraph: "ppa:p5:¶1"}
+
+edges:
+  - {type: PARTY_TO, from: "John Hartley", to: Lease, role: landlord, paragraph: "lease:p1:¶1"}
+  - {type: PARTY_TO, from: "Brackenfield Solar Limited", to: Lease, role: tenant, paragraph: "lease:p1:¶1"}
+  - {type: PARTY_TO, from: "John Hartley", to: Permit, role: landowner, paragraph: "planning:p1:¶2",
+     note: "planning names him 'Mr J. Hartley'; consolidation must merge him with the lease's JOHN HARTLEY"}
+  - {type: PARTY_TO, from: "Brackenfield Solar Limited", to: Permit, role: applicant, paragraph: "planning:p1:¶2",
+     note: "planning says 'Ltd'; must merge with 'Limited'"}
+  - {type: PARTY_TO, from: "Fenland Distribution Networks plc", to: GridConnection, role: network_operator, paragraph: "grid_offer:p1:¶2"}
+  - {type: PARTY_TO, from: "Brackenfield Solar Limited", to: GridConnection, role: customer, paragraph: "grid_offer:p1:¶2"}
+  - {type: PARTY_TO, from: "Brackenfield Solar Limited", to: OfftakeAgreement, role: generator, paragraph: "ppa:p1:¶1"}
+  - {type: PARTY_TO, from: "Northwind Energy Supply Limited", to: OfftakeAgreement, role: buyer, paragraph: "ppa:p1:¶1"}
+  - {type: COVERS, from: Lease, to: [9, 10, 11], paragraph: "lease:p1:¶3"}
+  - {type: SITE_INCLUDES, from: Asset, to: [9, 10, 11], paragraph: "site_plan:p1:¶1"}
+  - {type: CABLE_CROSSES, from: Asset, to: [14, 15], paragraph: "site_plan:p1:¶2"}
+  - {type: HAS_CONDITION, from: Permit, to: [1, 2, 3, 4, 5], paragraphs: ["planning:p2:¶2", "planning:p2:¶4", "planning:p3:¶2", "planning:p3:¶4", "planning:p3:¶6"]}
+
+# Things that must NOT be extracted (a model that invents these is wrong)
+absent:
+  - "any Easement node (the data room has no easement)"
+  - "Condition 5 discharged_on (no discharge exists)"
+  - "a second export capacity figure from the grid offer's import capacity (20 MW is import)"
+
+consolidation:
+  merges:
+    - {node: Party, canonical: "John Hartley", variants: ["JOHN HARTLEY", "Mr J. Hartley", "John Hartley"]}
+    - {node: Party, canonical: "Brackenfield Solar Limited", variants: ["Brackenfield Solar Limited", "Brackenfield Solar Ltd"]}
+  conflicts:
+    - property: Asset.export_capacity_mw
+      corroborated: {value: 49.9, documents: [planning, ppa]}
+      conflicting: {value: 45, documents: [grid]}
+
+checks:
+  cable_route_rights:
+    result: missing_evidence
+    finding: F-01
+    evidence: ["site_plan:p1:¶2", "lease:p1:¶3", "missing"]
+    context:
+      crossed_parcels: "Parcels 14 and 15"
+      covered_parcels_short: "9 to 11"
+      uncovered_range: "14–15"
+      substation: "Wickham Primary Substation"
+      rfi_id: "RFI-01"
+  grid_before_cod:
+    result: fail
+    finding: F-02
+    evidence: ["grid_offer:p2:¶3", "ppa:p4:¶1"]
+    context:
+      days: 184
+      slack_days: 91
+      connection_date_short: "1 Oct 2029"
+      target_cod_short: "31 Mar 2029"
+  export_capacity_consistent:
+    result: conflict
+    finding: F-03
+    evidence: ["planning:p1:¶4", "ppa:p1:¶2", "grid_offer:p2:¶3"]
+    context:
+      majority_value: "49.9"
+      majority_count_word: "two"
+      majority_docs_text: "Planning and the PPA"
+      minority_value: "45"
+      minority_doc: "the grid offer"
+      overstatement_pct: 10
+      source_count_word: "Three"
+      rfi_id: "RFI-03"
+  lease_covers_operating_life:
+    result: fail
+    finding: F-04
+    evidence: ["lease:p1:¶5", "planning:p3:¶2"]
+    context:
+      condition_number: "3"
+      lease_start_short: "1 Jan 2026"
+      term_years: "35"
+      first_export_year: "2029"
+      operating_years: "40"
+      lease_end_year: "2060"
+      operating_end_year: "2069"
+      shortfall_years_word: "nine"
+      shortfall_years_word_cap: "Nine"
+      shortfall_years: "9"
+      lease_end_short: "31 Dec 2060"
+  pre_commencement_conditions:
+    result: missing_evidence
+    finding: F-05
+    evidence: ["planning:p3:¶6", "missing"]
+    context:
+      condition_number: "5"
+      condition_subject: "Construction Traffic Management Plan"
+      rfi_id: "RFI-02"
+  permission_in_force:
+    result: pass
+    context: {condition_number: "1", deadline_short: "12 Jun 2027"}
+  parties_consistent:
+    result: pass
+    context: {names: ""}
+  offtaker_identified:
+    result: pass
+    context: {buyer_name: "Northwind Energy Supply", rfi_id: ""}
+
+rfi_order: ["RFI-01 cable_route_rights", "RFI-02 pre_commencement_conditions", "RFI-03 export_capacity_consistent"]

@@ -3,8 +3,10 @@
 import { createContext, useCallback, useContext, useMemo, useReducer, useRef, type ReactNode } from 'react';
 import * as api from '../api/client';
 import type { CheckResult, EvalStatus, Finding, FindingRow, Rfi, Summary } from '../api/types';
+import type { AskResponse, AskSuggestion } from '../api/ask.types';
+import { findingName } from '../lib/format';
 
-export type View = 'summary' | 'evidence' | 'rfi';
+export type View = 'summary' | 'evidence' | 'rfi' | 'ask';
 export type ReviewMode = 'idle' | 'reject' | 'correct';
 
 export type Loadable<T> =
@@ -19,6 +21,13 @@ export interface Toast {
   /** Where focus returns after Undo. */
   returnFocus?: string;
 }
+
+/** One question in this session's Ask history. Each keeps its own state. */
+export type AskEntry = { key: number; question: string } & (
+  | { status: 'pending'; phase: 'searching' | 'checking' }
+  | { status: 'done'; response: AskResponse }
+  | { status: 'error'; message: string }
+);
 
 export interface State {
   view: View;
@@ -35,6 +44,14 @@ export interface State {
   helpOpen: boolean;
   /** A request to move focus to the element with this data-focus key. */
   focus: { key: string; nonce: number } | null;
+  askSuggestions: Loadable<AskSuggestion[]>;
+  /** Newest first. */
+  askEntries: AskEntry[];
+  askDraft: string;
+  /** Which answer's citation is open in the Ask document pane (index across the answer's citations). */
+  askViewing: { entryKey: number; index: number } | null;
+  /** Polite live-region text for the Ask view. */
+  askAnnounce: string;
 }
 
 export const PANE_MIN = 400;
@@ -54,6 +71,11 @@ const initialState: State = {
   toast: null,
   helpOpen: false,
   focus: null,
+  askSuggestions: { status: 'loading' },
+  askEntries: [],
+  askDraft: '',
+  askViewing: null,
+  askAnnounce: '',
 };
 
 type Action =
@@ -71,7 +93,13 @@ type Action =
   | { type: 'eval'; value: EvalStatus }
   | { type: 'toast'; toast: Toast | null }
   | { type: 'help'; open: boolean }
-  | { type: 'focus'; key: string };
+  | { type: 'focus'; key: string }
+  | { type: 'askSuggestions'; value: Loadable<AskSuggestion[]> }
+  | { type: 'askEntry'; entry: AskEntry }
+  | { type: 'askRemove'; key: number }
+  | { type: 'askDraft'; value: string }
+  | { type: 'askViewing'; value: State['askViewing'] }
+  | { type: 'askAnnounce'; text: string };
 
 let nonce = 0;
 
@@ -130,6 +158,27 @@ function reducer(state: State, action: Action): State {
       return { ...state, helpOpen: action.open };
     case 'focus':
       return { ...state, focus: { key: action.key, nonce: ++nonce } };
+    case 'askSuggestions':
+      return { ...state, askSuggestions: action.value };
+    case 'askEntry': {
+      const exists = state.askEntries.some((e) => e.key === action.entry.key);
+      const askEntries = exists
+        ? state.askEntries.map((e) => (e.key === action.entry.key ? action.entry : e))
+        : [action.entry, ...state.askEntries];
+      return { ...state, askEntries };
+    }
+    case 'askRemove':
+      return {
+        ...state,
+        askEntries: state.askEntries.filter((e) => e.key !== action.key),
+        askViewing: state.askViewing?.entryKey === action.key ? null : state.askViewing,
+      };
+    case 'askDraft':
+      return { ...state, askDraft: action.value };
+    case 'askViewing':
+      return { ...state, askViewing: action.value };
+    case 'askAnnounce':
+      return { ...state, askAnnounce: action.text };
   }
 }
 
@@ -172,6 +221,16 @@ export function useSelectedRow(): FindingRow | null {
 
 const message = (e: unknown) => (e instanceof Error ? e.message : String(e));
 let toastSeq = 0;
+let askSeq = 0;
+/** In-flight Ask requests, so Cancel can abort them. Kept out of React state (not serialisable). */
+const askControllers = new Map<number, AbortController>();
+
+/** What the live region says when an answer arrives. */
+function askAnnouncement(r: AskResponse): string {
+  if (r.status !== 'answered') return r.message ?? 'No answer.';
+  const n = r.sentences.length;
+  return `Answer ready: ${n} ${n === 1 ? 'sentence' : 'sentences'}, each backed by the documents.`;
+}
 
 export function useActions() {
   const { dispatch, stateRef } = useStore();
@@ -274,17 +333,19 @@ export function useActions() {
         dispatch({ type: 'eval', value: res.eval });
         dispatch({ type: 'mode', mode: 'idle' });
         const where = stateRef.current.view === 'summary' ? `row-${id}` : 'review-accept';
+        const name = findingName(id);
         const text =
           action === 'accept'
-            ? `${id} accepted as lawyer-verified`
+            ? `${name} confirmed`
             : action === 'correct'
-              ? `Saved as ${res.golden_item_id} in the golden set`
-              : `${id} rejected · saved as ${res.golden_item_id}`;
+              ? `Correction saved. We'll re-check it on every run.`
+              : `${name} dismissed. Your reason is saved.`;
         toast(text, { undoToken: res.undo_token, returnFocus: where });
         if (action !== 'accept') dispatch({ type: 'focus', key: where });
         return true;
       } catch (e) {
-        toast(`Couldn't save the review. ${message(e)}`);
+        console.error(e);
+        toast("Couldn't save your review. Please try again.");
         return false;
       } finally {
         dispatch({ type: 'saving', value: false });
@@ -303,7 +364,8 @@ export function useActions() {
       toast('Undone');
       if (t.returnFocus) dispatch({ type: 'focus', key: t.returnFocus });
     } catch (e) {
-      toast(`Couldn't undo. ${message(e)}`);
+      console.error(e);
+      toast("Couldn't undo. Please try again.");
     }
   }, [dispatch, stateRef, toast]);
 
@@ -316,13 +378,14 @@ export function useActions() {
       dispatch({ type: 'eval', value: done });
       if (done.state === 'passing') {
         const all = done.corrections_held === done.corrections_total;
-        toast(`Eval passed · ${Math.round(done.score * 100)}% · ${all ? 'all corrections still hold' : `${done.corrections_held} of ${done.corrections_total} corrections hold`}`);
+        toast(all ? 'Re-check complete. All your corrections still hold.' : `Re-check complete. ${done.corrections_held} of ${done.corrections_total} corrections hold.`);
       } else {
-        toast(`Eval failed · ${Math.round(done.score * 100)}% · below the ${Math.round(done.gate * 100)}% gate`);
+        toast('Re-check found problems. Some results have changed since your corrections.');
       }
     } catch (e) {
       dispatch({ type: 'eval', value: s.summary.data.eval });
-      toast(`Couldn't run the eval. ${message(e)}`);
+      console.error(e);
+      toast("Couldn't run the re-check. Please try again.");
     }
   }, [dispatch, stateRef, toast]);
 
@@ -338,11 +401,86 @@ export function useActions() {
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       const n = stateRef.current.rfi.status === 'ready' ? stateRef.current.rfi.data.length : 0;
-      toast(`Exported ${n} requests as brackenfield-rfis.md`);
+      toast(`Downloaded ${n} seller questions`);
     } catch (e) {
-      toast(`Couldn't export the requests. ${message(e)}`);
+      console.error(e);
+      toast("Couldn't download the questions. Please try again.");
     }
   }, [stateRef, toast]);
+
+  // ---------------------------------------------------------------- Ask
+
+  const loadAskSuggestions = useCallback(async () => {
+    dispatch({ type: 'askSuggestions', value: { status: 'loading' } });
+    try {
+      dispatch({ type: 'askSuggestions', value: { status: 'ready', data: await api.getAskSuggestions() } });
+    } catch (e) {
+      dispatch({ type: 'askSuggestions', value: { status: 'error', error: message(e) } });
+    }
+  }, [dispatch]);
+
+  const setAskDraft = useCallback((value: string) => dispatch({ type: 'askDraft', value }), [dispatch]);
+
+  /** Submits a question. The caller validates length; only one question is in flight at a time. */
+  const ask = useCallback(
+    async (question: string) => {
+      const q = question.trim();
+      if (stateRef.current.askEntries.some((e) => e.status === 'pending')) return;
+      const key = ++askSeq;
+      const controller = new AbortController();
+      askControllers.set(key, controller);
+      dispatch({ type: 'askDraft', value: q });
+      dispatch({ type: 'askEntry', entry: { key, question: q, status: 'pending', phase: 'searching' } });
+      dispatch({ type: 'askAnnounce', text: 'Searching the documents…' });
+      // Answers are verified before they're sent, so say what's happening after a moment.
+      const phase = setTimeout(() => {
+        dispatch({ type: 'askEntry', entry: { key, question: q, status: 'pending', phase: 'checking' } });
+        dispatch({ type: 'askAnnounce', text: 'Checking every quote…' });
+      }, 1000);
+      try {
+        const response = await api.askQuestion(q, controller.signal);
+        dispatch({ type: 'askEntry', entry: { key, question: q, status: 'done', response } });
+        dispatch({ type: 'askDraft', value: '' });
+        const cited = response.status === 'answered' && response.sentences.some((s) => s.citations.length > 0);
+        if (cited) dispatch({ type: 'askViewing', value: { entryKey: key, index: 0 } });
+        dispatch({ type: 'askAnnounce', text: askAnnouncement(response) });
+      } catch (e) {
+        if (e instanceof DOMException && e.name === 'AbortError') {
+          dispatch({ type: 'askRemove', key });
+          dispatch({ type: 'askAnnounce', text: 'Question cancelled.' });
+          return;
+        }
+        console.error(e);
+        const detail =
+          e instanceof api.ApiError && e.status === 400 ? 'Questions need 3 to 500 characters.' : 'Check your connection, then try again.';
+        dispatch({ type: 'askEntry', entry: { key, question: q, status: 'error', message: detail } });
+        dispatch({ type: 'askAnnounce', text: `Couldn't get an answer. ${detail}` });
+      } finally {
+        clearTimeout(phase);
+        askControllers.delete(key);
+      }
+    },
+    [dispatch, stateRef],
+  );
+
+  const cancelAsk = useCallback(() => {
+    askControllers.forEach((c) => c.abort());
+  }, []);
+
+  const retryAsk = useCallback(
+    (key: number) => {
+      const entry = stateRef.current.askEntries.find((e) => e.key === key);
+      if (!entry) return;
+      dispatch({ type: 'askRemove', key });
+      void ask(entry.question);
+    },
+    [ask, dispatch, stateRef],
+  );
+
+  const viewAskSource = useCallback(
+    (entryKey: number, index: number) => dispatch({ type: 'askViewing', value: { entryKey, index } }),
+    [dispatch],
+  );
 
   const setSrc = useCallback((idx: number) => dispatch({ type: 'src', idx }), [dispatch]);
   const setLeftW = useCallback((width: number) => dispatch({ type: 'leftW', width }), [dispatch]);
@@ -355,9 +493,11 @@ export function useActions() {
     () => ({
       loadSummary, loadFinding, loadRfi, setView, select, openEvidence, move, setMode, review, undo, runEval, exportRfi,
       setSrc, setLeftW, togglePassed, dismissToast, setHelp, focus,
+      loadAskSuggestions, setAskDraft, ask, cancelAsk, retryAsk, viewAskSource,
     }),
     [loadSummary, loadFinding, loadRfi, setView, select, openEvidence, move, setMode, review, undo, runEval, exportRfi,
-      setSrc, setLeftW, togglePassed, dismissToast, setHelp, focus],
+      setSrc, setLeftW, togglePassed, dismissToast, setHelp, focus,
+      loadAskSuggestions, setAskDraft, ask, cancelAsk, retryAsk, viewAskSource],
   );
 }
 

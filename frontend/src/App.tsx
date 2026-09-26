@@ -9,6 +9,7 @@ import { ShortcutsDialog } from './components/ShortcutsDialog';
 import { SummaryView } from './views/SummaryView';
 import { EvidenceView } from './views/EvidenceView';
 import { RequestsView } from './views/RequestsView';
+import { AskView } from './views/AskView';
 
 // ---------------------------------------------------------------- location hash <-> view
 
@@ -54,7 +55,9 @@ function useShortcuts() {
       if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
       if (isTypingTarget(e.target)) return;
       const s = stateRef.current;
-      if (s.helpOpen) return; // the dialog handles its own keys
+      // The dialog handles its own keys. Ask the DOM, not state: Chrome fires the dialog's
+      // close event a moment after it closes, and a key pressed in between must still work.
+      if (document.querySelector('dialog[open]')) return;
       const inGrid = e.target instanceof HTMLElement && !!e.target.closest('[role="grid"]');
       const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
 
@@ -63,7 +66,14 @@ function useShortcuts() {
         actions.setHelp(true);
         return;
       }
-      if (s.view === 'rfi' || s.summary.status !== 'ready') return;
+      if (e.key === '/') {
+        // Focus the Ask input from anywhere (opens Ask if needed).
+        e.preventDefault();
+        if (s.view !== 'ask') actions.setView('ask');
+        actions.focus('ask-input');
+        return;
+      }
+      if (s.view === 'rfi' || s.view === 'ask' || s.summary.status !== 'ready') return;
 
       if (key === 'j' || (s.view === 'evidence' && key === 'ArrowDown' && !inGrid && isPlainTarget(e.target))) {
         e.preventDefault();
@@ -109,12 +119,13 @@ function useFocusRequests() {
 
 export function App() {
   const { state } = useStore();
-  const { loadSummary, loadRfi } = useActions();
+  const { loadSummary, loadRfi, loadAskSuggestions } = useActions();
 
   useEffect(() => {
     void loadSummary();
     void loadRfi();
-  }, [loadSummary, loadRfi]);
+    void loadAskSuggestions();
+  }, [loadSummary, loadRfi, loadAskSuggestions]);
 
   useHashSync();
   useShortcuts();
@@ -130,10 +141,11 @@ export function App() {
       <TopBar />
       <div className="flex min-h-0 grow max-md:flex-col">
         <Sidebar />
-        <main id="main" tabIndex={-1} className="flex min-h-0 min-w-0 grow flex-col focus:outline-none">
+        <main id="main" tabIndex={-1} className="flex min-h-0 min-w-0 grow flex-col focus:outline-none!">
           {state.view === 'summary' && <SummaryView />}
           {state.view === 'evidence' && <EvidenceView />}
           {state.view === 'rfi' && <RequestsView />}
+          {state.view === 'ask' && <AskView />}
         </main>
       </div>
       <Toast />

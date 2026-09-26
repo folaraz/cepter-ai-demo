@@ -1,8 +1,11 @@
 import type { Finding, QuoteEvidence } from '../api/types';
 import { QUOTE, RESULT, REVIEW, SEVERITY } from '../lib/status';
-import { rowNumber } from '../lib/format';
 import { useActions, useStore, useSummary } from '../state/store';
-import { Button, hit, Kbd, ResultPill, Sk, Tag, TextLink } from '../components/ui';
+import { FileQuestionMark } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { Button, Count, hit, Icon, IconButton, ResultPill, Sk, Tag } from '../components/ui';
+
+const subhead = 'text-sm font-semibold text-ink';
 import { cn } from '../lib/cn';
 import { ErrorNote } from '../components/ErrorNote';
 import { ReviewFooter } from './ReviewFooter';
@@ -24,11 +27,11 @@ export function EvidenceView() {
     <div className="flex min-h-0 grow max-md:flex-col" style={{ ['--left-w' as string]: `${state.leftW}px` }}>
       <section aria-labelledby="ev-h" className="flex min-h-0 w-(--left-w) shrink-0 flex-col bg-surface max-md:w-auto">
         <div className="flex grow flex-col gap-5 overflow-y-auto px-7 py-6 max-md:overflow-visible">
-          <EvidenceNav />
+          <EvidenceNav index={index} total={summary?.findings.length ?? 0} />
           {entry?.status === 'error' ? (
-            <ErrorNote title="Couldn't load this finding." detail={entry.error} onRetry={() => id && loadFinding(id, true)} />
+            <ErrorNote title="Couldn't load this finding." onRetry={() => id && loadFinding(id, true)} />
           ) : finding ? (
-            <FindingDetail finding={finding} num={rowNumber(Math.max(0, index))} srcIdx={srcIdx} />
+            <FindingDetail finding={finding} num={Math.max(0, index) + 1} srcIdx={srcIdx} />
           ) : (
             <FindingSkeleton />
           )}
@@ -41,35 +44,35 @@ export function EvidenceView() {
   );
 }
 
-function EvidenceNav() {
+function EvidenceNav({ index, total }: { index: number; total: number }) {
   const { setView, move } = useActions();
   return (
     <div className="flex items-center justify-between">
-      <TextLink onClick={() => setView('summary')}>
-        <span aria-hidden="true">←</span> Summary
-      </TextLink>
-      <span className="flex gap-1.5">
-        <Button size="xs" className="px-2" aria-label="Previous finding" onClick={() => move(-1)}>
-          <Kbd>K</Kbd>
-        </Button>
-        <Button size="xs" className="px-2" aria-label="Next finding" onClick={() => move(1)}>
-          <Kbd>J</Kbd>
-        </Button>
-      </span>
+      <Button size="sm" className="pl-2.5" onClick={() => setView('summary')}>
+        <Icon icon={ArrowLeft} size={14} />
+        All findings
+      </Button>
+      <div className="flex items-center gap-2">
+        {total > 0 && index >= 0 && (
+          <span className="text-sm text-muted tabular-nums">
+            {index + 1} of {total}
+          </span>
+        )}
+        <IconButton icon={ChevronUp} size="sm" aria-label="Previous finding" title="Previous finding (K)" disabled={index <= 0} onClick={() => move(-1)} />
+        <IconButton icon={ChevronDown} size="sm" aria-label="Next finding" title="Next finding (J)" disabled={index >= total - 1} onClick={() => move(1)} />
+      </div>
     </div>
   );
 }
 
-function FindingDetail({ finding, num, srcIdx }: { finding: Finding; num: string; srcIdx: number }) {
+function FindingDetail({ finding, num, srcIdx }: { finding: Finding; num: number; srcIdx: number }) {
   const { setSrc } = useActions();
   let q = -1;
   return (
     <>
-      <div className="flex flex-col gap-2.5">
-        <span className="t-label">
-          {num}. {finding.check_id}
-        </span>
-        <h1 id="ev-h" className="t-title text-pretty focus:outline-none" data-focus="evidence-heading" tabIndex={-1}>
+      <div className="flex flex-col gap-3">
+        <span className="text-sm font-medium text-muted">Finding {num}</span>
+        <h1 id="ev-h" className="t-title text-pretty focus:outline-none!" data-focus="evidence-heading" tabIndex={-1}>
           {finding.title}
         </h1>
         <div data-part="finding-status" className="flex flex-wrap items-center gap-3.5">
@@ -79,22 +82,24 @@ function FindingDetail({ finding, num, srcIdx }: { finding: Finding; num: string
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <h2 className="t-label">Why it matters</h2>
+        <h2 className={subhead}>Why it matters</h2>
         <p className="text-base leading-[1.6] text-pretty">{finding.why}</p>
       </div>
       <div className="flex flex-col gap-1.5">
-        <h2 className="t-label">How the check decided</h2>
+        <h2 className={subhead}>How we reached this</h2>
         <p className="text-md leading-[1.6] text-pretty text-body">{finding.how}</p>
       </div>
       <div className="flex flex-col gap-2">
-        <h2 className="t-label">Evidence · {finding.evidence.length} items</h2>
+        <h2 className={cn(subhead, 'flex items-center gap-2')}>
+          Sources <Count>{finding.evidence.length}</Count>
+        </h2>
         <ol role="list" className="flex flex-col gap-1">
           {finding.evidence.map((ev, i) => {
             if (ev.kind === 'missing') {
               return (
                 <li key={`m-${i}`}>
                   <div className="flex flex-col gap-[3px] rounded-inner border border-dashed border-missing bg-missing-soft px-3.5 py-3">
-                    <Tag def={{ glyph: '○', word: ev.label, color: 'var(--missing)' }} />
+                    <Tag def={{ icon: FileQuestionMark, word: ev.label, color: 'var(--missing)' }} />
                     <span className="text-sm text-body">{ev.note}</span>
                   </div>
                 </li>
@@ -120,7 +125,7 @@ function FindingDetail({ finding, num, srcIdx }: { finding: Finding; num: string
                     <Tag def={v} small />
                   </span>
                   <span className="text-sm text-muted">
-                    <span className="t-ref">{ev.citation.paragraph_id}</span> · {ev.role}
+                    Page {ev.citation.page} · {ev.role}
                   </span>
                 </button>
               </li>

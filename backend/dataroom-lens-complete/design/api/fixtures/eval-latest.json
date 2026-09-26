@@ -1,0 +1,11 @@
+{
+  "state": "passing",
+  "score": 0.96,
+  "gate": 0.9,
+  "golden_count": 20,
+  "corrections_held": 1,
+  "corrections_total": 1,
+  "citation_validity": 1.0,
+  "cost_gbp": 0.42,
+  "last_run_at": "2026-09-21T14:02:00Z"
+}
