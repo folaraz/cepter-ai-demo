@@ -12,6 +12,7 @@ cd backend
 uv sync
 docker compose -f ../docker-compose.yml up -d --wait db
 uv run lens migrate
+uv run lens ingest      # PDFs -> documents and paragraphs; skips unchanged files
 uv run uvicorn app.main:app
 curl localhost:8000/api/health
 ```
