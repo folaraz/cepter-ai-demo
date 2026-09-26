@@ -13,6 +13,7 @@ uv sync
 docker compose -f ../docker-compose.yml up -d --wait db
 uv run lens migrate
 uv run lens ingest      # PDFs -> documents and paragraphs; skips unchanged files
+uv run lens run         # the pipeline, replaying recorded model responses
 uv run uvicorn app.main:app
 curl localhost:8000/api/health
 ```
@@ -53,6 +54,18 @@ uv run python tools/check_ask.py
 `replay_first` (Ask only). Every call writes an `llm_calls` row. No temperature is sent:
 `claude-sonnet-5` rejects non-default sampling parameters, and replay is what makes runs
 repeatable.
+
+To record model responses (needs an API key; nothing else does):
+
+```bash
+export ANTHROPIC_API_KEY=...
+uv run lens record              # one extraction call per document -> fixtures/llm/
+git add fixtures/llm && git commit -m "Record extract.v1 responses"
+unset ANTHROPIC_API_KEY
+```
+
+Changing the extraction prompt changes the recording keys: bump `PROMPT_VERSION` in
+`app/extract/prompt.py` and record again.
 
 PyMuPDF is AGPL, which is fine for a demo; a commercial build would swap it for
 pypdfium2 or pdfplumber.

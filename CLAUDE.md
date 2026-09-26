@@ -57,7 +57,7 @@ The people using this are diligence lawyers and associates, not engineers. Deal 
 
 ## Backend commands (run in backend/, Python 3.12 via uv)
 - `uv sync`, then `docker compose up -d --wait db` from the repo root (set `LENS_DB_PORT` and
-  `DATABASE_URL` if 5432 is taken), `uv run lens migrate`, `uv run lens ingest`, `uv run uvicorn app.main:app`
+  `DATABASE_URL` if 5432 is taken), `uv run lens migrate`, `uv run lens ingest`, `uv run lens run`, `uv run uvicorn app.main:app`
 - `uv run pytest` (database tests skip without Postgres; `LENS_REQUIRE_DB=1` makes them fail),
   `uv run ruff check .`, `uv run mypy`
 - `uv run python tools/check_dataroom.py` (and `check_templates.py`, `check_ask.py`)
