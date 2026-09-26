@@ -28,14 +28,15 @@ TABLES = {
 
 
 def test_settings_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
-    for var in ("LLM_MODE", "LLM_MODEL", "ASK_LIVE", "EVAL_GATE", "COOKIE_SECURE"):
-        monkeypatch.delenv(var, raising=False)
+    for name in Settings.model_fields:
+        monkeypatch.delenv(name.upper(), raising=False)
     s = Settings(_env_file=None)
     assert s.llm_mode == "replay"
     assert s.llm_model == "claude-sonnet-5"
     assert s.ask_live is False
     assert s.eval_gate == 0.90
     assert str(s.embedding_cache_dir) == ".models"
+    assert s.anthropic_api_key is None
 
 
 def test_settings_reject_unknown_llm_mode(monkeypatch: pytest.MonkeyPatch) -> None:
