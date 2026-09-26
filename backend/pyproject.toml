@@ -44,6 +44,8 @@ extend-exclude = ["tools", "*.md"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+# Wording uses real typography: an en dash in parcel ranges ("14–15").
+allowed-confusables = ["–"]
 
 [tool.mypy]
 python_version = "3.12"

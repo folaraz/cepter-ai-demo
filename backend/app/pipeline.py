@@ -1,7 +1,7 @@
 """One pipeline run: record it in `runs`, run the passes, mark it finished.
 
-Pass 1 (extraction), pass 2 (verification) and pass 3 (consolidation) are here now. The
-checks (C7) join them next.
+Pass 1 (extraction), pass 2 (verification), pass 3 (consolidation), then the check
+playbook, which writes one finding per check.
 """
 
 import uuid
@@ -10,9 +10,12 @@ from datetime import datetime
 
 from psycopg import Connection
 
+from app.checks.runner import run_checks
+from app.checks.view import GraphView
 from app.consolidate.graph import consolidate, write_graph
-from app.db.repositories import claims, documents, runs
+from app.db.repositories import claims, documents, findings, runs
 from app.domain.claims import Claim
+from app.domain.findings import FindingRecord
 from app.domain.ontology import load_ontology
 from app.domain.runs import RunKind
 from app.extract.pass1 import run_pass1
@@ -28,6 +31,7 @@ class PipelineResult:
     claims: list[Claim]  # verified and rejected, in document order
     nodes: int
     edges: int
+    findings: list[FindingRecord]
 
 
 def new_run_id(now: datetime | None = None) -> str:
@@ -61,6 +65,10 @@ def run_pipeline(
             [d.id for d in load_manifest()],
         )
         write_graph(conn, graph)
+        order = [d.id for d in load_manifest()]
+        view = GraphView.load(conn, run.id, order, run.as_of)
+        results = run_checks(view, run.id)
+        findings.insert_findings(conn, results)
     except Exception as err:
         runs.finish_run(conn, run.id, "failed", f"{type(err).__name__}: {err}")
         raise
@@ -68,4 +76,4 @@ def run_pipeline(
         runs.publish_run(conn, run.id)
     else:
         runs.finish_run(conn, run.id, "succeeded")
-    return PipelineResult(run.id, stored, len(graph.nodes), len(graph.edges))
+    return PipelineResult(run.id, stored, len(graph.nodes), len(graph.edges), results)
