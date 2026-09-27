@@ -15,5 +15,17 @@ services:
       timeout: 3s
       retries: 20
 
+  # The deployed image, run locally: docker compose --profile app up --build
+  app:
+    profiles: [app]
+    build: .
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      DATABASE_URL: postgresql://lens:lens@db:5432/lens
+    ports:
+      - "${LENS_APP_PORT:-8000}:8000"
+    command: ["sh", "-c", "lens release; exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log"]
+
 volumes:
   lens-db:

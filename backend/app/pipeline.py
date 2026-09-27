@@ -4,9 +4,10 @@ Pass 1 (extraction), pass 2 (verification), pass 3 (consolidation), then the che
 playbook, which writes one finding per check.
 """
 
+import logging
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 
 from psycopg import Connection
 
@@ -22,7 +23,10 @@ from app.extract.pass1 import run_pass1
 from app.extract.prompt import PROMPT_VERSION
 from app.ingest.manifest import load_as_of, load_asset_name, load_manifest
 from app.llm.client import LLMClient, Mode
+from app.logs import run_context
 from app.verify.verifier import verify_claims
+
+log = logging.getLogger("lens.pipeline")
 
 
 @dataclass(frozen=True)
@@ -55,15 +59,28 @@ def run_pipeline(
         session_id=session_id,
         prompt_versions={"extract": PROMPT_VERSION},
     )
+    with run_context(run.id):
+        log.info("pipeline started", extra={"kind": kind})
+        result = _run_passes(conn, llm, run.id, run.as_of, mode, publish)
+        log.info(
+            "pipeline finished",
+            extra={"claims": len(result.claims), "findings": len(result.findings)},
+        )
+        return result
+
+
+def _run_passes(
+    conn: Connection, llm: LLMClient, run_id: str, as_of: date, mode: Mode | None, publish: bool
+) -> PipelineResult:
     try:
-        drafts = run_pass1(conn, llm, run.id, mode)
+        drafts = run_pass1(conn, llm, run_id, mode)
         paragraphs = {p.id: p for p in documents.list_paragraphs(conn)}
         checked = verify_claims(
-            (d for doc in drafts.values() for d in doc), paragraphs, load_ontology(), run.id
+            (d for doc in drafts.values() for d in doc), paragraphs, load_ontology(), run_id
         )
         stored = claims.insert_claims(conn, checked)
         graph = consolidate(
-            run.id,
+            run_id,
             stored,
             paragraphs,
             load_ontology(),
@@ -72,14 +89,14 @@ def run_pipeline(
         )
         write_graph(conn, graph)
         order = [d.id for d in load_manifest()]
-        view = GraphView.load(conn, run.id, order, run.as_of)
-        results = run_checks(view, run.id)
+        view = GraphView.load(conn, run_id, order, as_of)
+        results = run_checks(view, run_id)
         findings.insert_findings(conn, results)
     except Exception as err:
-        runs.finish_run(conn, run.id, "failed", f"{type(err).__name__}: {err}")
+        runs.finish_run(conn, run_id, "failed", f"{type(err).__name__}: {err}")
         raise
     if publish:
-        runs.publish_run(conn, run.id)
+        runs.publish_run(conn, run_id)
     else:
-        runs.finish_run(conn, run.id, "succeeded")
-    return PipelineResult(run.id, stored, len(graph.nodes), len(graph.edges), results)
+        runs.finish_run(conn, run_id, "succeeded")
+    return PipelineResult(run_id, stored, len(graph.nodes), len(graph.edges), results)
