@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     # Model prices are in USD; llm_calls stores GBP. Placeholder rate: confirm before
     # quoting costs.
     gbp_per_usd: float = Field(default=0.75, gt=0.0)
+    # The built UI (npm run build). Served at / when it exists; the API works without it.
+    frontend_dist: Path = REPO_ROOT / "frontend" / "dist"
 
 
 @lru_cache
