@@ -48,6 +48,27 @@ uv run python tools/check_templates.py
 uv run python tools/check_ask.py
 ```
 
+## Accuracy check (eval)
+
+`uv run lens eval [--session S] [--gate 0.90] [--json]` re-runs the pipeline on the
+recorded model responses and scores it against `evals/golden.jsonl` (plus a session's
+corrections). It prints a table and exits 1 when failing. On the hand-written perfect
+extraction the tests use:
+
+```
+Metric                                      Result
+--------------------------------------------------
+Extraction (facts and edges)                 15/15
+Conflicts                                      1/1
+Checks                                         3/3
+Corrections held                   1/1 (1 learned)
+Citation validity                             100%
+```
+
+Passing needs score >= the gate, 100% citation validity and every correction held. A
+correction holds only while the paragraphs it cited are unchanged. CI runs the gate once
+recordings are committed. `POST /api/evals/run` runs it for a visitor's session.
+
 ## The UI
 
 With a build in `frontend/dist` (`npm run build` in `frontend/`), the API also serves

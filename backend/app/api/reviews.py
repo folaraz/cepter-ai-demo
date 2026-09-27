@@ -6,7 +6,7 @@ from psycopg import Connection
 from app.api.deps import connection, published
 from app.api.models import FindingRow, ReviewRequest, ReviewResponse, UndoRequest
 from app.api.session import session_id
-from app.evals.status import current_eval_status
+from app.evals.status import eval_status
 from app.published import load_published
 from app.reviews.service import ReviewError, UnknownFinding, submit_review, undo_review
 from app.summary.build import finding_row
@@ -38,7 +38,7 @@ def post_review(
     return ReviewResponse(
         finding=finding_row(record, after),
         golden_item_id=review.golden_item_id,
-        eval=current_eval_status(after.run_at),
+        eval=eval_status(conn, session),
         undo_token=review.undo_token,
     )
 

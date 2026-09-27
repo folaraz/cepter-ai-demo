@@ -60,4 +60,9 @@ jobs:
         run: uv run python tools/check_templates.py
       - name: Ask golden set agrees with the data room
         run: uv run python tools/check_ask.py
-      # C11 adds the gate here: uv run lens eval --gate 0.90
+      # The gate replays the committed model recordings, so it runs once `lens record`
+      # has produced them. A failing eval (score under the gate, a citation that isn't
+      # verbatim, or a correction no longer held) fails the build.
+      - name: Eval gate
+        if: hashFiles('backend/fixtures/llm/*.json') != ''
+        run: uv run lens run --publish && uv run lens seed && uv run lens eval --gate 0.90

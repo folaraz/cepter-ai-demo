@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from psycopg_pool import ConnectionPool
 
 from app import web
-from app.api import findings, health, reviews, rfi, summary
+from app.api import evals, findings, health, reviews, rfi, summary
 from app.api.session import session_middleware
 from app.config import get_settings
 from app.db.pool import create_pool
@@ -39,6 +39,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(title="DataRoom Lens", lifespan=lifespan)
 app.middleware("http")(session_middleware)
-for router in (health.router, summary.router, findings.router, reviews.router, rfi.router):
+for router in (
+    health.router,
+    summary.router,
+    findings.router,
+    reviews.router,
+    rfi.router,
+    evals.router,
+):
     app.include_router(router, prefix="/api")
 app.include_router(web.router)  # last: its catch-all must not shadow the API
