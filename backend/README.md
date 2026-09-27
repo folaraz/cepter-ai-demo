@@ -34,6 +34,7 @@ If port 5432 is taken, start the database with `LENS_DB_PORT=5433` and set
 | `EMBEDDING_CACHE_DIR` | `./.models` |
 | `COOKIE_SECURE` | `false` |
 | `EVAL_GATE` | `0.90` |
+| `FRONTEND_DIST` | `../frontend/dist`: the built UI, served at `/` when present |
 | `GBP_PER_USD` | `0.75`: placeholder; model prices are in USD, `llm_calls.cost_gbp` is GBP |
 
 ## Checks
@@ -46,6 +47,13 @@ uv run python tools/check_dataroom.py
 uv run python tools/check_templates.py
 uv run python tools/check_ask.py
 ```
+
+## The UI
+
+With a build in `frontend/dist` (`npm run build` in `frontend/`), the API also serves
+the app at `/`: files in `dist` as themselves, any other non-`/api` path as
+`index.html`. `tests/test_api_types.py` fails if a response model drifts from
+`design/api/types.ts`.
 
 ## Model calls
 
