@@ -187,3 +187,23 @@ class Rfi(BaseModel):
     request: str
     why: str
     documents_expected: list[str]
+
+
+# ---------- Review loop ----------
+
+
+class ReviewRequest(BaseModel):
+    action: Literal["accept", "reject", "correct"]
+    corrected_result: Result | None = None  # required when action = "correct"
+    reason: str | None = None  # required for reject and correct
+
+
+class ReviewResponse(BaseModel):
+    finding: FindingRow
+    golden_item_id: str | None  # "corr-002" for reject and correct
+    eval: EvalStatus  # "stale" after a new golden item
+    undo_token: str
+
+
+class UndoRequest(BaseModel):
+    undo_token: str
