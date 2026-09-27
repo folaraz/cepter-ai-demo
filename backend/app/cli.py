@@ -137,3 +137,33 @@ def eval_command(
         typer.echo(format_report(result))
     if result.state != "passing":
         raise typer.Exit(1)
+
+
+@app.command()
+def release() -> None:
+    """Everything a deploy runs before serving: migrate, ingest, run and publish the
+    pipeline, seed the demo's reviews, then the accuracy check. Stops at the first
+    failure, so a deploy never serves a run that failed its checks."""
+    settings = get_settings()
+    apply_schema(settings.database_url)
+    typer.echo("migrate: schema applied")
+    with connect(settings.database_url) as conn:
+        changed = [r.document_id for r in ingest_dataroom(conn) if r.changed]
+        typer.echo(f"ingest: {', '.join(changed) or 'no changes'}")
+
+        llm = AnthropicLLMClient(trace=db_tracer(conn), default_mode="replay")
+        try:
+            published = run_pipeline(conn, llm, kind="published", publish=True)
+        except MissingRecording as err:
+            typer.echo(f"run: {err}", err=True)
+            raise typer.Exit(1) from None
+        typer.echo(f"run: published {published.run_id}")
+
+        # C13 adds the retrieval index here (`lens index`).
+
+        typer.echo(f"seed: {apply_seed(conn, published.run_id)} reviews added")
+
+        result = run_eval(conn, llm, session_id=None, gate=settings.eval_gate)
+        typer.echo(format_report(result))
+    if result.state != "passing":
+        raise typer.Exit(1)

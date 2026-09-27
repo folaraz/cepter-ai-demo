@@ -109,5 +109,42 @@ uv run lens golden export --session <session id>   # appends to evals/golden.jso
 
 Session reviews, questions and eval runs older than 7 days are removed at startup.
 
+## Deploy (Railway)
+
+One service, built from the repo-root `Dockerfile`: Node builds the UI, then a Python
+3.12 image with the embedding model downloaded at build time (the container never
+fetches anything at runtime). `railway.json` configures the build, the pre-deploy
+release step and the health check.
+
+1. **Postgres with pgvector.** In the Railway project, add a Postgres service that has
+   pgvector (Railway's pgvector template, or the `pgvector/pgvector:pg16` image). Confirm
+   it on the first deploy: `lens migrate` fails loudly if `CREATE EXTENSION vector`
+   isn't available.
+2. **The app service.** New service from this GitHub repo; Railway picks up
+   `railway.json` and builds the `Dockerfile`. Set:
+
+   | Variable | Value |
+   |---|---|
+   | `DATABASE_URL` | the Postgres service's connection URL |
+   | `COOKIE_SECURE` | `true` (the site is served over HTTPS) |
+   | `LLM_MODE` | `replay` (the image's default) |
+   | `ASK_LIVE` | `false` (the image's default): no API key needed |
+
+3. **Release.** Before each deploy goes live, Railway runs `lens release`: migrate,
+   ingest, run and publish the pipeline on the committed recordings, seed the demo's
+   reviews, then the accuracy check. It stops at the first failure, and a failed
+   release never goes live. It needs `fixtures/llm/` recordings committed (`lens
+   record`, above).
+4. **Check** that the public URL opens on the Summary and `/api/health` reports the
+   published run.
+
+**Live Ask** (after C14): set `ASK_LIVE=true` and `ANTHROPIC_API_KEY`. Free-form
+questions are then capped by `backend/ask.yaml` `limits`: 20 per session per day and a
+£5.00 daily budget. Suggested questions always replay and never need the key.
+
+**Locally, the same image:** `docker compose --profile app up --build` (set
+`LENS_APP_PORT` if 8000 is taken). Logs are JSON lines, each with `request_id` and,
+inside a pipeline run, `run_id`; responses echo `X-Request-ID`.
+
 PyMuPDF is AGPL, which is fine for a demo; a commercial build would swap it for
 pypdfium2 or pdfplumber.
