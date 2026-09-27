@@ -15,6 +15,7 @@ from app.llm.anthropic_client import AnthropicLLMClient
 from app.llm.client import MissingRecording
 from app.llm.tracing import db_tracer
 from app.pipeline import PipelineResult, run_pipeline
+from app.reviews.golden import export_session_corrections
 from app.reviews.seed import apply_seed
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
@@ -96,3 +97,19 @@ def seed() -> None:
             typer.echo("no published run; run `lens run --publish` first", err=True)
             raise typer.Exit(1)
         typer.echo(f"{apply_seed(conn, run.id)} seed reviews added")
+
+
+golden = typer.Typer(no_args_is_help=True, help="The golden set in evals/golden.jsonl.")
+app.add_typer(golden, name="golden")
+
+
+@golden.command("export")
+def golden_export(
+    session: str = typer.Option(..., help="The session whose corrections to promote."),
+) -> None:
+    """Append a session's corrections to evals/golden.jsonl, to commit as CI tests."""
+    with connect(get_settings().database_url) as conn:
+        written = export_session_corrections(conn, session)
+    for item in written:
+        typer.echo(f"{item['id']} {item['check_id']}: expect {item['expect']}")
+    typer.echo(f"{len(written)} corrections appended to evals/golden.jsonl")

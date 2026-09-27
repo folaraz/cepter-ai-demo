@@ -1,23 +1,17 @@
-"""Shared request plumbing for the read endpoints."""
+"""Shared request plumbing for the endpoints."""
 
 from collections.abc import Iterator
 
 from fastapi import HTTPException, Request, status
 from psycopg import Connection
 
+from app.api.session import session_id
 from app.published import NoPublishedRun, Published, load_published
-
-SESSION_COOKIE = "lens_session"
 
 
 def connection(request: Request) -> Iterator[Connection]:
     with request.app.state.pool.connection() as conn:
         yield conn
-
-
-def session_id(request: Request) -> str | None:
-    # The cookie is set by the session middleware (C9); until then reads use seed reviews.
-    return request.cookies.get(SESSION_COOKIE)
 
 
 def published(conn: Connection, request: Request) -> Published:

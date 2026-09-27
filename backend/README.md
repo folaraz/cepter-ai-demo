@@ -68,5 +68,17 @@ unset ANTHROPIC_API_KEY
 Changing the extraction prompt changes the recording keys: bump `PROMPT_VERSION` in
 `app/extract/prompt.py` and record again.
 
+## Reviews
+
+Each visitor gets a private session (a `lens_session` cookie, 7 days). Their reviews
+apply only to what they see; seed reviews (`lens seed`) apply to everyone. A reject or
+correct becomes a golden item (`corr-002` onwards). To keep one as a CI test:
+
+```bash
+uv run lens golden export --session <session id>   # appends to evals/golden.jsonl
+```
+
+Session reviews, questions and eval runs older than 7 days are removed at startup.
+
 PyMuPDF is AGPL, which is fine for a demo; a commercial build would swap it for
 pypdfium2 or pdfplumber.
