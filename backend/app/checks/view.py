@@ -77,6 +77,10 @@ class GraphView:
     def property_rows(self, node: Node, prop: str) -> list[Provenance]:
         return self._by_node_prop.get((node.id, prop), [])
 
+    def identity_rows(self, node: Node) -> list[Provenance]:
+        """A party's name claims: who it is, per document."""
+        return self._by_node_prop.get((node.id, None), [])
+
     def node_rows(self, node: Node) -> list[Provenance]:
         return [r for (nid, _), rows in self._by_node_prop.items() if nid == node.id for r in rows]
 

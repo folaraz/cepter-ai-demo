@@ -7,6 +7,7 @@ import typer
 from app.config import get_settings
 from app.db.migrate import migrate as apply_schema
 from app.db.pool import connect
+from app.db.repositories import runs
 from app.domain.claims import Claim
 from app.domain.runs import RunKind
 from app.ingest.service import ingest_dataroom
@@ -14,6 +15,7 @@ from app.llm.anthropic_client import AnthropicLLMClient
 from app.llm.client import MissingRecording
 from app.llm.tracing import db_tracer
 from app.pipeline import PipelineResult, run_pipeline
+from app.reviews.seed import apply_seed
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
 
@@ -83,3 +85,14 @@ def run(
             typer.echo(str(err), err=True)
             raise typer.Exit(1) from None
         _report(result)
+
+
+@app.command()
+def seed() -> None:
+    """Apply backend/seed/reviews.yaml to the published run (idempotent)."""
+    with connect(get_settings().database_url) as conn:
+        run = runs.get_published_run(conn)
+        if run is None:
+            typer.echo("no published run; run `lens run --publish` first", err=True)
+            raise typer.Exit(1)
+        typer.echo(f"{apply_seed(conn, run.id)} seed reviews added")

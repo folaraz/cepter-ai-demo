@@ -1,8 +1,14 @@
-"""API response models. Everything in design/api/types.ts is mirrored here (C10)."""
+"""API response models. Each mirrors a type in design/api/types.ts, field for field."""
 
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
+
+from app.domain.findings import Result, Severity
+
+ReviewState = Literal["ai_extracted", "needs_review", "lawyer_verified", "corrected", "rejected"]
+QuoteStatus = Literal["verified", "corroborated", "conflict"]
+EvalState = Literal["passing", "stale", "running", "failing"]
 
 
 class Health(BaseModel):
@@ -13,3 +19,171 @@ class Health(BaseModel):
     recordings: int  # committed model recordings in backend/fixtures/llm/
     embedding_model: str
     ask_live: bool
+
+
+# ---------- Evidence ----------
+
+
+class Citation(BaseModel):
+    document_id: str
+    paragraph_id: str
+    page: int
+    quote: str
+
+
+class QuoteEvidence(BaseModel):
+    kind: Literal["quote"]
+    citation: Citation
+    document_title: str
+    file_name: str
+    role: str
+    heading: str
+    paragraph_text: str
+    quote_start: int
+    quote_end: int
+    status: QuoteStatus
+
+
+class MissingEvidence(BaseModel):
+    kind: Literal["missing"]
+    label: str
+    note: str
+    expected_by: str
+    rfi_id: str | None
+
+
+Evidence = QuoteEvidence | MissingEvidence
+
+
+# ---------- Findings ----------
+
+
+class FindingRow(BaseModel):
+    id: str
+    check_id: str
+    title: str
+    severity: Severity
+    result: Result
+    review: ReviewState
+    quote_count: int
+    gap_count: int
+    source_titles: list[str]
+
+
+class Finding(FindingRow):
+    why: str
+    how: str
+    evidence: list[Evidence]
+
+
+# ---------- Summary ----------
+
+
+class Fact(BaseModel):
+    key: str
+    label: str
+    value: str
+    status: QuoteStatus
+    finding_id: str
+
+
+class DateMark(BaseModel):
+    key: str
+    label: str
+    date: str
+    tone: Literal["neutral", "clash", "warning"]
+    finding_id: str
+
+
+class DateClash(BaseModel):
+    from_key: str
+    to_key: str
+    days: int
+    label: str
+    finding_id: str
+
+
+class LongHorizonNote(BaseModel):
+    text: str
+    flag: str
+    finding_id: str
+
+
+class DocumentSummary(BaseModel):
+    id: str
+    title: str
+    file_name: str
+    pages: int
+
+
+class ExpectedDocument(BaseModel):
+    label: str
+    expected_by: str
+    rfi_id: str
+    finding_id: str
+
+
+class EvalStatus(BaseModel):
+    state: EvalState
+    score: float
+    gate: float
+    golden_count: int
+    corrections_held: int
+    corrections_total: int
+    citation_validity: float
+    cost_gbp: float
+    last_run_at: str
+
+
+class Asset(BaseModel):
+    name: str
+    subtitle: str
+    synthetic: bool
+
+
+class RunInfo(BaseModel):
+    id: str
+    at: str
+    checks_total: int
+
+
+class DateWindow(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    from_: str = Field(alias="from")  # "from" is a Python keyword
+    to: str
+
+
+class PassedCheck(BaseModel):
+    check_id: str
+    title: str
+
+
+class Summary(BaseModel):
+    asset: Asset
+    run: RunInfo
+    headline: str
+    facts: list[Fact]
+    dates: list[DateMark]
+    date_window: DateWindow
+    clash: DateClash | None  # only when the grid connection clashes with the PPA
+    long_horizon: LongHorizonNote | None  # only when the lease falls short
+    findings: list[FindingRow]
+    passed: list[PassedCheck]
+    documents: list[DocumentSummary]
+    missing_documents: list[ExpectedDocument]
+    eval: EvalStatus
+
+
+# ---------- RFI ----------
+
+
+class Rfi(BaseModel):
+    id: str
+    finding_id: str
+    check_id: str
+    title: str
+    severity: Severity
+    request: str
+    why: str
+    documents_expected: list[str]
