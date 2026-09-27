@@ -9,6 +9,7 @@ from app.api.session import session_id
 from app.config import get_settings
 from app.db.repositories import evals as evals_repo
 from app.domain.evals import EvalRun
+from app.evals.ask_eval import replay_runner
 from app.evals.harness import complete_eval, start_eval
 from app.evals.status import eval_status
 from app.llm.anthropic_client import AnthropicLLMClient
@@ -25,8 +26,9 @@ def replay_llm(conn: Connection) -> LLMClient:
 
 def _finish(request: Request, started: EvalRun) -> None:
     factory = getattr(request.app.state, "eval_llm", replay_llm)
+    runner = getattr(request.app.state, "eval_ask", replay_runner)
     with request.app.state.pool.connection() as conn:
-        complete_eval(conn, factory(conn), started)
+        complete_eval(conn, factory(conn), started, runner)
 
 
 @router.post("/evals/run", response_model=EvalStatus)

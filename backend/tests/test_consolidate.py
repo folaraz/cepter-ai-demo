@@ -318,9 +318,16 @@ DOCUMENT_BY_TITLE = {d.title: d.id for d in load_manifest()}
 
 
 class PerfectTransport:
-    """Answers each document's extraction call with its perfect extraction."""
+    """Answers every model call as a perfect model would: extraction with the perfect
+    extraction, Ask's routing and drafting from the Ask golden set."""
 
-    def call(self, *, user: str, **_: Any) -> ToolCall:
+    def call(self, *, user: str, tool: dict[str, Any], **_: Any) -> ToolCall:
+        from tests import perfect_ask
+
+        if tool["name"] == "RouteDecision":
+            return ToolCall(input=perfect_ask.route(user), input_tokens=900, output_tokens=40)
+        if tool["name"] == "AnswerDraft":
+            return ToolCall(input=perfect_ask.draft(user), input_tokens=2500, output_tokens=120)
         title = user.splitlines()[0].removeprefix("Document: ")
         answer = PERFECT[DOCUMENT_BY_TITLE[title]].model_dump()
         return ToolCall(input=answer, input_tokens=4000, output_tokens=1500)

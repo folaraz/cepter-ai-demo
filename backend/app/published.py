@@ -44,8 +44,11 @@ class Published:
         return at.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def load_published(conn: Connection, session_id: str | None) -> Published:
-    run = runs.get_published_run(conn)
+def load_published(
+    conn: Connection, session_id: str | None, run_id: str | None = None
+) -> Published:
+    """The published run, or `run_id` (an eval run, for Ask's accuracy check)."""
+    run = runs.get_run(conn, run_id) if run_id else runs.get_published_run(conn)
     if run is None:
         raise NoPublishedRun
     order = [d.id for d in load_manifest()]
