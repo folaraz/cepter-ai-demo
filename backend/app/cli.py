@@ -17,6 +17,8 @@ from app.llm.anthropic_client import AnthropicLLMClient
 from app.llm.client import MissingRecording
 from app.llm.tracing import db_tracer
 from app.pipeline import PipelineResult, run_pipeline
+from app.retrieval.calibrate import calibrate
+from app.retrieval.index import build_index
 from app.reviews.golden import export_session_corrections
 from app.reviews.seed import apply_seed
 
@@ -142,7 +144,8 @@ def eval_command(
 @app.command()
 def release() -> None:
     """Everything a deploy runs before serving: migrate, ingest, run and publish the
-    pipeline, seed the demo's reviews, then the accuracy check. Stops at the first
+    pipeline, index the paragraphs for Ask, seed the demo's reviews, then the accuracy
+    check. Stops at the first
     failure, so a deploy never serves a run that failed its checks."""
     settings = get_settings()
     apply_schema(settings.database_url)
@@ -159,7 +162,8 @@ def release() -> None:
             raise typer.Exit(1) from None
         typer.echo(f"run: published {published.run_id}")
 
-        # C13 adds the retrieval index here (`lens index`).
+        indexed = build_index(conn)
+        typer.echo(f"index: {indexed.written} chunks embedded, {indexed.unchanged} unchanged")
 
         typer.echo(f"seed: {apply_seed(conn, published.run_id)} reviews added")
 
@@ -167,3 +171,24 @@ def release() -> None:
         typer.echo(format_report(result))
     if result.state != "passing":
         raise typer.Exit(1)
+
+
+@app.command()
+def index() -> None:
+    """Embed every paragraph into the Ask retrieval index (skips unchanged chunks)."""
+    with connect(get_settings().database_url) as conn:
+        result = build_index(conn)
+    typer.echo(f"{result.written} chunks embedded, {result.unchanged} unchanged")
+
+
+ask = typer.Typer(no_args_is_help=True, help="Ask: questions about the data room.")
+app.add_typer(ask, name="ask")
+
+
+@ask.command("calibrate")
+def ask_calibrate() -> None:
+    """For every golden Ask question: the best similarity, and where each expected
+    paragraph ranks under vector, keyword and hybrid search. Use it to set
+    min_similarity in backend/ask.yaml and to check recall before recording."""
+    with connect(get_settings().database_url) as conn:
+        typer.echo(calibrate(conn))
