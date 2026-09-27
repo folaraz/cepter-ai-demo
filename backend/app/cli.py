@@ -10,6 +10,8 @@ from app.db.pool import connect
 from app.db.repositories import runs
 from app.domain.claims import Claim
 from app.domain.runs import RunKind
+from app.evals.harness import run_eval
+from app.evals.report import format_report
 from app.ingest.service import ingest_dataroom
 from app.llm.anthropic_client import AnthropicLLMClient
 from app.llm.client import MissingRecording
@@ -113,3 +115,25 @@ def golden_export(
     for item in written:
         typer.echo(f"{item['id']} {item['check_id']}: expect {item['expect']}")
     typer.echo(f"{len(written)} corrections appended to evals/golden.jsonl")
+
+
+@app.command("eval")
+def eval_command(
+    session: str | None = typer.Option(None, help="Include this session's corrections."),
+    gate: float | None = typer.Option(None, help="Passing score; defaults to EVAL_GATE."),
+    as_json: bool = typer.Option(False, "--json", help="Print the eval row as JSON."),
+    no_ask: bool = typer.Option(False, "--no-ask", help="Skip the Ask metrics (C14)."),
+) -> None:
+    """Re-run the pipeline in replay mode and score it against the golden set. Exits 1
+    when failing: score under the gate, a citation that isn't verbatim, or a correction
+    that no longer holds."""
+    settings = get_settings()
+    with connect(settings.database_url) as conn:
+        llm = AnthropicLLMClient(trace=db_tracer(conn), default_mode="replay")
+        result = run_eval(conn, llm, session_id=session, gate=gate or settings.eval_gate)
+    if as_json:
+        typer.echo(result.model_dump_json(indent=2))
+    else:
+        typer.echo(format_report(result))
+    if result.state != "passing":
+        raise typer.Exit(1)

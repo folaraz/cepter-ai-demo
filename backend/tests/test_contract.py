@@ -18,6 +18,7 @@ from fastapi.testclient import TestClient
 
 from app.config import BACKEND_DIR
 from app.db.pool import connect
+from app.evals.harness import run_eval
 from app.ingest.service import ingest_dataroom
 from app.llm.anthropic_client import AnthropicLLMClient
 from app.llm.replay import RecordingStore
@@ -49,6 +50,8 @@ def api(tmp_path: Path, empty_database: str, client_for: ClientFor) -> Iterator[
         )
         result = run_pipeline(conn, llm, kind="published", mode="record", publish=True)
         apply_seed(conn, result.run_id)
+        # The release step ends with `lens eval`, so a deployed Summary has a measured eval.
+        run_eval(conn, llm, session_id=None, gate=0.90)
     with client_for(empty_database) as client:
         yield client
 
@@ -87,6 +90,8 @@ def test_summary(api: TestClient) -> None:
     assert set(ev) == set(expected("eval-latest.json"))
     assert 0 <= ev["score"] <= 1 and 0 <= ev["citation_validity"] <= 1
     assert ev["gate"] == 0.9 and ISO_DATETIME.match(ev["last_run_at"])
+    assert (ev["state"], ev["golden_count"]) == ("passing", 20)
+    assert (ev["corrections_held"], ev["corrections_total"]) == (1, 1)
 
     for key in want:
         assert got[key] == want[key], key

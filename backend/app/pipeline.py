@@ -45,9 +45,15 @@ def run_pipeline(
     kind: RunKind = "eval",
     mode: Mode | None = None,
     publish: bool = False,
+    session_id: str | None = None,  # set for eval runs started from the UI
 ) -> PipelineResult:
     run = runs.create_run(
-        conn, new_run_id(), kind, load_as_of(), prompt_versions={"extract": PROMPT_VERSION}
+        conn,
+        new_run_id(),
+        kind,
+        load_as_of(),
+        session_id=session_id,
+        prompt_versions={"extract": PROMPT_VERSION},
     )
     try:
         drafts = run_pass1(conn, llm, run.id, mode)
