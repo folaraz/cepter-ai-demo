@@ -14,6 +14,7 @@ docker compose -f ../docker-compose.yml up -d --wait db
 uv run lens migrate
 uv run lens ingest      # PDFs -> documents and paragraphs; skips unchanged files
 uv run lens run --publish   # the pipeline, replaying recorded model responses
+uv run lens index           # embed every paragraph for Ask (skips unchanged)
 uv run lens seed            # the demo's seed reviews
 uv run uvicorn app.main:app
 curl localhost:8000/api/health
@@ -47,6 +48,13 @@ uv run python tools/check_dataroom.py
 uv run python tools/check_templates.py
 uv run python tools/check_ask.py
 ```
+
+## Retrieval (Ask)
+
+`lens index` stores one embedded chunk per paragraph (bge-small, 384 dimensions, local).
+Search fuses vector and keyword search by reciprocal rank. `uv run lens ask calibrate`
+prints, for every golden Ask question, the best similarity and where each expected
+paragraph ranks under vector, keyword and hybrid search.
 
 ## Accuracy check (eval)
 
