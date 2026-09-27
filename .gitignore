@@ -13,3 +13,5 @@ frontend/test-results/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+# onnxruntime telemetry session file (fastembed)
+*.ses
