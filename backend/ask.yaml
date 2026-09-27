@@ -9,7 +9,10 @@ retrieval:
   chunk_text: "{document_title} — {heading}: {text}"
   candidates_per_method: 20      # top N from vector search and from keyword search
   rrf_k: 60                      # reciprocal rank fusion: score = sum(1 / (rrf_k + rank))
-  top_k: 6                       # paragraphs given to the answer model
+  top_k: 8                       # paragraphs given to the answer model
+  # 8, not 6: with 6, fusion ranks a07's lease-term paragraph 8th (keyword noise from
+  # "long" and "land" outranks vector's rank 6), so hybrid recall@6 was 7/8. Measured
+  # with `lens ask calibrate` on 2026-09-27; recall@8 is 8/8.
   # Cheap early exit only: abstain without calling the answer model when the best cosine
   # similarity is below this AND keyword search found nothing. It is NOT the main
   # abstention guard: "How large is the decommissioning bond?" retrieves Condition 4 at
@@ -25,10 +28,10 @@ retrieval:
   #   replace(plainto_tsquery('english', :q)::text, '&', '|')::tsquery
   # Measured on the committed data room with keyword search alone:
   #   a01–a06 (questions sharing words with the text): 6/6, each at rank 1
-  #   a07 "How long does the project control the land for?": MISS (not in the top 6)
+  #   a07 "How long does the project control the land for?": MISS (not in the top 20)
   #   a08 "Who buys the electricity the plant generates?": rank 3
   # That is why retrieval is hybrid: vector search has to carry the paraphrases. Vector
-  # and hybrid recall are measured by `lens eval` (recall@6 target: 8/8).
+  # and hybrid recall are measured by `lens eval` (recall@top_k target: 8/8).
   # Paragraphs go into the prompt in document order, not score order, so the recording
   # key depends only on which paragraphs were retrieved (SPEC C14, "Replay").
   prompt_order: document

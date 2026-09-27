@@ -18,7 +18,7 @@ from app.retrieval.search import keyword_search, search
 pytestmark = pytest.mark.db
 
 LOOKUPS = [i for i in read_ask_golden() if i["route"] == "lookup" and i["expect"] == "answer"]
-TOP_K = 6
+TOP_K = 8  # ask.yaml top_k: at 6, fusion put a07's paragraph 8th
 
 
 @pytest.fixture(scope="module")
@@ -97,21 +97,12 @@ def test_keyword_search_alone_misses_a07(indexed: psycopg.Connection) -> None:
     assert "lease:p1:¶5" not in top
 
 
-def _recall_case(item: dict[str, Any]) -> Any:
-    if item["id"] != "a07":
-        return item
-    return pytest.param(
-        item,
-        marks=pytest.mark.xfail(
-            strict=True,
-            reason="hybrid ranks lease:p1:¶5 8th: keyword noise ('long', 'land') outranks "
-            "vector's rank 6. Vector alone is 8/8. Open decision, see the C13 PR.",
-        ),
-    )
+def test_top_k_is_eight() -> None:
+    assert retrieval_config().top_k == TOP_K
 
 
-@pytest.mark.parametrize("item", [_recall_case(i) for i in LOOKUPS], ids=lambda i: i["id"])
-def test_hybrid_recall_at_6(indexed: psycopg.Connection, item: dict[str, Any]) -> None:
+@pytest.mark.parametrize("item", LOOKUPS, ids=lambda i: i["id"])
+def test_hybrid_recall_at_top_k(indexed: psycopg.Connection, item: dict[str, Any]) -> None:
     hits = [h.paragraph_id for h in search(indexed, item["question"]).hits]
     assert len(hits) == TOP_K
     assert set(item["paragraphs"]) <= set(hits), hits
