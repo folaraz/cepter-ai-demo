@@ -1,9 +1,8 @@
 // DataRoom Lens: API contract between the FastAPI backend and the React UI.
 //
-// Tonight the UI reads these shapes from ./fixtures. Tomorrow the backend returns
-// exactly the same shapes, and the UI switches from fixtures to fetch() by changing
-// one flag (see DESIGN_HANDOFF.md, "Data layer"). Once FastAPI exists, regenerate this
-// file from its OpenAPI schema (openapi-typescript) and diff it against this one.
+// The backend returns exactly these shapes; ./fixtures holds them for the UI's fixture
+// mode (VITE_USE_FIXTURES, see frontend/src/api/client.ts). frontend/src/api/schema.check.ts
+// proves the backend's OpenAPI schema matches this file.
 
 // ---------- Enums ----------
 

@@ -3,7 +3,7 @@
 Diligence associate for one renewable-energy asset. `frontend/` is the React UI; `backend/` holds the FastAPI service; its spec is `specs/SPEC.md`. `design/` is the source of truth for both.
 
 ## Frontend rules
-- The UI spec is design/DESIGN_HANDOFF.md. The API contract is design/api/types.ts, plus design/api/ask.types.ts for Ask. Ask's user-facing messages come verbatim from backend/ask.yaml `messages`; never write your own.
+- The running app is the UI reference; these rules govern changes to it. The API contract is design/api/types.ts, plus design/api/ask.types.ts for Ask. Ask's user-facing messages come verbatim from backend/ask.yaml `messages`; never write your own.
 - Use only CSS variables from design/tokens.css. No raw hex, no new colours or fonts.
 - Styling is Tailwind v4 (frontend/src/styles/app.css). Its theme is mapped from the tokens and every default palette, font, radius, shadow and text size is cleared, so only token utilities exist: `bg-surface`, `text-muted`, `border-hairline`, `rounded-card`, `text-md`, `font-display`... Spacing is the 4px token base (`p-4` = 16px). Shared primitives live in frontend/src/components/ui.tsx (Button, Tag, ResultPill, Kbd, Sk); reuse them rather than re-styling.
 - Type roles come from tokens.css classes: `t-display`, `t-title`, `t-label`, `t-ref`.
@@ -18,7 +18,6 @@ The product should look crafted, not templated. These were deliberately removed;
 - Filler content (placeholder paragraphs, fake context). Show real data or nothing.
 - Keyboard caps inside buttons. Shortcuts live in `title` tooltips and the shortcuts sheet.
 - Text characters as icons. Use Lucide via `<Icon>`; icon-only controls use `<IconButton>` with an aria-label.
-This deliberately overrides the numbered labels and the Summary glow in design/DESIGN_HANDOFF.md.
 
 ## Writing for the reviewer
 The people using this are diligence lawyers and associates, not engineers. Deal language is fine (COD, PPA, easement, lease term, RFI, severity). System language is not:
