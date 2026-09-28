@@ -1,0 +1,37 @@
+{
+  "input_tokens": 1661,
+  "key": "d5f00161b2fdb4a8b86b085d2baa9b965159bb509fa70c608f2aeef5a815c138",
+  "latency_ms": 2526,
+  "metadata": {
+    "question": "How long does the project control the land for?",
+    "retrieved": [
+      "lease:p1:¶5",
+      "lease:p2:¶4",
+      "planning:p1:¶5",
+      "planning:p2:¶2",
+      "planning:p3:¶2",
+      "planning:p3:¶3",
+      "planning:p3:¶4",
+      "ppa:p4:¶2"
+    ]
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "abstain": false,
+    "abstain_reason": null,
+    "sentences": [
+      {
+        "citations": [
+          {
+            "paragraph_id": "lease:p1:¶5",
+            "quote": "for a term of 35 years from and including 1 January 2026"
+          }
+        ],
+        "text": "The project holds the land under a lease for a term of 35 years starting 1 January 2026."
+      }
+    ]
+  },
+  "output_tokens": 229,
+  "prompt_version": "ask.answer.v2",
+  "purpose": "ask:answer"
+}

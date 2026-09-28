@@ -1,0 +1,17 @@
+{
+  "input_tokens": 1329,
+  "key": "6c772d8eb816050313bfa95cf239f1fadb601348e9fbe563f84b4d8aafed8a72",
+  "latency_ms": 1986,
+  "metadata": {
+    "question": "How large is the decommissioning bond?"
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "graph_query": null,
+    "params": {},
+    "route": "lookup"
+  },
+  "output_tokens": 127,
+  "prompt_version": "ask.route.v2",
+  "purpose": "ask:route"
+}

@@ -1,0 +1,37 @@
+{
+  "input_tokens": 1656,
+  "key": "1ca440d760ffb74e3179a47cb8f9bf6600141f365ee7463366b685b3084392d3",
+  "latency_ms": 2453,
+  "metadata": {
+    "question": "What is the target commercial operation date?",
+    "retrieved": [
+      "planning:p1:¶3",
+      "planning:p2:¶2",
+      "grid_offer:p1:¶3",
+      "grid_offer:p2:¶3",
+      "ppa:p2:¶1",
+      "ppa:p2:¶3",
+      "ppa:p4:¶1",
+      "ppa:p4:¶2"
+    ]
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "abstain": false,
+    "abstain_reason": null,
+    "sentences": [
+      {
+        "citations": [
+          {
+            "paragraph_id": "ppa:p4:¶1",
+            "quote": "The Generator shall use reasonable endeavours to achieve Commercial Operation on or before 31 March 2029 (the \"Target COD\")."
+          }
+        ],
+        "text": "The Target COD under the PPA is 31 March 2029, the date by which the Generator must use reasonable endeavours to achieve Commercial Operation."
+      }
+    ]
+  },
+  "output_tokens": 289,
+  "prompt_version": "ask.answer.v2",
+  "purpose": "ask:answer"
+}

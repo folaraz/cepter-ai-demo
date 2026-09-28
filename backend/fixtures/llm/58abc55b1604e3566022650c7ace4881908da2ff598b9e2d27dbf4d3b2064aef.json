@@ -1,0 +1,112 @@
+{
+  "input_tokens": 3400,
+  "key": "58abc55b1604e3566022650c7ace4881908da2ff598b9e2d27dbf4d3b2064aef",
+  "latency_ms": 5821,
+  "metadata": {},
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "asset_properties": [
+      {
+        "name": "export_capacity_mw",
+        "paragraph_id": "ppa:p1:¶2",
+        "quote": "Contracted Capacity: 49.9 MW",
+        "value": 49.9
+      },
+      {
+        "name": "technology",
+        "paragraph_id": "ppa:p1:¶3",
+        "quote": "the solar photovoltaic generating station and co-located battery storage",
+        "value": [
+          "solar_pv",
+          "bess"
+        ]
+      }
+    ],
+    "entities": [
+      {
+        "local_id": "generator",
+        "name": "Brackenfield Solar Limited",
+        "properties": [
+          {
+            "name": "name",
+            "paragraph_id": "ppa:p1:¶1",
+            "quote": "Brackenfield Solar Limited",
+            "value": "Brackenfield Solar Limited"
+          }
+        ],
+        "type": "Party"
+      },
+      {
+        "local_id": "buyer",
+        "name": "Northwind Energy Supply Limited",
+        "properties": [
+          {
+            "name": "name",
+            "paragraph_id": "ppa:p1:¶1",
+            "quote": "Northwind Energy Supply Limited",
+            "value": "Northwind Energy Supply Limited"
+          }
+        ],
+        "type": "Party"
+      },
+      {
+        "local_id": "ppa",
+        "name": "Power purchase agreement",
+        "properties": [
+          {
+            "name": "target_cod",
+            "paragraph_id": "ppa:p4:¶1",
+            "quote": "31 March 2029",
+            "value": "2029-03-31"
+          },
+          {
+            "name": "long_stop_date",
+            "paragraph_id": "ppa:p4:¶2",
+            "quote": "31 December 2029",
+            "value": "2029-12-31"
+          },
+          {
+            "name": "term_years",
+            "paragraph_id": "ppa:p2:¶3",
+            "quote": "10 years",
+            "value": 10
+          },
+          {
+            "name": "price_gbp_per_mwh",
+            "paragraph_id": "ppa:p3:¶1",
+            "quote": "£61.50 per MWh",
+            "value": 61.5
+          },
+          {
+            "name": "signed_date",
+            "paragraph_id": "ppa:p5:¶2",
+            "quote": "on 3 March 2025",
+            "value": "2025-03-03"
+          }
+        ],
+        "type": "OfftakeAgreement"
+      }
+    ],
+    "relations": [
+      {
+        "paragraph_id": "ppa:p1:¶1",
+        "quote": "Brackenfield Solar Limited (the \"Generator\")",
+        "role": "generator",
+        "source_local_id": "generator",
+        "target_local_id": "ppa",
+        "type": "PARTY_TO"
+      },
+      {
+        "paragraph_id": "ppa:p1:¶1",
+        "quote": "Northwind Energy Supply Limited (the \"Buyer\")",
+        "role": "buyer",
+        "source_local_id": "buyer",
+        "target_local_id": "ppa",
+        "type": "PARTY_TO"
+      }
+    ]
+  },
+  "output_tokens": 1013,
+  "prompt_version": "extract.v4",
+  "purpose": "extract:ppa"
+}
