@@ -30,7 +30,7 @@ def validate(decision: RouteDecision) -> Route:
         return LOOKUP
     specs = query.get("params") or {}
     params: dict[str, Any] = {}
-    for name, value in decision.params.items():
+    for name, value in decision.params.model_dump(exclude_none=True).items():
         spec = specs.get(name)
         if spec is None or value not in _allowed_values(spec):
             return LOOKUP

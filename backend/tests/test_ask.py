@@ -23,7 +23,7 @@ from app.ask.service import RetrievalDrift, ask
 from app.config import BACKEND_DIR, DATAROOM_DIR, REPO_ROOT
 from app.db.migrate import migrate
 from app.db.pool import connect
-from app.domain.ask import AnswerDraft, RouteDecision, ask_config
+from app.domain.ask import AnswerDraft, RouteDecision, RouteParams, ask_config
 from app.ingest.service import ingest_dataroom
 from app.llm.anthropic_client import AnthropicLLMClient, ToolCall
 from app.llm.replay import RecordingStore
@@ -383,5 +383,11 @@ def test_routing_is_checked_against_ask_yaml() -> None:
     assert validate(decision("relationship", "no_such_query")).route == "lookup"
     assert validate(decision("relationship", "parties", agreement="Mortgage")).route == "lookup"
     assert validate(decision("relationship", "property_sources")).route == "lookup"  # param needed
-    assert validate(decision("relationship", "parties", extra="x")).route == "lookup"
+    wrong_query = decision("relationship", "parties", property="Asset.export_capacity_mw")
+    assert validate(wrong_query).route == "lookup"
+
+
+def test_route_params_are_every_param_in_ask_yaml() -> None:
+    names = {n for q in ask_config().graph_queries.values() for n in q.get("params") or {}}
+    assert set(RouteParams.model_fields) == names
     assert validate(decision("out_of_scope")).route == "out_of_scope"
