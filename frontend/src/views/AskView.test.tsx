@@ -146,7 +146,7 @@ describe('Ask view', () => {
     expect(input().value).toBe('What is the target commercial operation date?');
 
     await user.click(within(alert).getByRole('button', { name: 'Retry' }));
-    expect(await screen.findByText(/target commercial operation date of 31 March 2029/)).toBeInTheDocument();
+    expect(await screen.findByText(/target commercial operation date is 31 March 2029/)).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
@@ -178,7 +178,7 @@ describe('Ask view', () => {
   it('keeps each question in the session history, newest first', async () => {
     const user = renderApp();
     await user.click(await screen.findByRole('button', { name: 'What is the target commercial operation date?' }));
-    await screen.findByText(/target commercial operation date of 31 March 2029/, visible);
+    await screen.findByText(/target commercial operation date is 31 March 2029/, visible);
     await user.type(input(), 'How large is the decommissioning bond?{Enter}');
     await screen.findByText(ABSTAIN_NOT_FOUND, visible);
     const cards = screen.getAllByRole('article', { name: /^Question:/ });

@@ -6,7 +6,7 @@
   "result": "conflict",
   "review": "needs_review",
   "why": "Revenue modelled on 49.9 MW may be overstated by about 10% if the grid only accepts 45 MW.",
-  "how": "Three documents give different figures for the same thing. Rather than pick one, we show all three and ask you to decide. If they turn out to describe different limits, correct the result and your reason is kept for future runs.",
+  "how": "Three verified values for the same property disagree. The system does not pick a winner: it returns conflict with every source and routes it to a reviewer. A lawyer may decide these are different properties, which is exactly what a correction records.",
   "evidence": [
     {
       "kind": "quote",

@@ -15,8 +15,8 @@ export default defineConfig({
     port: 5173,
     // tokens.css is imported straight from ../design so there is one source of truth.
     fs: { allow: ['.', designDir] },
-    // When VITE_USE_FIXTURES=false, /api goes to the FastAPI backend.
-    proxy: { '/api': 'http://localhost:8000' },
+    // When VITE_USE_FIXTURES=false, /api goes to the FastAPI backend (LENS_API_URL if 8000 is taken).
+    proxy: { '/api': process.env.LENS_API_URL ?? 'http://localhost:8000' },
   },
   test: {
     environment: 'node',

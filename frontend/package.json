@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc -b",
-    "a11y": "node scripts/a11y.mjs"
+    "a11y": "node scripts/a11y.mjs",
+    "schema": "openapi-typescript ${LENS_API_URL:-http://localhost:8000}/openapi.json -o src/api/schema.ts"
   },
   "dependencies": {
     "lucide-react": "^1.48.0",
@@ -28,6 +29,7 @@
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",
     "jsdom": "^25.0.1",
+    "openapi-typescript": "^7.13.0",
     "playwright": "^1.63.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",

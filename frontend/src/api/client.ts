@@ -26,6 +26,10 @@ import askR04 from './fixtures/ask/r04.json';
 import askX01 from './fixtures/ask/x01.json';
 import askUnavailable from './fixtures/ask/unavailable.json';
 import { rfiToMarkdown } from './markdown';
+import type { components } from './schema';
+
+/** Live responses are typed by the FastAPI schema; schema.check.ts proves it equals ./types. */
+type Api = components['schemas'];
 
 export const USE_FIXTURES = import.meta.env.VITE_USE_FIXTURES !== 'false';
 const API_BASE = import.meta.env.VITE_API_BASE ?? '';
@@ -176,27 +180,27 @@ async function http<T>(path: string, init?: RequestInit & { json?: unknown }): P
 // ---------------------------------------------------------------- public API
 
 export function getSummary(): Promise<Summary> {
-  return USE_FIXTURES ? fixture(() => fixtures.getSummary()) : http('/api/summary');
+  return USE_FIXTURES ? fixture(() => fixtures.getSummary()) : http<Api['Summary']>('/api/summary');
 }
 
 export function getFinding(id: string): Promise<Finding> {
-  return USE_FIXTURES ? fixture(() => fixtures.getFinding(id)) : http(`/api/findings/${encodeURIComponent(id)}`);
+  return USE_FIXTURES ? fixture(() => fixtures.getFinding(id)) : http<Api['Finding']>(`/api/findings/${encodeURIComponent(id)}`);
 }
 
 export function postReview(id: string, body: ReviewRequest): Promise<ReviewResponse> {
   return USE_FIXTURES
     ? fixture(() => fixtures.postReview(id, body))
-    : http(`/api/findings/${encodeURIComponent(id)}/review`, { method: 'POST', json: body });
+    : http<Api['ReviewResponse']>(`/api/findings/${encodeURIComponent(id)}/review`, { method: 'POST', json: body });
 }
 
 export function undoReview(undoToken: string): Promise<FindingRow> {
   return USE_FIXTURES
     ? fixture(() => fixtures.undoReview(undoToken))
-    : http('/api/reviews/undo', { method: 'POST', json: { undo_token: undoToken } });
+    : http<Api['FindingRow']>('/api/reviews/undo', { method: 'POST', json: { undo_token: undoToken } });
 }
 
 export function getRfi(): Promise<Rfi[]> {
-  return USE_FIXTURES ? fixture(() => fixtures.getRfi()) : http('/api/rfi');
+  return USE_FIXTURES ? fixture(() => fixtures.getRfi()) : http<Api['Rfi'][]>('/api/rfi');
 }
 
 export async function getRfiMarkdown(): Promise<string> {
@@ -206,7 +210,7 @@ export async function getRfiMarkdown(): Promise<string> {
 }
 
 export function getEvalLatest(): Promise<EvalStatus> {
-  return USE_FIXTURES ? fixture(() => fixtures.getEvalLatest()) : http('/api/evals/latest');
+  return USE_FIXTURES ? fixture(() => fixtures.getEvalLatest()) : http<Api['EvalStatus']>('/api/evals/latest');
 }
 
 /** Starts an eval run and resolves once it has finished (polls the API while it reports "running"). */
@@ -216,7 +220,7 @@ export async function runEval(): Promise<EvalStatus> {
     await sleep(EVAL_RUN_MS);
     return fixtures.finishEval();
   }
-  let status = await http<EvalStatus>('/api/evals/run', { method: 'POST' });
+  let status = await http<Api['EvalStatus']>('/api/evals/run', { method: 'POST' });
   while (status.state === 'running') {
     await sleep(750);
     status = await getEvalLatest();
@@ -267,7 +271,7 @@ function wait(ms: number, signal?: AbortSignal) {
 }
 
 export function getAskSuggestions(): Promise<AskSuggestion[]> {
-  return USE_FIXTURES ? fixture(() => clone(askSuggestionsFixture) as AskSuggestion[]) : http('/api/ask/suggestions');
+  return USE_FIXTURES ? fixture(() => clone(askSuggestionsFixture) as AskSuggestion[]) : http<Api['AskSuggestion'][]>('/api/ask/suggestions');
 }
 
 /**
@@ -277,7 +281,7 @@ export function getAskSuggestions(): Promise<AskSuggestion[]> {
 export async function askQuestion(question: string, signal?: AbortSignal): Promise<AskResponse> {
   const q = question.trim();
   if (q.length < ASK_MIN || q.length > ASK_MAX) throw new ApiError('Questions need 3 to 500 characters.', 400);
-  if (!USE_FIXTURES) return http('/api/ask', { method: 'POST', json: { question: q }, signal });
+  if (!USE_FIXTURES) return http<Api['AskResponse']>('/api/ask', { method: 'POST', json: { question: q }, signal });
 
   await wait(askDelayMs, signal);
   const key = normaliseQuestion(q);
