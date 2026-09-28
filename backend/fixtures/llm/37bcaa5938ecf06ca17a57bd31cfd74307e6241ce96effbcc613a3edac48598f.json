@@ -1,0 +1,37 @@
+{
+  "input_tokens": 3697,
+  "key": "37bcaa5938ecf06ca17a57bd31cfd74307e6241ce96effbcc613a3edac48598f",
+  "latency_ms": 5018,
+  "metadata": {
+    "question": "What is the target commercial operation date?",
+    "retrieved": [
+      "planning:p1:¶3",
+      "planning:p2:¶2",
+      "grid_offer:p1:¶3",
+      "grid_offer:p2:¶3",
+      "ppa:p2:¶1",
+      "ppa:p2:¶3",
+      "ppa:p4:¶1",
+      "ppa:p4:¶2"
+    ]
+  },
+  "model": "claude-sonnet-5",
+  "output": {
+    "abstain": false,
+    "abstain_reason": null,
+    "sentences": [
+      {
+        "citations": [
+          {
+            "paragraph_id": "ppa:p4:¶1",
+            "quote": "achieve Commercial Operation on or before 31 March 2029 (the \"Target COD\")"
+          }
+        ],
+        "text": "The target commercial operation date is 31 March 2029."
+      }
+    ]
+  },
+  "output_tokens": 325,
+  "prompt_version": "ask.answer.v1",
+  "purpose": "ask:answer"
+}

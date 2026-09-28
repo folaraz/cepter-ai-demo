@@ -1,0 +1,181 @@
+{
+  "input_tokens": 3392,
+  "key": "622fc5db9afdc3ea03a0b9c750ba7b4039e08669ca8bee8a5306d27753103b19",
+  "latency_ms": 10895,
+  "metadata": {},
+  "model": "claude-sonnet-5",
+  "output": {
+    "asset_properties": [
+      {
+        "name": "technology",
+        "paragraph_id": "lease:p1:¶2",
+        "quote": "solar photovoltaic and battery storage facility",
+        "value": [
+          "solar_pv",
+          "bess"
+        ]
+      }
+    ],
+    "entities": [
+      {
+        "local_id": "landlord",
+        "name": "JOHN HARTLEY",
+        "properties": [
+          {
+            "name": "name",
+            "paragraph_id": "lease:p1:¶1",
+            "quote": "JOHN HARTLEY of Bracken Farm, Wickham (the \"Landlord\")",
+            "value": "JOHN HARTLEY"
+          }
+        ],
+        "type": "Party"
+      },
+      {
+        "local_id": "tenant",
+        "name": "Brackenfield Solar Limited",
+        "properties": [
+          {
+            "name": "name",
+            "paragraph_id": "lease:p1:¶1",
+            "quote": "Brackenfield Solar Limited, a company registered in England and Wales (the \"Tenant\")",
+            "value": "Brackenfield Solar Limited"
+          }
+        ],
+        "type": "Party"
+      },
+      {
+        "local_id": "lease",
+        "name": null,
+        "properties": [
+          {
+            "name": "signed_date",
+            "paragraph_id": "lease:p1:¶1",
+            "quote": "This Lease is made on 15 December 2025",
+            "value": "2025-12-15"
+          },
+          {
+            "name": "term_years",
+            "paragraph_id": "lease:p1:¶5",
+            "quote": "for a term of 35 years from and including 1 January 2026",
+            "value": 35
+          },
+          {
+            "name": "start_date",
+            "paragraph_id": "lease:p1:¶5",
+            "quote": "for a term of 35 years from and including 1 January 2026",
+            "value": "2026-01-01"
+          }
+        ],
+        "type": "Lease"
+      },
+      {
+        "local_id": "parcel9",
+        "name": null,
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "lease:p1:¶3",
+            "quote": "Parcels 9, 10 and 11",
+            "value": "9"
+          }
+        ],
+        "type": "LandParcel"
+      },
+      {
+        "local_id": "parcel10",
+        "name": null,
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "lease:p1:¶3",
+            "quote": "Parcels 9, 10 and 11",
+            "value": "10"
+          }
+        ],
+        "type": "LandParcel"
+      },
+      {
+        "local_id": "parcel11",
+        "name": null,
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "lease:p1:¶3",
+            "quote": "Parcels 9, 10 and 11",
+            "value": "11"
+          }
+        ],
+        "type": "LandParcel"
+      }
+    ],
+    "relations": [
+      {
+        "paragraph_id": "lease:p1:¶1",
+        "quote": "JOHN HARTLEY of Bracken Farm, Wickham (the \"Landlord\")",
+        "role": "landlord",
+        "source_local_id": "landlord",
+        "target_local_id": "lease",
+        "type": "PARTY_TO"
+      },
+      {
+        "paragraph_id": "lease:p1:¶1",
+        "quote": "Brackenfield Solar Limited, a company registered in England and Wales (the \"Tenant\")",
+        "role": "tenant",
+        "source_local_id": "tenant",
+        "target_local_id": "lease",
+        "type": "PARTY_TO"
+      },
+      {
+        "paragraph_id": "lease:p1:¶3",
+        "quote": "Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "lease",
+        "target_local_id": "parcel9",
+        "type": "COVERS"
+      },
+      {
+        "paragraph_id": "lease:p1:¶3",
+        "quote": "Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "lease",
+        "target_local_id": "parcel10",
+        "type": "COVERS"
+      },
+      {
+        "paragraph_id": "lease:p1:¶3",
+        "quote": "Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "lease",
+        "target_local_id": "parcel11",
+        "type": "COVERS"
+      },
+      {
+        "paragraph_id": "lease:p1:¶3",
+        "quote": "Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel9",
+        "type": "SITE_INCLUDES"
+      },
+      {
+        "paragraph_id": "lease:p1:¶3",
+        "quote": "Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel10",
+        "type": "SITE_INCLUDES"
+      },
+      {
+        "paragraph_id": "lease:p1:¶3",
+        "quote": "Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel11",
+        "type": "SITE_INCLUDES"
+      }
+    ]
+  },
+  "output_tokens": 1565,
+  "prompt_version": "extract.v3",
+  "purpose": "extract:lease"
+}

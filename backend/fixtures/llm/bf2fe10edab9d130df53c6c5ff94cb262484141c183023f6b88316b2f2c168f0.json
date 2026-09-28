@@ -1,0 +1,27 @@
+{
+  "input_tokens": 3711,
+  "key": "bf2fe10edab9d130df53c6c5ff94cb262484141c183023f6b88316b2f2c168f0",
+  "latency_ms": 3771,
+  "metadata": {
+    "question": "How large is the decommissioning bond?",
+    "retrieved": [
+      "lease:p2:¶4",
+      "planning:p1:¶1",
+      "planning:p1:¶4",
+      "planning:p3:¶4",
+      "planning:p3:¶5",
+      "grid_offer:p2:¶3",
+      "grid_offer:p2:¶4",
+      "ppa:p3:¶1"
+    ]
+  },
+  "model": "claude-sonnet-5",
+  "output": {
+    "abstain": true,
+    "abstain_reason": "The paragraphs describe a decommissioning scheme requirement and a reinstatement obligation, but they do not state the size of any decommissioning bond.",
+    "sentences": []
+  },
+  "output_tokens": 244,
+  "prompt_version": "ask.answer.v1",
+  "purpose": "ask:answer"
+}

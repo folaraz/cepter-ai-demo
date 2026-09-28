@@ -1,0 +1,103 @@
+{
+  "input_tokens": 3321,
+  "key": "0a07acfc114ee3f4da9f6ee71139bebd28a85d5ffb6ba64c22b4379e8539a509",
+  "latency_ms": 7223,
+  "metadata": {},
+  "model": "claude-sonnet-5",
+  "output": {
+    "asset_properties": [
+      {
+        "name": "export_capacity_mw",
+        "paragraph_id": "grid_offer:p2:¶3",
+        "quote": "The Maximum Export Capacity at the Point of Connection shall be 45 MW.",
+        "value": 45
+      }
+    ],
+    "entities": [
+      {
+        "local_id": "fenland",
+        "name": null,
+        "properties": [
+          {
+            "name": "name",
+            "paragraph_id": "grid_offer:p1:¶2",
+            "quote": "Fenland Distribution Networks plc",
+            "value": "Fenland Distribution Networks plc"
+          }
+        ],
+        "type": "Party"
+      },
+      {
+        "local_id": "brackenfield",
+        "name": null,
+        "properties": [
+          {
+            "name": "name",
+            "paragraph_id": "grid_offer:p1:¶2",
+            "quote": "Brackenfield Solar Limited",
+            "value": "Brackenfield Solar Limited"
+          }
+        ],
+        "type": "Party"
+      },
+      {
+        "local_id": "grid_connection",
+        "name": null,
+        "properties": [
+          {
+            "name": "reference",
+            "paragraph_id": "grid_offer:p1:¶1",
+            "quote": "FDN/CO/2024/0917",
+            "value": "FDN/CO/2024/0917"
+          },
+          {
+            "name": "connection_date",
+            "paragraph_id": "grid_offer:p2:¶3",
+            "quote": "The Connection Date shall be 1 October 2029",
+            "value": "2029-10-01"
+          },
+          {
+            "name": "max_import_capacity_mw",
+            "paragraph_id": "grid_offer:p2:¶4",
+            "quote": "The Maximum Import Capacity at the Point of Connection shall be 20 MW.",
+            "value": 20
+          },
+          {
+            "name": "substation",
+            "paragraph_id": "grid_offer:p2:¶1",
+            "quote": "Wickham Primary Substation",
+            "value": "Wickham Primary Substation"
+          },
+          {
+            "name": "voltage_kv",
+            "paragraph_id": "grid_offer:p2:¶1",
+            "quote": "the 33 kV busbar at Wickham Primary Substation",
+            "value": 33
+          }
+        ],
+        "type": "GridConnection"
+      }
+    ],
+    "relations": [
+      {
+        "paragraph_id": "grid_offer:p1:¶2",
+        "quote": "This Connection Offer is made by Fenland Distribution Networks plc to Brackenfield Solar Limited.",
+        "role": "network_operator",
+        "source_local_id": "fenland",
+        "target_local_id": "grid_connection",
+        "type": "PARTY_TO"
+      },
+      {
+        "paragraph_id": "grid_offer:p1:¶2",
+        "quote": "This Connection Offer is made by Fenland Distribution Networks plc to Brackenfield Solar Limited.",
+        "role": "customer",
+        "source_local_id": "brackenfield",
+        "target_local_id": "grid_connection",
+        "type": "PARTY_TO"
+      }
+    ]
+  },
+  "output_tokens": 961,
+  "prompt_version": "extract.v3",
+  "purpose": "extract:grid"
+}

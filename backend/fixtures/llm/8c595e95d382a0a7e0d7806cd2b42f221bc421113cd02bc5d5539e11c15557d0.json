@@ -1,0 +1,19 @@
+{
+  "input_tokens": 1323,
+  "key": "8c595e95d382a0a7e0d7806cd2b42f221bc421113cd02bc5d5539e11c15557d0",
+  "latency_ms": 2396,
+  "metadata": {
+    "question": "Do the documents agree on the export capacity?"
+  },
+  "model": "claude-sonnet-5",
+  "output": {
+    "graph_query": "property_sources",
+    "params": {
+      "property": "Asset.export_capacity_mw"
+    },
+    "route": "relationship"
+  },
+  "output_tokens": 100,
+  "prompt_version": "ask.route.v2",
+  "purpose": "ask:route"
+}

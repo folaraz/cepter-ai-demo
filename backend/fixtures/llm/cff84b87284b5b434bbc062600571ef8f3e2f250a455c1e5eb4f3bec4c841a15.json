@@ -1,0 +1,46 @@
+{
+  "input_tokens": 3631,
+  "key": "cff84b87284b5b434bbc062600571ef8f3e2f250a455c1e5eb4f3bec4c841a15",
+  "latency_ms": 6193,
+  "metadata": {
+    "question": "How long does the project control the land for?",
+    "retrieved": [
+      "lease:p1:¶5",
+      "lease:p2:¶4",
+      "planning:p1:¶5",
+      "planning:p2:¶2",
+      "planning:p3:¶2",
+      "planning:p3:¶3",
+      "planning:p3:¶4",
+      "ppa:p4:¶2"
+    ]
+  },
+  "model": "claude-sonnet-5",
+  "output": {
+    "abstain": false,
+    "abstain_reason": null,
+    "sentences": [
+      {
+        "citations": [
+          {
+            "paragraph_id": "lease:p1:¶5",
+            "quote": "35 years from and including 1 January 2026"
+          }
+        ],
+        "text": "The project controls the land through a lease for a term of 35 years from 1 January 2026."
+      },
+      {
+        "citations": [
+          {
+            "paragraph_id": "planning:p3:¶2",
+            "quote": "a limited period of 40 years from the date of First Export, after which the site shall be restored"
+          }
+        ],
+        "text": "Separately, the planning permission for the site is limited to 40 years from the date of First Export, after which the site must be restored."
+      }
+    ]
+  },
+  "output_tokens": 516,
+  "prompt_version": "ask.answer.v1",
+  "purpose": "ask:answer"
+}

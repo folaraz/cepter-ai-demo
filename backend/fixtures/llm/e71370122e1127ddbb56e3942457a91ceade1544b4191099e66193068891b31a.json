@@ -1,0 +1,112 @@
+{
+  "input_tokens": 3486,
+  "key": "e71370122e1127ddbb56e3942457a91ceade1544b4191099e66193068891b31a",
+  "latency_ms": 7827,
+  "metadata": {},
+  "model": "claude-sonnet-5",
+  "output": {
+    "asset_properties": [
+      {
+        "name": "export_capacity_mw",
+        "paragraph_id": "ppa:p1:¶2",
+        "quote": "Contracted Capacity: 49.9 MW (AC)",
+        "value": 49.9
+      },
+      {
+        "name": "technology",
+        "paragraph_id": "ppa:p1:¶3",
+        "quote": "solar photovoltaic generating station and co-located battery storage",
+        "value": [
+          "solar_pv",
+          "bess"
+        ]
+      }
+    ],
+    "entities": [
+      {
+        "local_id": "generator_party",
+        "name": "Brackenfield Solar Limited",
+        "properties": [
+          {
+            "name": "name",
+            "paragraph_id": "ppa:p1:¶1",
+            "quote": "Brackenfield Solar Limited (the \"Generator\")",
+            "value": "Brackenfield Solar Limited"
+          }
+        ],
+        "type": "Party"
+      },
+      {
+        "local_id": "buyer_party",
+        "name": "Northwind Energy Supply Limited",
+        "properties": [
+          {
+            "name": "name",
+            "paragraph_id": "ppa:p1:¶1",
+            "quote": "Northwind Energy Supply Limited (the \"Buyer\")",
+            "value": "Northwind Energy Supply Limited"
+          }
+        ],
+        "type": "Party"
+      },
+      {
+        "local_id": "offtake_agreement",
+        "name": null,
+        "properties": [
+          {
+            "name": "term_years",
+            "paragraph_id": "ppa:p2:¶3",
+            "quote": "This Agreement continues for 10 years from Commercial Operation.",
+            "value": 10
+          },
+          {
+            "name": "price_gbp_per_mwh",
+            "paragraph_id": "ppa:p3:¶1",
+            "quote": "The Contract Price shall be £61.50 per MWh",
+            "value": 61.5
+          },
+          {
+            "name": "target_cod",
+            "paragraph_id": "ppa:p4:¶1",
+            "quote": "on or before 31 March 2029 (the \"Target COD\")",
+            "value": "2029-03-31"
+          },
+          {
+            "name": "long_stop_date",
+            "paragraph_id": "ppa:p4:¶2",
+            "quote": "by 31 December 2029 (the \"Long-Stop Date\")",
+            "value": "2029-12-31"
+          },
+          {
+            "name": "signed_date",
+            "paragraph_id": "ppa:p5:¶1",
+            "quote": "Signed for and on behalf of Northwind Energy Supply Limited on 3 March 2025.",
+            "value": "2025-03-03"
+          }
+        ],
+        "type": "OfftakeAgreement"
+      }
+    ],
+    "relations": [
+      {
+        "paragraph_id": "ppa:p1:¶1",
+        "quote": "Brackenfield Solar Limited (the \"Generator\")",
+        "role": "generator",
+        "source_local_id": "generator_party",
+        "target_local_id": "offtake_agreement",
+        "type": "PARTY_TO"
+      },
+      {
+        "paragraph_id": "ppa:p1:¶1",
+        "quote": "Northwind Energy Supply Limited (the \"Buyer\")",
+        "role": "buyer",
+        "source_local_id": "buyer_party",
+        "target_local_id": "offtake_agreement",
+        "type": "PARTY_TO"
+      }
+    ]
+  },
+  "output_tokens": 998,
+  "prompt_version": "extract.v3",
+  "purpose": "extract:ppa"
+}

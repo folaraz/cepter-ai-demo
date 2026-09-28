@@ -30,49 +30,17 @@ checks are green.
 | — | Decisions: per-item gate, nullable clash/long-horizon, RFI empty state | #16 |
 | — | Fixes from the first real-model recording (`extract.v2`) | #17 |
 
-## Immediate next step: finish the recordings
+## Recordings: done
 
-The user is recording the real model's answers (needs `ANTHROPIC_API_KEY`, laptop
-only). **Nothing in `backend/fixtures/llm/` is committed yet.** As of this handoff the
-folder holds 26 uncommitted recordings: 5 × `extract.v2`, 15 × `ask.route.v1`,
-6 × `ask.answer.v1`.
+`backend/fixtures/llm/` holds 28 committed recordings: 5 × `extract.v3`, 15 ×
+`ask.route.v2`, 8 × `ask.answer.v1`. `lens eval` scores 1.000 (PASSING): every golden
+item passes, citation validity 100%, 0 verifier rejections, routing 13/15 (reported
+only). The recorded-model tests run and pass (283 passed, none skipped).
 
-What the `extract.v2` recordings show (`pytest -s tests/test_verifier.py::test_verifier_over_the_recorded_extraction`):
-74 claims, **1 rejected**:
-
-- grid offer `PARTY_TO` customer, quoting `grid_offer:p2:¶2` ("The Customer shall
-  construct the export cable…"), which doesn't name the company, so the verifier's name
-  rule rejects it. The right paragraph is `grid_offer:p1:¶2` ("…made by Fenland
-  Distribution Networks plc to Brackenfield Solar Limited."). Effect: F-07
-  (`parties_consistent`) is `missing_evidence`, not `pass`, and the answer-key test for
-  that edge fails.
-
-**Fix (next session):** bump to `extract.v3` in `backend/app/extract/prompt.py` with a
-rule like "cite the paragraph where the party is named in that role (for example the
-opening parties clause), not a later clause that uses the role on its own". Then the user
-re-records extraction. Don't loosen tests or the verifier. The build prompts say to fix
-the prompt and re-record.
-
-Also confirm `lens record --ask` completed. Six answer recordings may be short: eight
-lookups plus x01 reach the answer model, unless the early exit fires; x02 is expected to
-exit early. `lens eval` will say.
-
-Then the user runs, from `backend/`:
-
-```bash
-rm fixtures/llm/*.json   # only if re-recording everything; keys change with prompt versions
-export DATABASE_URL=postgresql://lens:lens@localhost:5433/lens ANTHROPIC_API_KEY=...
-uv run lens record
-uv run lens run --publish && uv run lens index
-uv run lens record --ask
-uv run lens eval          # must print PASSING; every golden item is its own gate
-git add fixtures/llm && git commit -m "Record extract.v3, ask.route.v1 and ask.answer.v1"
-unset ANTHROPIC_API_KEY
-```
-
-The recorded-model tests (`test_*_over_the_recorded_extraction`, the contract test's
-recorded variant) stop skipping once recordings match. They're the check that the real
-model meets the answer key.
+`extract.v3` makes every Party carry a quoted name in every document and cite the
+paragraph that names it in its role. `ask.route.v2` sends single-value questions to
+lookup even when a graph query covers the value. Re-record whenever a prompt version
+changes; delete the old version's files so none are orphaned.
 
 ## After recordings: remaining steps
 

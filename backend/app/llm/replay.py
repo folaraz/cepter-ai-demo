@@ -23,8 +23,8 @@ class Recording(BaseModel):
 
 
 class RecordingStore:
-    def __init__(self, directory: Path = RECORDINGS_DIR) -> None:
-        self.directory = directory
+    def __init__(self, directory: Path | None = None) -> None:
+        self.directory = directory or RECORDINGS_DIR
 
     def path(self, key: str) -> Path:
         return self.directory / f"{key}.json"

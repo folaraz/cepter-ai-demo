@@ -1,0 +1,298 @@
+{
+  "input_tokens": 3583,
+  "key": "26264f969ed44c7b70f9d3d183fa7fa65c32631d5dfcc40fa02cfc1388d8d027",
+  "latency_ms": 17235,
+  "metadata": {},
+  "model": "claude-sonnet-5",
+  "output": {
+    "asset_properties": [
+      {
+        "name": "export_capacity_mw",
+        "paragraph_id": "planning:p1:¶4",
+        "quote": "maximum export capacity of 49.9MW",
+        "value": 49.9
+      },
+      {
+        "name": "technology",
+        "paragraph_id": "planning:p1:¶4",
+        "quote": "ground-mounted solar photovoltaic array and battery energy storage system",
+        "value": [
+          "solar_pv",
+          "bess"
+        ]
+      }
+    ],
+    "entities": [
+      {
+        "local_id": "applicant",
+        "name": "Brackenfield Solar Ltd",
+        "properties": [
+          {
+            "name": "name",
+            "paragraph_id": "planning:p1:¶2",
+            "quote": "Applicant: Brackenfield Solar Ltd.",
+            "value": "Brackenfield Solar Ltd"
+          }
+        ],
+        "type": "Party"
+      },
+      {
+        "local_id": "landowner",
+        "name": "Mr J. Hartley",
+        "properties": [
+          {
+            "name": "name",
+            "paragraph_id": "planning:p1:¶2",
+            "quote": "Landowner: Mr J. Hartley, Bracken Farm.",
+            "value": "Mr J. Hartley"
+          }
+        ],
+        "type": "Party"
+      },
+      {
+        "local_id": "parcel9",
+        "name": null,
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "planning:p1:¶5",
+            "quote": "Parcels 9, 10 and 11",
+            "value": "9"
+          }
+        ],
+        "type": "LandParcel"
+      },
+      {
+        "local_id": "parcel10",
+        "name": null,
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "planning:p1:¶5",
+            "quote": "Parcels 9, 10 and 11",
+            "value": "10"
+          }
+        ],
+        "type": "LandParcel"
+      },
+      {
+        "local_id": "parcel11",
+        "name": null,
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "planning:p1:¶5",
+            "quote": "Parcels 9, 10 and 11",
+            "value": "11"
+          }
+        ],
+        "type": "LandParcel"
+      },
+      {
+        "local_id": "permit",
+        "name": null,
+        "properties": [
+          {
+            "name": "reference",
+            "paragraph_id": "planning:p1:¶1",
+            "quote": "Application reference: 24/00318/FUL",
+            "value": "24/00318/FUL"
+          },
+          {
+            "name": "decision_date",
+            "paragraph_id": "planning:p1:¶3",
+            "quote": "Date of decision: 12 June 2024",
+            "value": "2024-06-12"
+          },
+          {
+            "name": "authority",
+            "paragraph_id": "planning:p2:¶1",
+            "quote": "Wickham District Council hereby grants planning permission",
+            "value": "Wickham District Council"
+          }
+        ],
+        "type": "Permit"
+      },
+      {
+        "local_id": "cond1",
+        "name": null,
+        "properties": [
+          {
+            "name": "condition_type",
+            "paragraph_id": "planning:p2:¶2",
+            "quote": "shall be begun before the expiration of three years from the date of this permission",
+            "value": "time_limit"
+          },
+          {
+            "name": "years",
+            "paragraph_id": "planning:p2:¶2",
+            "quote": "three years from the date of this permission",
+            "value": 3
+          }
+        ],
+        "type": "Condition"
+      },
+      {
+        "local_id": "cond2",
+        "name": null,
+        "properties": [
+          {
+            "name": "condition_type",
+            "paragraph_id": "planning:p2:¶4",
+            "quote": "carried out in accordance with the approved plans listed in Schedule A",
+            "value": "approved_plans"
+          },
+          {
+            "name": "requires",
+            "paragraph_id": "planning:p2:¶4",
+            "quote": "the approved plans listed in Schedule A",
+            "value": "Schedule A"
+          }
+        ],
+        "type": "Condition"
+      },
+      {
+        "local_id": "cond3",
+        "name": null,
+        "properties": [
+          {
+            "name": "condition_type",
+            "paragraph_id": "planning:p3:¶2",
+            "quote": "shall be for a limited period of 40 years from the date of First Export",
+            "value": "temporary_period"
+          },
+          {
+            "name": "years",
+            "paragraph_id": "planning:p3:¶2",
+            "quote": "a limited period of 40 years from the date of First Export",
+            "value": 40
+          }
+        ],
+        "type": "Condition"
+      },
+      {
+        "local_id": "cond4",
+        "name": null,
+        "properties": [
+          {
+            "name": "condition_type",
+            "paragraph_id": "planning:p3:¶4",
+            "quote": "a scheme for the removal of the development shall be submitted to the Local Planning Authority for approval",
+            "value": "decommissioning"
+          },
+          {
+            "name": "requires",
+            "paragraph_id": "planning:p3:¶4",
+            "quote": "a scheme for the removal of the development",
+            "value": "scheme for the removal of the development"
+          }
+        ],
+        "type": "Condition"
+      },
+      {
+        "local_id": "cond5",
+        "name": null,
+        "properties": [
+          {
+            "name": "condition_type",
+            "paragraph_id": "planning:p3:¶6",
+            "quote": "No development shall commence until a Construction Traffic Management Plan has been submitted",
+            "value": "pre_commencement"
+          },
+          {
+            "name": "requires",
+            "paragraph_id": "planning:p3:¶6",
+            "quote": "a Construction Traffic Management Plan",
+            "value": "Construction Traffic Management Plan"
+          }
+        ],
+        "type": "Condition"
+      }
+    ],
+    "relations": [
+      {
+        "paragraph_id": "planning:p1:¶2",
+        "quote": "Applicant: Brackenfield Solar Ltd.",
+        "role": "applicant",
+        "source_local_id": "applicant",
+        "target_local_id": "permit",
+        "type": "PARTY_TO"
+      },
+      {
+        "paragraph_id": "planning:p1:¶2",
+        "quote": "Landowner: Mr J. Hartley, Bracken Farm.",
+        "role": "landowner",
+        "source_local_id": "landowner",
+        "target_local_id": "permit",
+        "type": "PARTY_TO"
+      },
+      {
+        "paragraph_id": "planning:p1:¶5",
+        "quote": "Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel9",
+        "type": "SITE_INCLUDES"
+      },
+      {
+        "paragraph_id": "planning:p1:¶5",
+        "quote": "Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel10",
+        "type": "SITE_INCLUDES"
+      },
+      {
+        "paragraph_id": "planning:p1:¶5",
+        "quote": "Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel11",
+        "type": "SITE_INCLUDES"
+      },
+      {
+        "paragraph_id": "planning:p2:¶2",
+        "quote": "The development hereby permitted shall be begun before the expiration of three years from the date of this permission.",
+        "role": null,
+        "source_local_id": "permit",
+        "target_local_id": "cond1",
+        "type": "HAS_CONDITION"
+      },
+      {
+        "paragraph_id": "planning:p2:¶4",
+        "quote": "The development shall be carried out in accordance with the approved plans listed in Schedule A.",
+        "role": null,
+        "source_local_id": "permit",
+        "target_local_id": "cond2",
+        "type": "HAS_CONDITION"
+      },
+      {
+        "paragraph_id": "planning:p3:¶2",
+        "quote": "The permission hereby granted shall be for a limited period of 40 years from the date of First Export, after which the site shall be restored.",
+        "role": null,
+        "source_local_id": "permit",
+        "target_local_id": "cond3",
+        "type": "HAS_CONDITION"
+      },
+      {
+        "paragraph_id": "planning:p3:¶4",
+        "quote": "Within six months of the cessation of export, a scheme for the removal of the development shall be submitted to the Local Planning Authority for approval.",
+        "role": null,
+        "source_local_id": "permit",
+        "target_local_id": "cond4",
+        "type": "HAS_CONDITION"
+      },
+      {
+        "paragraph_id": "planning:p3:¶6",
+        "quote": "No development shall commence until a Construction Traffic Management Plan has been submitted to and approved in writing by the Local Planning Authority.",
+        "role": null,
+        "source_local_id": "permit",
+        "target_local_id": "cond5",
+        "type": "HAS_CONDITION"
+      }
+    ]
+  },
+  "output_tokens": 2734,
+  "prompt_version": "extract.v3",
+  "purpose": "extract:planning"
+}

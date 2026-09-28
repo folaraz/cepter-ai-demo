@@ -1,0 +1,46 @@
+{
+  "input_tokens": 3721,
+  "key": "a59ab11231c16f7998ff47db46f7b89b33af33a109f82d7551da9d0f48976d16",
+  "latency_ms": 6877,
+  "metadata": {
+    "question": "How much rent does the tenant pay?",
+    "retrieved": [
+      "lease:p1:¶1",
+      "lease:p1:¶2",
+      "lease:p1:¶4",
+      "lease:p1:¶5",
+      "lease:p2:¶1",
+      "lease:p2:¶2",
+      "lease:p2:¶3",
+      "lease:p2:¶4"
+    ]
+  },
+  "model": "claude-sonnet-5",
+  "output": {
+    "abstain": false,
+    "abstain_reason": null,
+    "sentences": [
+      {
+        "citations": [
+          {
+            "paragraph_id": "lease:p1:¶4",
+            "quote": "The Tenant shall pay a rent of £1,150 per hectare per annum, payable quarterly in advance."
+          }
+        ],
+        "text": "The tenant pays rent of £1,150 per hectare per year, paid quarterly in advance."
+      },
+      {
+        "citations": [
+          {
+            "paragraph_id": "lease:p2:¶2",
+            "quote": "The rent shall be reviewed on every fifth anniversary of the start of the term in line with the Consumer Prices Index."
+          }
+        ],
+        "text": "This rent amount is reviewed every fifth anniversary of the start of the term in line with the Consumer Prices Index."
+      }
+    ]
+  },
+  "output_tokens": 571,
+  "prompt_version": "ask.answer.v1",
+  "purpose": "ask:answer"
+}

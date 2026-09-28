@@ -1,0 +1,17 @@
+{
+  "input_tokens": 1328,
+  "key": "a37d1cd4ca5b339ab4b0dab8da23064e0d786de52d1bc09b84e370ff62acc6e0",
+  "latency_ms": 1668,
+  "metadata": {
+    "question": "Does the project have rights over every parcel the cable crosses?"
+  },
+  "model": "claude-sonnet-5",
+  "output": {
+    "graph_query": "cable_route_rights",
+    "params": {},
+    "route": "relationship"
+  },
+  "output_tokens": 86,
+  "prompt_version": "ask.route.v2",
+  "purpose": "ask:route"
+}
