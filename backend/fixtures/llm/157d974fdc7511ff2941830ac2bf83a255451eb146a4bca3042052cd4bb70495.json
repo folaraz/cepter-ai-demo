@@ -1,0 +1,37 @@
+{
+  "input_tokens": 1693,
+  "key": "157d974fdc7511ff2941830ac2bf83a255451eb146a4bca3042052cd4bb70495",
+  "latency_ms": 2573,
+  "metadata": {
+    "question": "What is the maximum import capacity?",
+    "retrieved": [
+      "planning:p1:¶4",
+      "planning:p3:¶2",
+      "planning:p3:¶4",
+      "grid_offer:p2:¶3",
+      "grid_offer:p2:¶4",
+      "grid_offer:p3:¶1",
+      "ppa:p1:¶2",
+      "ppa:p3:¶1"
+    ]
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "abstain": false,
+    "abstain_reason": null,
+    "sentences": [
+      {
+        "citations": [
+          {
+            "paragraph_id": "grid_offer:p2:¶4",
+            "quote": "The Maximum Import Capacity at the Point of Connection shall be 20 MW."
+          }
+        ],
+        "text": "The maximum import capacity at the Point of Connection is 20 MW."
+      }
+    ]
+  },
+  "output_tokens": 228,
+  "prompt_version": "ask.answer.v2",
+  "purpose": "ask:answer"
+}

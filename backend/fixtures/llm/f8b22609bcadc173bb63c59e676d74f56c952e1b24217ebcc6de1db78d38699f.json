@@ -1,0 +1,27 @@
+{
+  "input_tokens": 1654,
+  "key": "f8b22609bcadc173bb63c59e676d74f56c952e1b24217ebcc6de1db78d38699f",
+  "latency_ms": 2189,
+  "metadata": {
+    "question": "How large is the decommissioning bond?",
+    "retrieved": [
+      "lease:p2:¶4",
+      "planning:p1:¶1",
+      "planning:p1:¶4",
+      "planning:p3:¶4",
+      "planning:p3:¶5",
+      "grid_offer:p2:¶3",
+      "grid_offer:p2:¶4",
+      "ppa:p3:¶1"
+    ]
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "abstain": true,
+    "abstain_reason": "The paragraphs contain no decommissioning bond or financial security amount; they only cover reinstatement obligations and a removal scheme condition.",
+    "sentences": []
+  },
+  "output_tokens": 205,
+  "prompt_version": "ask.answer.v2",
+  "purpose": "ask:answer"
+}

@@ -1,0 +1,20 @@
+{
+  "input_tokens": 1331,
+  "key": "4822638dcfe5a6495cb1a7ed174c96a304ac3d5d6545f17fba395ce82c594645",
+  "latency_ms": 2355,
+  "metadata": {
+    "question": "Who buys the electricity the plant generates?"
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "graph_query": "parties",
+    "params": {
+      "agreement": "OfftakeAgreement",
+      "property": null
+    },
+    "route": "relationship"
+  },
+  "output_tokens": 175,
+  "prompt_version": "ask.route.v2",
+  "purpose": "ask:route"
+}

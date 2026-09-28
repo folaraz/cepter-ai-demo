@@ -29,7 +29,7 @@ If port 5432 is taken, start the database with `LENS_DB_PORT=5433` and set
 |---|---|
 | `DATABASE_URL` | `postgresql://lens:lens@localhost:5432/lens` |
 | `LLM_MODE` | `replay` (`record`, `live`) |
-| `LLM_MODEL` | `claude-sonnet-5` |
+| `LLM_MODEL` | `claude-sonnet-5-5` |
 | `ANTHROPIC_API_KEY` | unset; only needed to record, or for live Ask |
 | `ASK_LIVE` | `false` |
 | `EMBEDDING_CACHE_DIR` | `./.models` |
@@ -101,7 +101,7 @@ the app at `/`: files in `dist` as themselves, any other non-`/api` path as
 (default; reads `fixtures/llm/{key}.json` and raises `MissingRecording` if it is absent),
 `record` (calls the API and writes the file), `live` (calls without writing) or
 `replay_first` (Ask only). Every call writes an `llm_calls` row. No temperature is sent:
-`claude-sonnet-5` rejects non-default sampling parameters, and replay is what makes runs
+`claude-sonnet-5-5` rejects non-default sampling parameters, and replay is what makes runs
 repeatable.
 
 To record model responses (needs an API key; nothing else does). Record both before

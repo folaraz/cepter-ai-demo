@@ -23,7 +23,7 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql://lens:lens@localhost:5432/lens"
     llm_mode: LLMMode = "replay"
-    llm_model: str = "claude-sonnet-5"
+    llm_model: str = "claude-sonnet-5-5"
     anthropic_api_key: str | None = None
     ask_live: bool = False
     embedding_cache_dir: Path = Path("./.models")

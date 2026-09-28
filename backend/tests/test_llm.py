@@ -19,6 +19,7 @@ from app.llm.anthropic_client import (
     NoToolCall,
     ToolCall,
     tool_for,
+    with_tool_instruction,
 )
 from app.llm.client import LLMError, MissingRecording, recording_key
 from app.llm.pricing import cost_gbp
@@ -26,7 +27,7 @@ from app.llm.replay import RecordingStore
 from app.llm.tracing import db_tracer
 
 RUN = "r-test"
-MODEL = "claude-sonnet-5"
+MODEL = "claude-sonnet-5-5"
 
 
 class Capacity(BaseModel):
@@ -83,7 +84,7 @@ def key_for_prompt() -> str:
     return recording_key(
         model=MODEL,
         prompt_version="extract.v1",
-        system=PROMPT["system"],
+        system=with_tool_instruction(PROMPT["system"], tool_for(Capacity)),
         user=PROMPT["user"],
         schema=tool_for(Capacity)["input_schema"],
     )
@@ -235,7 +236,7 @@ def stub_transport(response: Any) -> tuple[AnthropicTransport, StubMessages]:
     return transport, messages
 
 
-def test_transport_forces_the_tool_and_sends_no_sampling_params() -> None:
+def test_transport_sends_a_strict_tool_and_no_sampling_params() -> None:
     response = SimpleNamespace(
         stop_reason="tool_use",
         content=[
@@ -250,8 +251,10 @@ def test_transport_forces_the_tool_and_sends_no_sampling_params() -> None:
     call = transport.call(model=MODEL, system="sys", user="usr", tool=tool)
 
     assert call == ToolCall(input=GOOD, input_tokens=1200, output_tokens=80)
-    assert messages.kwargs["tool_choice"] == {"type": "tool", "name": "Capacity"}
-    assert messages.kwargs["tools"][0]["input_schema"] == Capacity.model_json_schema()
+    # claude-sonnet-5-5 rejects a forced tool_choice; the prompt asks for the call instead.
+    assert messages.kwargs["tool_choice"] == {"type": "auto"}
+    assert messages.kwargs["tools"][0]["strict"] is True
+    assert messages.kwargs["tools"][0]["input_schema"]["additionalProperties"] is False
     assert messages.kwargs["messages"] == [{"role": "user", "content": "usr"}]
     assert not {"temperature", "top_p", "top_k"} & set(messages.kwargs)
 
@@ -265,7 +268,7 @@ def test_transport_raises_when_the_model_does_not_call_the_tool() -> None:
         transport.call(model=MODEL, system="s", user="u", tool=tool_for(Capacity))
 
 
-def test_transport_turns_thinking_off_so_the_tool_call_is_forced() -> None:
+def test_transport_sends_the_lowest_thinking_setting() -> None:
     response = SimpleNamespace(
         stop_reason="tool_use",
         content=[SimpleNamespace(type="tool_use", input=GOOD)],
@@ -273,7 +276,13 @@ def test_transport_turns_thinking_off_so_the_tool_call_is_forced() -> None:
     )
     transport, messages = stub_transport(response)
     transport.call(model=MODEL, system="s", user="u", tool=tool_for(Capacity))
-    assert messages.kwargs["thinking"] == {"type": "disabled"}
+    assert messages.kwargs["thinking"] == {"type": "between_tools"}  # "disabled" is a 400
+
+
+def test_the_prompt_asks_for_the_tool_call() -> None:
+    assert with_tool_instruction("Rules.", tool_for(Capacity)).endswith(
+        "Always answer by calling the Capacity tool, exactly once."
+    )
 
 
 class EndsTurnOnce:

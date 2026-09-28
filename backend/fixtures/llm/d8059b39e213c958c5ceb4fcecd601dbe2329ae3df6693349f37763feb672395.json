@@ -1,0 +1,20 @@
+{
+  "input_tokens": 1332,
+  "key": "d8059b39e213c958c5ceb4fcecd601dbe2329ae3df6693349f37763feb672395",
+  "latency_ms": 2276,
+  "metadata": {
+    "question": "Who is the landlord and who is the tenant?"
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "graph_query": "parties",
+    "params": {
+      "agreement": "Lease",
+      "property": null
+    },
+    "route": "relationship"
+  },
+  "output_tokens": 153,
+  "prompt_version": "ask.route.v2",
+  "purpose": "ask:route"
+}

@@ -27,7 +27,9 @@ facts:
   - {node: GridConnection, property: max_import_capacity_mw, value: 20, paragraph: "grid_offer:p2:¶4"}
   - {node: OfftakeAgreement, property: target_cod, value: "2029-03-31", paragraph: "ppa:p4:¶1"}
   - {node: OfftakeAgreement, property: long_stop_date, value: "2029-12-31", paragraph: "ppa:p4:¶2"}
-  - {node: OfftakeAgreement, property: signed_date, value: "2025-03-03", paragraph: "ppa:p5:¶1"}
+  # Both signature blocks state the date, so either is a correct citation.
+  - {node: OfftakeAgreement, property: signed_date, value: "2025-03-03", paragraph: "ppa:p5:¶1",
+     also: ["ppa:p5:¶2"]}
 
 edges:
   - {type: PARTY_TO, from: "John Hartley", to: Lease, role: landlord, paragraph: "lease:p1:¶1"}
@@ -87,6 +89,7 @@ checks:
     context:
       majority_value: "49.9"
       majority_count_word: "two"
+      majority_where: "two documents"
       majority_docs_text: "Planning and the PPA"
       minority_value: "45"
       minority_doc: "the grid offer"

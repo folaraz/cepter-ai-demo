@@ -1,0 +1,17 @@
+{
+  "input_tokens": 1327,
+  "key": "b571a120ae0f7830da9b8f1ce10ef800ba2fa745f0645d100338d51c9a06b6a3",
+  "latency_ms": 2055,
+  "metadata": {
+    "question": "When will the grid connection be made?"
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "graph_query": null,
+    "params": {},
+    "route": "lookup"
+  },
+  "output_tokens": 138,
+  "prompt_version": "ask.route.v2",
+  "purpose": "ask:route"
+}

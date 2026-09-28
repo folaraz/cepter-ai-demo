@@ -15,13 +15,23 @@ from app.config import ASK_YAML
 Route = Literal["lookup", "relationship", "out_of_scope"]
 
 
+class RouteParams(BaseModel):
+    """Every graph query param in ask.yaml, as fixed fields: strict tool use can't take a
+    free-form mapping. Leave out (null) any param the chosen query doesn't take."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    agreement: str | None = None
+    property: str | None = None
+
+
 class RouteDecision(BaseModel):
     """ask.route.v2's answer. Code checks it against ask.yaml; anything not allowed there
     falls back to lookup."""
 
     route: Route
     graph_query: str | None = Field(description="A graph query ID, for route relationship")
-    params: dict[str, str | None] = Field(description="The graph query's parameters")
+    params: RouteParams = Field(description="The graph query's parameters")
 
 
 class DraftCitation(BaseModel):
@@ -35,7 +45,7 @@ class DraftSentence(BaseModel):
 
 
 class AnswerDraft(BaseModel):
-    """ask.answer.v1's answer."""
+    """ask.answer.v2's answer."""
 
     sentences: list[DraftSentence]  # at most answer.max_sentences
     abstain: bool

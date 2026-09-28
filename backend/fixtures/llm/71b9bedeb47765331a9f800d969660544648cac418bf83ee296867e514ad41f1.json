@@ -1,0 +1,37 @@
+{
+  "input_tokens": 1697,
+  "key": "71b9bedeb47765331a9f800d969660544648cac418bf83ee296867e514ad41f1",
+  "latency_ms": 2793,
+  "metadata": {
+    "question": "When can the buyer terminate the PPA if the plant isn't running?",
+    "retrieved": [
+      "lease:p2:¶4",
+      "planning:p2:¶2",
+      "planning:p3:¶3",
+      "planning:p3:¶4",
+      "ppa:p1:¶1",
+      "ppa:p3:¶2",
+      "ppa:p4:¶2",
+      "site_plan:p1:¶2"
+    ]
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "abstain": false,
+    "abstain_reason": null,
+    "sentences": [
+      {
+        "citations": [
+          {
+            "paragraph_id": "ppa:p4:¶2",
+            "quote": "If Commercial Operation has not occurred by 31 December 2029 (the \"Long-Stop Date\"), the Buyer may terminate this Agreement by notice to the Generator."
+          }
+        ],
+        "text": "The Buyer may terminate by notice to the Generator if Commercial Operation has not occurred by the Long-Stop Date of 31 December 2029."
+      }
+    ]
+  },
+  "output_tokens": 332,
+  "prompt_version": "ask.answer.v2",
+  "purpose": "ask:answer"
+}

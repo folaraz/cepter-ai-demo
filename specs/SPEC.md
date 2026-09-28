@@ -112,7 +112,7 @@ Each component lists what to build and a **done when** that can be checked by co
 - FastAPI app with `GET /api/health` returning
   `{status, published_run, recordings, embedding_model, ask_live}`.
 - `pydantic-settings` config: `DATABASE_URL`, `LLM_MODE` (`replay` | `record` | `live`,
-  default `replay`), `LLM_MODEL` (default `claude-sonnet-5`), `ANTHROPIC_API_KEY`
+  default `replay`), `LLM_MODEL` (default `claude-sonnet-5-5`), `ANTHROPIC_API_KEY`
   (optional), `ASK_LIVE` (default `false`), `EMBEDDING_CACHE_DIR` (default `./.models`),
   `COOKIE_SECURE`, `EVAL_GATE` (default 0.90).
 - `docker-compose.yml` with the `pgvector/pgvector:pg16` image. `lens migrate` applies
@@ -162,10 +162,13 @@ class LLMClient(Protocol):
                    mode: Mode | None = None) -> T: ...
 ```
 
-- **Anthropic client:** the Messages API with one tool whose `input_schema` is
-  `schema.model_json_schema()`, forced with `tool_choice`, temperature 0. Validate the
-  tool input with `schema.model_validate`. On a validation error, retry once with the
-  error appended; then raise.
+- **Anthropic client:** the Messages API with one strict tool whose `input_schema` is
+  `anthropic.transform_schema(schema)`. `claude-sonnet-5-5` rejects a forced
+  `tool_choice`, `thinking: disabled` and sampling parameters, so the call sends
+  `tool_choice: auto`, `thinking: between_tools`, no temperature, and the system prompt
+  ends by asking for the tool call. Validate the tool input with `schema.model_validate`.
+  On a validation error or a missing tool call, retry once with a note appended; then
+  raise.
 - **Recording key:** `sha256` of canonical JSON of
   `{model, prompt_version, system, user, schema}`. File:
   `backend/fixtures/llm/{key}.json` holding the tool input, usage, latency, model and any
@@ -535,7 +538,7 @@ methods apart).
    quote. No second model call.
 5. **Lookup:** retrieve (C13). If the best similarity is below `min_similarity` and
    keyword search found nothing, abstain without calling the model. Otherwise call
-   `ask.answer.v1` (`replay_first`) with the top paragraphs **in document order**, each as
+   `ask.answer.v2` (`replay_first`) with the top paragraphs **in document order**, each as
    `[paragraph_id] (heading) text`. Output schema:
 
    ```python

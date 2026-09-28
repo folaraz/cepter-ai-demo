@@ -1,16 +1,17 @@
 """LLMClient backed by the Claude Messages API, with record/replay and tracing.
 
-The model answers by calling one tool whose input schema is the requested Pydantic
-schema; tool_choice forces that call, so the answer is always structured. The tool input
-is validated with the schema. If it doesn't validate, the call is retried once with the
-validation error appended to the prompt, then an LLMError is raised.
+The model answers by calling one strict tool whose input schema is the requested Pydantic
+schema, so the answer is always structured. claude-sonnet-5-5 rejects a forced
+tool_choice, so the choice is "auto" and the system prompt says to call the tool. The tool
+input is still validated with the schema. If it doesn't validate, or the model ends its
+turn without calling the tool, the call is retried once with a note appended to the
+prompt, then an LLMError is raised.
 
-Sampling parameters are not sent: claude-sonnet-5 rejects a non-default temperature, and
+Sampling parameters are not sent: the model rejects a non-default temperature, and
 repeatability comes from replaying recordings, not from temperature 0.
 
-Thinking is turned off: with it on, a forced tool choice is not guaranteed and the model
-can end its turn without calling the tool. If a response still has no tool call, the call
-is retried once, like an answer that fails validation.
+Thinking is "between_tools", the lowest setting on claude-sonnet-5-5 (it rejects
+"disabled"): no up-front thinking, and none is needed for a single tool call.
 """
 
 import time
@@ -21,8 +22,8 @@ from typing import Any, Protocol
 import anthropic
 from anthropic.types import (
     MessageParam,
-    ThinkingConfigDisabledParam,
-    ToolChoiceToolParam,
+    ThinkingConfigBetweenToolsParam,
+    ToolChoiceAutoParam,
     ToolParam,
 )
 from pydantic import BaseModel, ValidationError
@@ -46,7 +47,7 @@ class ToolCall:
 
 
 class Transport(Protocol):
-    """One forced tool call. Tests substitute a fake so they never touch the network."""
+    """One tool call. Tests substitute a fake so they never touch the network."""
 
     def call(self, *, model: str, system: str, user: str, tool: dict[str, Any]) -> ToolCall: ...
 
@@ -68,7 +69,10 @@ class AnthropicTransport:
     def call(self, *, model: str, system: str, user: str, tool: dict[str, Any]) -> ToolCall:
         messages: list[MessageParam] = [{"role": "user", "content": user}]
         tool_param = ToolParam(
-            name=tool["name"], description=tool["description"], input_schema=tool["input_schema"]
+            name=tool["name"],
+            description=tool["description"],
+            input_schema=tool["input_schema"],
+            strict=True,
         )
         response = self._client.messages.create(
             model=model,
@@ -76,8 +80,8 @@ class AnthropicTransport:
             system=system,
             messages=messages,
             tools=[tool_param],
-            tool_choice=ToolChoiceToolParam(type="tool", name=tool["name"]),
-            thinking=ThinkingConfigDisabledParam(type="disabled"),
+            tool_choice=ToolChoiceAutoParam(type="auto"),
+            thinking=ThinkingConfigBetweenToolsParam(type="between_tools"),
         )
         usage = (response.usage.input_tokens, response.usage.output_tokens)
         for block in response.content:
@@ -92,8 +96,15 @@ def tool_for(schema: type[BaseModel]) -> dict[str, Any]:
     return {
         "name": schema.__name__,
         "description": f"Submit the {schema.__name__}.",
-        "input_schema": schema.model_json_schema(),
+        # The SDK's strict-mode transform: additionalProperties false, unsupported keywords
+        # moved into descriptions. Pydantic still validates the full schema afterwards.
+        "input_schema": anthropic.transform_schema(schema),
     }
+
+
+def with_tool_instruction(system: str, tool: dict[str, Any]) -> str:
+    """tool_choice can't force the call, so the prompt asks for it."""
+    return f"{system}\n\nAlways answer by calling the {tool['name']} tool, exactly once."
 
 
 class AnthropicLLMClient:
@@ -127,6 +138,7 @@ class AnthropicLLMClient:
     ) -> T:
         mode = mode or self._default_mode
         tool = tool_for(schema)
+        system = with_tool_instruction(system, tool)
         key = recording_key(
             model=self._model,
             prompt_version=prompt_version,

@@ -1,0 +1,122 @@
+{
+  "input_tokens": 2966,
+  "key": "90419de8ca5f40eeecefa4f83ae07fd6641e7331cd8594f9bf092625264a1b41",
+  "latency_ms": 6128,
+  "metadata": {},
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "asset_properties": [],
+    "entities": [
+      {
+        "local_id": "parcel_9",
+        "name": "Parcel 9",
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "site_plan:p1:¶1",
+            "quote": "Parcels 9, 10 and 11",
+            "value": "9"
+          }
+        ],
+        "type": "LandParcel"
+      },
+      {
+        "local_id": "parcel_10",
+        "name": "Parcel 10",
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "site_plan:p1:¶1",
+            "quote": "Parcels 9, 10 and 11",
+            "value": "10"
+          }
+        ],
+        "type": "LandParcel"
+      },
+      {
+        "local_id": "parcel_11",
+        "name": "Parcel 11",
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "site_plan:p1:¶1",
+            "quote": "Parcels 9, 10 and 11",
+            "value": "11"
+          }
+        ],
+        "type": "LandParcel"
+      },
+      {
+        "local_id": "parcel_14",
+        "name": "Parcel 14",
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "site_plan:p1:¶2",
+            "quote": "Parcels 14 and 15",
+            "value": "14"
+          }
+        ],
+        "type": "LandParcel"
+      },
+      {
+        "local_id": "parcel_15",
+        "name": "Parcel 15",
+        "properties": [
+          {
+            "name": "number",
+            "paragraph_id": "site_plan:p1:¶2",
+            "quote": "Parcels 14 and 15",
+            "value": "15"
+          }
+        ],
+        "type": "LandParcel"
+      }
+    ],
+    "relations": [
+      {
+        "paragraph_id": "site_plan:p1:¶1",
+        "quote": "The Site comprises Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel_9",
+        "type": "SITE_INCLUDES"
+      },
+      {
+        "paragraph_id": "site_plan:p1:¶1",
+        "quote": "The Site comprises Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel_10",
+        "type": "SITE_INCLUDES"
+      },
+      {
+        "paragraph_id": "site_plan:p1:¶1",
+        "quote": "The Site comprises Parcels 9, 10 and 11",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel_11",
+        "type": "SITE_INCLUDES"
+      },
+      {
+        "paragraph_id": "site_plan:p1:¶2",
+        "quote": "The export cable shall run from the Site to Wickham Primary Substation across Parcels 14 and 15",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel_14",
+        "type": "CABLE_CROSSES"
+      },
+      {
+        "paragraph_id": "site_plan:p1:¶2",
+        "quote": "The export cable shall run from the Site to Wickham Primary Substation across Parcels 14 and 15",
+        "role": null,
+        "source_local_id": "asset",
+        "target_local_id": "parcel_15",
+        "type": "CABLE_CROSSES"
+      }
+    ]
+  },
+  "output_tokens": 1108,
+  "prompt_version": "extract.v4",
+  "purpose": "extract:site"
+}

@@ -8,12 +8,15 @@ condition's `requires` is the plan's name, not the surrounding clause.
 extract.v3: every Party gets a name property in every document (v2 left it on the entity
 alone in four of five documents, so the lease's "JOHN HARTLEY" lost to the planning
 decision's "Mr J. Hartley"); a PARTY_TO quote comes from the paragraph that names the
-party in that role (v2 quoted the grid offer's later "The Customer shall..." clause)."""
+party in that role (v2 quoted the grid offer's later "The Customer shall..." clause).
+
+extract.v4: export capacity under any name (claude-sonnet-5-5 skipped the PPA's
+"Contracted Capacity: 49.9 MW (AC)", so the three-way conflict lost a source)."""
 
 from app.domain.documents import Document, Paragraph
 from app.domain.ontology import ASSET, ASSET_LOCAL_ID, Ontology, PropertySpec
 
-PROMPT_VERSION = "extract.v3"
+PROMPT_VERSION = "extract.v4"
 
 RULES = f"""\
 You extract facts from one document in the data room for a renewable-energy asset.
@@ -26,7 +29,9 @@ Rules:
    given, and a quote copied character for character from that paragraph: the shortest
    span that states the value. Never paraphrase, reorder, abbreviate or fix a quote.
 3. Export capacity and technology are properties of the Asset, whichever document states
-   them: put them in asset_properties. The asset's local_id is "{ASSET_LOCAL_ID}"; use it
+   them: put them in asset_properties. Export capacity goes by several names, such as
+   maximum export capacity, export limit or contracted capacity; record every one you
+   find, one per document. The asset's local_id is "{ASSET_LOCAL_ID}"; use it
    as the source of SITE_INCLUDES and CABLE_CROSSES. Never give an entity that local_id.
 4. An import capacity is not an export capacity. The grid offer's Maximum Import Capacity
    is GridConnection.max_import_capacity_mw, never export_capacity_mw.

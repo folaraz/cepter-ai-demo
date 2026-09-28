@@ -105,7 +105,7 @@ def assert_planted(nodes: list[Node], edges: list[Edge], rows: list[Any]) -> Non
             r.node_id == target.id
             and r.property == fact["property"]
             and _canonical(r.value) == _canonical(fact["value"])
-            and r.paragraph_id == fact["paragraph"]
+            and r.paragraph_id in [fact["paragraph"], *fact.get("also", [])]
             for r in rows
         ), f"missing fact {fact}"
 

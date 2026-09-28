@@ -1,0 +1,17 @@
+{
+  "input_tokens": 1328,
+  "key": "71981e97065e9b48d22f52dc2c2031bc7f91e65504088441cc664e3c52f771d4",
+  "latency_ms": 2002,
+  "metadata": {
+    "question": "What is the target commercial operation date?"
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "graph_query": null,
+    "params": {},
+    "route": "lookup"
+  },
+  "output_tokens": 133,
+  "prompt_version": "ask.route.v2",
+  "purpose": "ask:route"
+}

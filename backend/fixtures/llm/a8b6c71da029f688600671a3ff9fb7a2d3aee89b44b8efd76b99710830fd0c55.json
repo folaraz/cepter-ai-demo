@@ -1,0 +1,37 @@
+{
+  "input_tokens": 1641,
+  "key": "a8b6c71da029f688600671a3ff9fb7a2d3aee89b44b8efd76b99710830fd0c55",
+  "latency_ms": 2370,
+  "metadata": {
+    "question": "When will the grid connection be made?",
+    "retrieved": [
+      "grid_offer:p1:¶1",
+      "grid_offer:p1:¶2",
+      "grid_offer:p1:¶3",
+      "grid_offer:p2:¶1",
+      "grid_offer:p2:¶2",
+      "grid_offer:p2:¶3",
+      "grid_offer:p2:¶4",
+      "grid_offer:p3:¶1"
+    ]
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "abstain": false,
+    "abstain_reason": null,
+    "sentences": [
+      {
+        "citations": [
+          {
+            "paragraph_id": "grid_offer:p2:¶3",
+            "quote": "The Connection Date shall be 1 October 2029, subject to completion of Reinforcement Works at Wickham Primary Substation."
+          }
+        ],
+        "text": "The Connection Date is 1 October 2029, subject to completion of Reinforcement Works at Wickham Primary Substation."
+      }
+    ]
+  },
+  "output_tokens": 272,
+  "prompt_version": "ask.answer.v2",
+  "purpose": "ask:answer"
+}

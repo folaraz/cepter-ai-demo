@@ -1,0 +1,17 @@
+{
+  "input_tokens": 1327,
+  "key": "ea6c5d960b26f23dd0b4e7526391bb2bf068b9a5f81ccf1fa90a9b69b9e677a3",
+  "latency_ms": 2033,
+  "metadata": {
+    "question": "How long does the project control the land for?"
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "graph_query": null,
+    "params": {},
+    "route": "lookup"
+  },
+  "output_tokens": 153,
+  "prompt_version": "ask.route.v2",
+  "purpose": "ask:route"
+}

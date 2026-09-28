@@ -1,0 +1,37 @@
+{
+  "input_tokens": 1632,
+  "key": "6043debf911c59406eb3eea1b2a33c7ee9dae5d1c9c5f656907dfe8ea3095db3",
+  "latency_ms": 2291,
+  "metadata": {
+    "question": "What price does the PPA pay per MWh?",
+    "retrieved": [
+      "lease:p1:¶4",
+      "lease:p2:¶2",
+      "grid_offer:p1:¶1",
+      "grid_offer:p2:¶3",
+      "grid_offer:p3:¶1",
+      "ppa:p1:¶2",
+      "ppa:p2:¶3",
+      "ppa:p3:¶1"
+    ]
+  },
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "abstain": false,
+    "abstain_reason": null,
+    "sentences": [
+      {
+        "citations": [
+          {
+            "paragraph_id": "ppa:p3:¶1",
+            "quote": "The Contract Price shall be £61.50 per MWh, indexed annually to the Consumer Prices Index."
+          }
+        ],
+        "text": "The PPA's Contract Price is £61.50 per MWh, indexed annually to the Consumer Prices Index."
+      }
+    ]
+  },
+  "output_tokens": 254,
+  "prompt_version": "ask.answer.v2",
+  "purpose": "ask:answer"
+}

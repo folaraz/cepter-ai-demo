@@ -4,11 +4,12 @@ from decimal import Decimal
 
 from app.config import get_settings
 
-# USD per million tokens, from Anthropic's price list (checked 2026-09-26).
+# USD per million tokens, from Anthropic's price list (checked 2026-09-28).
 # Add a model here before using it; an unknown model raises rather than costing zero.
 USD_PER_MTOK: dict[str, tuple[Decimal, Decimal]] = {
     # model: (input, output)
-    "claude-sonnet-5": (Decimal("2.00"), Decimal("10.00")),
+    "claude-sonnet-5-5": (Decimal("2.00"), Decimal("10.00")),
+    "claude-sonnet-5": (Decimal("2.00"), Decimal("10.00")),  # earlier runs' llm_calls
 }
 
 
