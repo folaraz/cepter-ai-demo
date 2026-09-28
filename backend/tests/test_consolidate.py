@@ -362,6 +362,6 @@ def test_consolidating_the_recorded_extraction_matches_the_answer_key() -> None:
 
     results = _recorded_results()
     if not results:
-        pytest.skip("no extract.v1 recordings yet: run `lens record`")
+        pytest.skip("no extraction recordings yet: run `lens record`")
     claims = as_claims([d for doc, result in results.items() for d in to_drafts(doc, result)])
     assert_planted(*flatten(build(claims)))

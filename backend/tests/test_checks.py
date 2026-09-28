@@ -302,7 +302,7 @@ def test_checks_over_the_recorded_extraction_match_the_answer_key() -> None:
 
     results = _recorded_results()
     if not results:
-        pytest.skip("no extract.v1 recordings yet: run `lens record`")
+        pytest.skip("no extraction recordings yet: run `lens record`")
     claims = as_claims([d for doc, r in results.items() for d in to_drafts(doc, r)])
     found = {f.check_id: f for f in run_checks(view_of(claims), "r-test")}
     for check_id, key in PLANTED["checks"].items():
@@ -321,3 +321,16 @@ def test_a_pass_keeps_only_whole_sentences() -> None:
     assert f.title == "Export capacity is consistent across documents"
     assert f.why == ""
     assert "{" not in f.how
+
+
+def test_parties_missing_a_role_says_it_could_not_be_evaluated() -> None:
+    """The real model once quoted the lease's roles without the names, so the tenant link
+    was rejected. The finding must not read "differs between agreements: " with no names."""
+    drafts = [d for doc, r in PERFECT_DRAFTS.items() for d in to_drafts(doc, r)]
+    no_tenant = [d for d in drafts if not (d.edge_type == "PARTY_TO" and d.value == "tenant")]
+    f = {x.check_id: x for x in run_checks(view_of(as_claims(no_tenant)), "r")}[
+        "parties_consistent"
+    ]
+    assert f.result == "missing_evidence"
+    assert f.title == "Parties consistent could not be evaluated: tenant not evidenced"
+    assert "{" not in f.title + f.how

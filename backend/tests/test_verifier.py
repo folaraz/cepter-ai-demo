@@ -348,7 +348,7 @@ def _recorded_results() -> dict[str, ExtractionResult]:
 def test_verifier_over_the_recorded_extraction(capsys: pytest.CaptureFixture[str]) -> None:
     results = _recorded_results()
     if not results:
-        pytest.skip("no extract.v1 recordings yet: run `lens record`")
+        pytest.skip("no extraction recordings yet: run `lens record`")
     drafts = [d for doc, result in results.items() for d in to_drafts(doc, result)]
     claims = verify(*drafts)
     reasons = Counter(c.rejection_reason for c in claims if c.status == "rejected")

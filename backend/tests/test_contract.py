@@ -156,7 +156,7 @@ def test_contract_on_the_recorded_extraction(empty_database: str, client_for: Cl
     from tests.test_verifier import _recorded_results
 
     if not _recorded_results():
-        pytest.skip("no extract.v1 recordings yet: run `lens record`")
+        pytest.skip("no extraction recordings yet: run `lens record`")
     from app.db.migrate import migrate
 
     migrate(empty_database)
