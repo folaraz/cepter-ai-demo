@@ -2,10 +2,8 @@
 
 Every exported interface must have a model of the same name with the same fields, the
 same optional and nullable fields, arrays where the TypeScript has arrays, the same
-primitive kinds, and the same values for every string-literal union. Known, deliberate
-differences are listed in DEVIATIONS with their reason.
-
-Ask's types (design/api/ask.types.ts) join the check when C14 adds their models.
+primitive kinds, and the same values for every string-literal union, for types.ts and
+ask.types.ts. Any deliberate difference goes in DEVIATIONS with its reason.
 """
 
 import re
@@ -25,11 +23,8 @@ ASK_TYPES_TS = REPO_ROOT / "design" / "api" / "ask.types.ts"
 # Models the API doesn't have yet, and the component that adds them.
 PENDING: dict[str, str] = {}
 
-# (interface, field) -> why the API differs from types.ts on purpose.
-DEVIATIONS = {
-    ("Summary", "clash"): "null when the grid connection does not clash with the PPA",
-    ("Summary", "long_horizon"): "null when the lease covers the operating life",
-}
+# (interface, field) -> why the API differs from types.ts on purpose. None today.
+DEVIATIONS: dict[tuple[str, str], str] = {}
 
 # Request bodies: an optional field may also accept null.
 REQUESTS = {"ReviewRequest", "AskRequest"}

@@ -19,19 +19,27 @@ export function RequestsView() {
   const summary = useSummary();
   const findingTitle = (id: string) => summary?.findings.find((f) => f.id === id)?.title ?? findingName(id);
   const n = r.status === 'ready' ? r.data.length : 3;
+  const none = r.status === 'ready' && n === 0;
 
   return (
     <div className={`${pageClass} gap-6`}>
       <div className={pageHeadClass}>
         <div className="flex max-w-[720px] flex-auto flex-col gap-3">
           <h1 className="t-display text-pretty focus:outline-none!" data-focus="rfi-heading" tabIndex={-1}>
-            {countWord(n)} {n === 1 ? 'question' : 'questions'} for the seller, each tied to the issue it resolves.
+            {none
+              ? 'No questions for the seller.'
+              : `${countWord(n)} ${n === 1 ? 'question' : 'questions'} for the seller, each tied to the issue it resolves.`}
           </h1>
           <p className="max-w-[600px] text-md text-muted">
             Each question uses standard wording, so the same gap always gets the same request. Download them to send to the seller.
           </p>
         </div>
-        <Button tone="ink" onClick={exportRfi} aria-disabled={r.status !== 'ready'}>
+        <Button
+          tone="ink"
+          // aria-disabled keeps the button focusable, so the click itself is guarded too.
+          onClick={() => r.status === 'ready' && !none && exportRfi()}
+          aria-disabled={r.status !== 'ready' || none}
+        >
           <Icon icon={Download} size={15} />
           Download questions
         </Button>
@@ -39,6 +47,10 @@ export function RequestsView() {
 
       {r.status === 'error' ? (
         <ErrorNote title="Couldn't load the seller questions." onRetry={loadRfi} />
+      ) : none ? (
+        <p data-part="rfi-empty" className={cn(panel, 'px-6 py-6 text-md text-body')}>
+          No open requests: every check either passed or rests on facts already in the data room.
+        </p>
       ) : (
         <ol role="list" aria-busy={r.status === 'loading'} className={cn(panel, 'divide-y divide-hairline overflow-hidden')}>
           {r.status === 'ready'

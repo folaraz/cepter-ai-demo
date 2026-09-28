@@ -61,8 +61,8 @@ jobs:
       - name: Ask golden set agrees with the data room
         run: uv run python tools/check_ask.py
       # The gate replays the committed model recordings, so it runs once `lens record`
-      # has produced them. A failing eval (score under the gate, a citation that isn't
-      # verbatim, or a correction no longer held) fails the build.
+      # has produced them. Any golden item not met, or a citation that isn't verbatim,
+      # fails the build: each item is its own gate.
       - name: Eval gate
         if: hashFiles('backend/fixtures/llm/*.json') != ''
         run: >-
