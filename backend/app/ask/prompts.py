@@ -1,5 +1,9 @@
-"""The ask.route.v1 and ask.answer.v1 prompts. Changing any text here changes the
-recording keys: bump the version in backend/ask.yaml and re-record (`lens record --ask`)."""
+"""The ask.route.v2 and ask.answer.v1 prompts. Changing any text here changes the
+recording keys: bump the version in backend/ask.yaml and re-record (`lens record --ask`).
+
+ask.route.v2: a question asking for one value is a lookup even when a graph query covers
+that value (v1 sent "What is the target commercial operation date?" to property_sources);
+a question about this asset's contracts is never out_of_scope."""
 
 from typing import Any
 
@@ -14,9 +18,12 @@ Choose exactly one route:
 - relationship: only when one of the graph queries below answers the question as asked.
   Give its ID as graph_query and fill its params from the allowed values (use null where
   null is allowed and the question doesn't narrow it).
-- lookup: the question asks for a single fact stated in the documents.
-- out_of_scope: anything that isn't about these documents, such as the weather, general
-  knowledge, or legal or financial advice.
+- lookup: the question asks for a single fact, such as a date, an amount or a duration.
+  This is lookup even when a graph query covers the same value: property_sources is only
+  for questions about which documents state a value or whether they agree.
+- out_of_scope: anything that isn't about this asset, such as the weather, general
+  knowledge, or legal or financial advice. A question about this asset's contracts or
+  land is a lookup even if the data room may not contain the answer.
 
 For lookup and out_of_scope, graph_query is null and params is empty.
 """

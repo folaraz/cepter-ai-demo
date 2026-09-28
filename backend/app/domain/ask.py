@@ -16,7 +16,7 @@ Route = Literal["lookup", "relationship", "out_of_scope"]
 
 
 class RouteDecision(BaseModel):
-    """ask.route.v1's answer. Code checks it against ask.yaml; anything not allowed there
+    """ask.route.v2's answer. Code checks it against ask.yaml; anything not allowed there
     falls back to lookup."""
 
     route: Route

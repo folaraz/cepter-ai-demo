@@ -3,12 +3,17 @@ PROMPT_VERSION and re-record rather than editing a recorded prompt in place.
 
 extract.v2: a PARTY_TO quote must name the party (v1 quotes like 'the "Landlord"' failed
 the verifier's name rule); conditions get no number (it is only in headings); a
-condition's `requires` is the plan's name, not the surrounding clause."""
+condition's `requires` is the plan's name, not the surrounding clause.
+
+extract.v3: every Party gets a name property in every document (v2 left it on the entity
+alone in four of five documents, so the lease's "JOHN HARTLEY" lost to the planning
+decision's "Mr J. Hartley"); a PARTY_TO quote comes from the paragraph that names the
+party in that role (v2 quoted the grid offer's later "The Customer shall..." clause)."""
 
 from app.domain.documents import Document, Paragraph
 from app.domain.ontology import ASSET, ASSET_LOCAL_ID, Ontology, PropertySpec
 
-PROMPT_VERSION = "extract.v2"
+PROMPT_VERSION = "extract.v3"
 
 RULES = f"""\
 You extract facts from one document in the data room for a renewable-energy asset.
@@ -27,10 +32,13 @@ Rules:
    is GridConnection.max_import_capacity_mw, never export_capacity_mw.
 5. Each land parcel is its own LandParcel entity with its number as the number property.
    A sentence naming several parcels gives one relation per parcel, all citing it.
-6. Each party is a Party entity with a name property quoted as written. Link it to the
-   agreement or instrument with PARTY_TO and the role the text gives it. A PARTY_TO quote
-   must contain both the party's name and the words that give its role, for example
-   'ACME SOLAR LIMITED (the "Buyer")', never the role alone.
+6. Each party is a Party entity. In every document, every Party has a name property in
+   its properties list, quoted as written in that document: the entity's own name field
+   is not enough. Link it to the agreement or instrument with PARTY_TO and the role the
+   text gives it. A PARTY_TO quote must contain both the party's name and the words that
+   give its role, for example 'ACME SOLAR LIMITED (the "Buyer")', never the role alone.
+   Cite the paragraph where the party is named in that role, usually the opening parties
+   clause, not a later clause that uses the role on its own.
 7. Each planning condition is its own Condition entity, linked from its Permit with
    HAS_CONDITION citing the condition's paragraph. Condition numbers appear only in
    headings, which cannot be quoted, so give a condition no number property.
