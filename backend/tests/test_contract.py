@@ -165,6 +165,7 @@ def test_contract_on_the_recorded_extraction(empty_database: str, client_for: Cl
         llm = AnthropicLLMClient(trace=db_tracer(conn), default_mode="replay")
         result = run_pipeline(conn, llm, kind="published", publish=True)
         apply_seed(conn, result.run_id)
+        run_eval(conn, llm, session_id=None, gate=0.90)
     with client_for(empty_database) as client:
         test_summary(client)
         for fid in ("F-01", "F-02", "F-03", "F-04", "F-05"):

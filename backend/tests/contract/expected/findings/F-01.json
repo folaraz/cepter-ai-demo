@@ -45,7 +45,7 @@
     {
       "kind": "missing",
       "label": "Deed of easement, Parcels 14–15",
-      "note": "Expected by cable_route_rights. Not in the data room. Raised as RFI-01.",
+      "note": "Not in the data room. Added to the seller questions as RFI-01.",
       "expected_by": "cable_route_rights",
       "rfi_id": "RFI-01"
     }

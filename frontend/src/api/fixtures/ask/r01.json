@@ -36,14 +36,14 @@
             "document_id": "lease",
             "paragraph_id": "lease:p1:¶3",
             "page": 1,
-            "quote": "The Property comprises Parcels 9, 10 and 11"
+            "quote": "Parcels 9, 10 and 11"
           },
           "document_title": "Lease, Bracken Farm",
           "file_name": "lease.pdf",
           "role": "cited in answer",
           "heading": "1. The Property",
           "paragraph_text": "The Property comprises Parcels 9, 10 and 11 as shown edged red on Plan 1 annexed to this Lease.",
-          "quote_start": 0,
+          "quote_start": 23,
           "quote_end": 43,
           "status": "verified"
         }

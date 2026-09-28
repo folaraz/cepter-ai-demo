@@ -36,6 +36,7 @@ The people using this are diligence lawyers and associates, not engineers. Deal 
 ## Frontend commands (run in frontend/)
 - `npm run dev` then open http://localhost:5173
 - `npm test` (vitest: data layer, plus Ask component tests in jsdom), `npm run typecheck`, `npm run build`
+- Live API: `VITE_USE_FIXTURES=false npm run dev` (set `LENS_API_URL` if the API is not on localhost:8000). After a backend model change, `npm run schema` regenerates src/api/schema.ts; typecheck fails if it no longer matches types.ts (src/api/schema.check.ts).
 - With the dev server running: `npm run a11y` (axe, light + dark), `node scripts/walkthrough.mjs` (keyboard-only demo loop), `node scripts/shots.mjs <dir>` (1440x900 screenshots)
 
 ## Backend rules

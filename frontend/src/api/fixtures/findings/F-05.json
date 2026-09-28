@@ -6,7 +6,7 @@
   "result": "missing_evidence",
   "review": "ai_extracted",
   "why": "Starting work before a pre-commencement condition is discharged can invalidate the permission.",
-  "how": "Condition 5 is quoted from the planning decision. We looked for the council's written approval of the traffic plan and couldn't find it.",
+  "how": "The condition is verified; the check looks for a discharge document linked to it and finds none.",
   "evidence": [
     {
       "kind": "quote",

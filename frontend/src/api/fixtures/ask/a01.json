@@ -5,7 +5,7 @@
   "status": "answered",
   "sentences": [
     {
-      "text": "The PPA sets a target commercial operation date of 31 March 2029.",
+      "text": "The target commercial operation date is 31 March 2029.",
       "citations": [
         {
           "kind": "quote",
@@ -13,15 +13,15 @@
             "document_id": "ppa",
             "paragraph_id": "ppa:p4:¶1",
             "page": 4,
-            "quote": "Commercial Operation on or before 31 March 2029"
+            "quote": "achieve Commercial Operation on or before 31 March 2029 (the \"Target COD\")"
           },
           "document_title": "Power purchase agreement",
           "file_name": "ppa.pdf",
           "role": "cited in answer",
           "heading": "6. Commercial Operation",
           "paragraph_text": "The Generator shall use reasonable endeavours to achieve Commercial Operation on or before 31 March 2029 (the \"Target COD\").",
-          "quote_start": 57,
-          "quote_end": 104,
+          "quote_start": 49,
+          "quote_end": 123,
           "status": "verified"
         }
       ],

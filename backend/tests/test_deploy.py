@@ -60,6 +60,7 @@ def test_release_stops_before_serving_without_recordings(
     empty_database: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     monkeypatch.setenv("DATABASE_URL", empty_database)
+    monkeypatch.setattr("app.llm.replay.RECORDINGS_DIR", tmp_path)
     get_settings.cache_clear()
     try:
         result = CliRunner().invoke(cli, ["release"])

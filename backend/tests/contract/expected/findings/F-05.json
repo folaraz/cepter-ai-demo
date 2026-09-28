@@ -28,7 +28,7 @@
     {
       "kind": "missing",
       "label": "Discharge of Condition 5",
-      "note": "Expected by pre_commencement_conditions. Not found. Raised as RFI-02.",
+      "note": "Not in the data room. Added to the seller questions as RFI-02.",
       "expected_by": "pre_commencement_conditions",
       "rfi_id": "RFI-02"
     }

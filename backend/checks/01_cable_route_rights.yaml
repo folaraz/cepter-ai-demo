@@ -45,7 +45,7 @@ how: >-
 
 missing:
   label: "Deed of easement, Parcels {uncovered_range}"
-  note: "Expected by cable_route_rights. Not in the data room. Raised as {rfi_id}."
+  note: "Not in the data room. Added to the seller questions as {rfi_id}."
   document_label: "Cable route easement"     # shown under "Expected, not found" in the sidebar
 
 rfi:
