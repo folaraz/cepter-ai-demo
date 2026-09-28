@@ -16,6 +16,12 @@ def export_capacity_consistent(inputs: dict[str, Input], view: GraphView) -> Out
     context: dict[str, object] = {
         "majority_value": format_number(float(majority.value)),  # type: ignore[arg-type]
         "majority_count_word": number_word(len(majority.documents)),
+        # "two documents", or the one document's noun: never "one documents".
+        "majority_where": (
+            f"{number_word(len(majority.documents))} documents"
+            if len(majority.documents) > 1
+            else noun(majority.documents[0])
+        ),
         "majority_docs_text": noun_list([noun(d) for d in majority.documents]),
         "source_count_word": capitalise(number_word(sum(len(v.documents) for v in group.values))),
     }

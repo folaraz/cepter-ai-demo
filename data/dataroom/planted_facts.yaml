@@ -87,6 +87,7 @@ checks:
     context:
       majority_value: "49.9"
       majority_count_word: "two"
+      majority_where: "two documents"
       majority_docs_text: "Planning and the PPA"
       minority_value: "45"
       minority_doc: "the grid offer"

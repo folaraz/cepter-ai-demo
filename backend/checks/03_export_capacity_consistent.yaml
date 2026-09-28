@@ -21,6 +21,7 @@ logic: |
 context:
   majority_value: 'value held by the most documents, formatted "49.9"'
   majority_count_word: 'number of documents holding it, as a word: "two"'
+  majority_where: '"two documents", or the noun of the only document holding it: "the PPA"'
   majority_docs_text: 'manifest nouns joined, first letter capitalised: "Planning and the PPA"'
   minority_value: 'the other value: "45"'
   minority_doc: 'manifest noun of the document holding it: "the grid offer"'
@@ -28,7 +29,7 @@ context:
   source_count_word: 'number of verified values (one per document), capitalised word: "Three"'
 
 title:
-  flagged: "Export capacity is {majority_value} MW in {majority_count_word} documents and {minority_value} MW in {minority_doc}"
+  flagged: "Export capacity is {majority_value} MW in {majority_where} and {minority_value} MW in {minority_doc}"
   passed: "Export capacity is consistent across documents"
 why: >-
   Revenue modelled on {majority_value} MW may be overstated by about {overstatement_pct}%
