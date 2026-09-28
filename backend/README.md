@@ -135,32 +135,36 @@ Session reviews, questions and eval runs older than 7 days are removed at startu
 
 One service, built from the repo-root `Dockerfile`: Node builds the UI, then a Python
 3.12 image with the embedding model downloaded at build time (the container never
-fetches anything at runtime). `railway.json` configures the build, the pre-deploy
-release step and the health check.
+fetches anything at runtime). Railway no longer reads `railway.json`, so the service's
+settings are set on the service itself (dashboard or API).
 
-1. **Postgres with pgvector.** In the Railway project, add a Postgres service that has
-   pgvector (Railway's pgvector template, or the `pgvector/pgvector:pg16` image). Confirm
-   it on the first deploy: `lens migrate` fails loudly if `CREATE EXTENSION vector`
-   isn't available.
-2. **The app service.** New service from this GitHub repo; Railway picks up
-   `railway.json` and builds the `Dockerfile`. Set:
+1. **Postgres with pgvector.** Add a service from the official `pgvector/pgvector:pg16`
+   image (Railway's `pgvector` template code resolves to a community repo; don't use it).
+   Variables `POSTGRES_USER=lens`, `POSTGRES_DB=lens`, a random `POSTGRES_PASSWORD`, and
+   `PGDATA=/var/lib/postgresql/data/pgdata`; a volume at `/var/lib/postgresql/data`.
+2. **The app service.**
 
-   | Variable | Value |
+   | Setting | Value |
    |---|---|
-   | `DATABASE_URL` | the Postgres service's connection URL |
+   | `DATABASE_URL` | `postgresql://${{postgres.POSTGRES_USER}}:${{postgres.POSTGRES_PASSWORD}}@${{postgres.RAILWAY_PRIVATE_DOMAIN}}:5432/${{postgres.POSTGRES_DB}}` |
    | `COOKIE_SECURE` | `true` (the site is served over HTTPS) |
    | `LLM_MODE` | `replay` (the image's default) |
-   | `ASK_LIVE` | `false` (the image's default): no API key needed |
+   | `ASK_LIVE` | `false` unless live Ask is wanted (below) |
+   | `RAILWAY_DOCKERFILE_PATH` | `Dockerfile` (without it Railway may build with Railpack and fail) |
+   | Pre-deploy command | `lens release` |
+   | Health check | `/api/health`, 120 s timeout |
+   | Restart policy | on failure |
 
-3. **Release.** Before each deploy goes live, Railway runs `lens release`: migrate,
-   ingest, run and publish the pipeline on the committed recordings, seed the demo's
-   reviews, then the accuracy check. It stops at the first failure, and a failed
-   release never goes live. It needs `fixtures/llm/` recordings committed (`lens
-   record`, above).
+3. **Deploy** from a clean, up-to-date `main` checkout: `railway up --ci --service app`
+   (until the repo is connected to Railway for deploy-on-push). Before it goes live,
+   Railway runs `lens release`: migrate, ingest, run and publish the pipeline on the
+   committed recordings, seed the demo's reviews, then the accuracy check. It stops at
+   the first failure, and a failed release never goes live. It needs the
+   `fixtures/llm/` recordings committed (`lens record`, above).
 4. **Check** that the public URL opens on the Summary and `/api/health` reports the
    published run.
 
-**Live Ask** (after C14): set `ASK_LIVE=true` and `ANTHROPIC_API_KEY`. Free-form
+**Live Ask**: set `ASK_LIVE=true` and `ANTHROPIC_API_KEY`. Free-form
 questions are then capped by `backend/ask.yaml` `limits`: 20 per session per day and a
 £5.00 daily budget. Suggested questions always replay and never need the key.
 

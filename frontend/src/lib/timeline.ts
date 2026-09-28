@@ -3,7 +3,7 @@ import type { DateMark } from '../api/types';
 
 export type LabelRow = 'above-far' | 'above-near' | 'below-near';
 
-/** Geometry per row, in px within the 172px-tall plot (axis at 82px). Matches the artboard. */
+/** Geometry per row, in px within the 172px-tall plot (axis at 82px). Matches the design. */
 export const ROW_GEOMETRY: Record<LabelRow, { top: number; stemTop: number; stemHeight: number }> = {
   'above-far': { top: 0, stemTop: 34, stemHeight: 48 },
   'above-near': { top: 38, stemTop: 72, stemHeight: 10 },

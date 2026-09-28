@@ -1,6 +1,6 @@
 # DataRoom Lens
 
-Diligence associate for one renewable-energy asset. `frontend/` is the React UI; `backend/` holds the FastAPI service; its spec and build prompts are in `specs/`. `design/` is the source of truth for both.
+Diligence associate for one renewable-energy asset. `frontend/` is the React UI; `backend/` holds the FastAPI service; its spec is `specs/SPEC.md`. `design/` is the source of truth for both.
 
 ## Frontend rules
 - The UI spec is design/DESIGN_HANDOFF.md. The API contract is design/api/types.ts, plus design/api/ask.types.ts for Ask. Ask's user-facing messages come verbatim from backend/ask.yaml `messages`; never write your own.

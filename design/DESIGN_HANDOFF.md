@@ -1,6 +1,6 @@
 # DataRoom Lens: UI design handoff
 
-This folder is the source of truth for the frontend. Build the UI to match it exactly. If something here is ambiguous, match the artboard; if the artboard is silent, choose the simplest option and note it in the PR.
+This folder is the source of truth for the frontend. Build the UI to match it exactly. If something here is ambiguous, match the live design (link below); if it is silent, choose the simplest option and note it in the PR.
 
 **Live design (clickable, press Play):** https://claude.ai/artifact/QTUuik1ByprR9MvFnF5gvc
 
@@ -9,14 +9,10 @@ This folder is the source of truth for the frontend. Build the UI to match it ex
 | Path | What it is |
 |---|---|
 | `DESIGN_HANDOFF.md` | This spec. |
-| `CLAUDE_CODE_PROMPTS.md` | The build, split into small tasks, in order. |
 | `tokens.css` | Every colour, font, radius and size as CSS variables, light and dark. |
 | `api/types.ts` | The API contract. The UI and the FastAPI backend both follow it. |
 | `api/ask.types.ts` | The Ask contract. Reuses `QuoteEvidence` from `types.ts`. |
 | `api/fixtures/` | Realistic data in exactly those shapes, so the UI can be built before the backend exists. |
-| `artboards/*.dc.html` | Design source files. Read them for exact spacing, copy and structure. They need the design tool's runtime to render, so use the live link above to see them. |
-
-Artboards: `workspace` (the app, all three views, interactive), `states` (loading, rejected by verifier, conflict, missing evidence, partial, error), `corrections` (the corrections-become-tests story for the README), `tokens` (the visual system).
 
 ## Stack for the UI
 
@@ -53,7 +49,7 @@ Top to bottom, 32px/40px page padding, 28px between sections:
 
 1. **Headline block.** Label `01. Diligence summary`, then `summary.headline` in `.t-display`. Right-aligned meta: `8 checks · run r-0921-a · 21 Sep 14:02`. One soft glow sits behind the headline only: `radial-gradient(closest-side, var(--orb), var(--orb-0))`, about 620×300px, absolutely positioned, `aria-hidden`, `pointer-events: none`. It must not sit behind any card.
 2. **Asset facts** card. A 4×2 grid of buttons, hairlines between cells. Each cell: label (12px muted), value (15px, 500), quote status tag. Clicking opens that fact's finding in Evidence.
-3. **Critical dates** card. A horizontal axis spanning `date_window`; each `DateMark` is a dot + stem + button label (date 13px 600, label 11px). Tone `clash` uses `--critical`, `warning` uses `--conflict`. Draw a translucent `--critical` band between the clash dates and a clash label below it. Year ticks along the bottom in DM Mono. Below the axis, a full-width button row with the `long_horizon` note and its flag. Place labels in three rows (above-far, above-near, below-near) so none overlap; see the artboard for exact positions.
+3. **Critical dates** card. A horizontal axis spanning `date_window`; each `DateMark` is a dot + stem + button label (date 13px 600, label 11px). Tone `clash` uses `--critical`, `warning` uses `--conflict`. Draw a translucent `--critical` band between the clash dates and a clash label below it. Year ticks along the bottom in DM Mono. Below the axis, a full-width button row with the `long_horizon` note and its flag. Place labels in three rows (above-far, above-near, below-near) so none overlap; see the live design for exact positions.
 4. **Findings** grid (the hero). See "Findings grid" below.
 
 ## Findings grid
@@ -97,7 +93,7 @@ Label `03. Requests for information`, headline "Three questions for the seller, 
 
 ## View 4: Ask
 
-Added after the original artboards, so there is no artboard for it: design it inside the current UI's patterns (navigation, headings, cards, chips, tokens). Contract: `api/ask.types.ts`. Behaviour: `specs/SPEC.md` C14. User-facing messages: `backend/ask.yaml` → `messages` (use those strings exactly).
+Added after the original design: design it inside the current UI's patterns (navigation, headings, cards, chips, tokens). Contract: `api/ask.types.ts`. Behaviour: `specs/SPEC.md` C14. User-facing messages: `backend/ask.yaml` → `messages` (use those strings exactly).
 
 **What it does.** A reviewer asks a question about the data room. The backend answers one of three ways: **lookup** (a single fact: retrieved paragraphs, a model-drafted answer, every sentence verified against its quotes before it is sent); **relationship** (a fixed query over the asset model, rendered from templates; a sentence stating an absence carries `finding_id` instead of a citation); or **abstained** (the documents don't answer it, or it is off-topic). Answers are **not streamed**: they arrive whole after about 2–4 s because they are verified first. The five suggested questions always work. A free-form question returns `status: "unavailable"` unless live Ask is switched on at the server.
 
@@ -171,7 +167,7 @@ In fixture mode, simulate steps 2 and 5 in the data layer (about 1s for the eval
 
 ## States every view needs
 
-- **Loading:** skeleton rows with the real row height and column widths (see `states` artboard); nothing shifts when data arrives.
+- **Loading:** skeleton rows with the real row height and column widths; nothing shifts when data arrives.
 - **Error:** scoped message with Retry, in the interface's voice ("Couldn't load findings. Retry."), never a blank screen.
 - **Empty:** not expected for the demo; if `findings` is empty, show "All 8 checks passed" with the passed list.
 
@@ -187,7 +183,7 @@ In fixture mode, simulate steps 2 and 5 in the data layer (about 1s for the eval
 
 ## Do not
 
-- Add features not in the artboards (search, command palette, chat, charts, extra filters).
+- Add features not in this spec (search, command palette, chat, charts, extra filters).
 - Use gradients anywhere except the one Summary glow.
 - Use more than one ink pill per view.
 - Show any value that has no verified quote.
@@ -195,7 +191,7 @@ In fixture mode, simulate steps 2 and 5 in the data layer (about 1s for the eval
 
 ## Definition of done
 
-1. Summary, Evidence and Requests match the live artboard side by side at 1440×900.
+1. Summary, Evidence and Requests match the live design side by side at 1440×900.
 2. The full review loop above works with fixtures, including Undo.
 3. Keyboard-only walkthrough: open a finding, step through sources, correct it, run eval, export RFIs.
 4. axe (or Lighthouse accessibility) reports no violations on each view.

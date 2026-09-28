@@ -121,7 +121,7 @@ Each component lists what to build and a **done when** that can be checked by co
 - GitHub Actions: a `pgvector/pgvector:pg16` service container; cache
   `EMBEDDING_CACHE_DIR`; lint, types, tests, `check_dataroom.py`, `check_templates.py`,
   `check_ask.py`, then `lens eval --gate 0.90` (from C11).
-- Backend rules in `CLAUDE.md` (see `CLAUDE_CODE_PROMPTS.md`, step 0).
+- Backend rules in `CLAUDE.md`.
 
 **Done when** `docker compose up -d db && lens migrate && uvicorn app.main:app` serves a
 green `/api/health`, and CI passes.
