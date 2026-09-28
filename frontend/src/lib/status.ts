@@ -17,7 +17,7 @@ import {
   Triangle,
   type LucideIcon,
 } from 'lucide-react';
-import type { CheckResult, EvalState, QuoteStatus, ReviewState, Severity } from '../api/types';
+import type { CheckResult, EvalState, QuoteStatus, ReviewState, Severity } from '@design/api/types';
 
 export interface StatusDef {
   /** Decorative icon; the word next to it carries the meaning. */

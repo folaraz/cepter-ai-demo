@@ -16,7 +16,7 @@ npm ci
 npm run dev
 ```
 
-Then open http://localhost:5173. `VITE_USE_FIXTURES=true` (the default) reads `frontend/src/api/fixtures/` and keeps review and eval state in memory. Set it to `false` to call the backend at `/api`, which the dev server proxies to `localhost:8000` (or `LENS_API_URL`, e.g. `LENS_API_URL=http://localhost:8001`).
+Then open http://localhost:5173. `VITE_USE_FIXTURES=true` (the default) reads `design/api/fixtures/` and keeps review and eval state in memory. Set it to `false` to call the backend at `/api`, which the dev server proxies to `localhost:8000` (or `LENS_API_URL`, e.g. `LENS_API_URL=http://localhost:8001`).
 
 ## Checks
 

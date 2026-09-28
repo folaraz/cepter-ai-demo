@@ -163,7 +163,7 @@ In fixture mode, simulate steps 2 and 5 in the data layer (about 1s for the eval
 
 ## Data layer
 
-`frontend/src/api/client.ts` exposes `getSummary`, `getFinding`, `postReview`, `undoReview`, `getRfi`, `getRfiMarkdown`, `runEval`, `getEvalLatest`. A single flag `VITE_USE_FIXTURES=true` makes them read from `design/api/fixtures/` (copied or imported into `frontend/src/api/fixtures/`) and keep review/eval state in memory. Tomorrow, set it to false and the same functions call FastAPI. Types come from `api/types.ts` until the backend's OpenAPI schema exists.
+`frontend/src/api/client.ts` exposes `getSummary`, `getFinding`, `postReview`, `undoReview`, `getRfi`, `getRfiMarkdown`, `runEval`, `getEvalLatest`. A single flag `VITE_USE_FIXTURES=true` makes them read `design/api/fixtures/` directly (imported via the `@design` alias) and keep review/eval state in memory; set it to false and the same functions call FastAPI. Types are imported from `design/api/types.ts`; `frontend/src/api/schema.check.ts` proves the backend's OpenAPI schema matches them.
 
 ## States every view needs
 

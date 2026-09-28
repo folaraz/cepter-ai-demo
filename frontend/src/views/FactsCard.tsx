@@ -1,4 +1,4 @@
-import type { Summary } from '../api/types';
+import type { Summary } from '@design/api/types';
 import { QUOTE } from '../lib/status';
 import { useActions } from '../state/store';
 import { hit, panel, SectionHeading, Sk, Tag } from '../components/ui';

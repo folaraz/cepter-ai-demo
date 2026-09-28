@@ -5,8 +5,8 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { StoreProvider } from '../state/store';
 import { DatesCard } from './DatesCard';
 import { RequestsView } from './RequestsView';
-import type { Summary } from '../api/types';
-import summaryFixture from '../api/fixtures/summary.json';
+import type { Summary } from '@design/api/types';
+import summaryFixture from '@design/api/fixtures/summary.json';
 
 afterEach(cleanup);
 

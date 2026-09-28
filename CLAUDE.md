@@ -41,7 +41,7 @@ The people using this are diligence lawyers and associates, not engineers. Deal 
 
 ## Backend rules
 - The backend spec is specs/SPEC.md. The API contract is design/api/types.ts and
-  design/api/ask.types.ts. Expected output is backend/tests/contract/expected/ (read its
+  design/api/ask.types.ts. Expected output is design/api/fixtures/ (read its
   README) and, for Ask, evals/ask_golden.jsonl.
 - Never store or serve a fact or an answer sentence without a verified quote. Absence
   statements link to the finding that established them instead. Rejected claims stay in
@@ -52,7 +52,7 @@ The people using this are diligence lawyers and associates, not engineers. Deal 
 - Tests and CI run with no API key: LLM_MODE=replay, and Ask uses recordings. A missing
   recording must raise, never fall back to the API.
 - Do not edit data/dataroom/pdf/, evals/golden.jsonl, evals/ask_golden.jsonl or
-  tests/contract/expected/ to make a test pass. If they look wrong, stop and say so.
+  design/api/fixtures/ to make a test pass. If they look wrong, stop and say so.
 - Plain SQL via psycopg 3; no ORM. Pydantic 2 models at every boundary.
 - Keep backend/tools/check_dataroom.py, check_templates.py and check_ask.py green.
 

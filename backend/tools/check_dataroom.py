@@ -9,8 +9,7 @@ What it checks, using a minimal reference implementation of the paragraph rules 
 specs/SPEC.md (component 4). The production ingester must produce the same IDs,
 headings and text as this script; tests/test_ingest.py should import or mirror it.
 
-  1. Every paragraph cited in design/api/fixtures/findings/*.json (or the copy in
-     backend/tests/contract/expected/findings/) exists at the same paragraph ID,
+  1. Every paragraph cited in design/api/fixtures/findings/*.json exists at the same paragraph ID,
      under the same heading, with exactly the same text.
   2. Every fixture quote is a verbatim substring of that paragraph at the same offsets.
   3. Two ingestions produce identical IDs (determinism).
@@ -33,7 +32,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 ROOM = ROOT / "data" / "dataroom"
-EXPECTED = ROOT / "backend" / "tests" / "contract" / "expected" / "findings"
+FIXTURES = ROOT / "design" / "api" / "fixtures" / "findings"
 
 MARGIN_PT = 70  # blocks starting inside the top or bottom 70pt are running header/footer
 
@@ -122,7 +121,7 @@ def main() -> int:
     if list(first) != list(second) or any(first[k] != second[k] for k in first):
         failures.append("ingestion is not deterministic")
 
-    fixture_dir = EXPECTED if EXPECTED.exists() else ROOT / "design" / "api" / "fixtures" / "findings"
+    fixture_dir = FIXTURES
     checked = 0
     for f in sorted(fixture_dir.glob("F-*.json")):
         finding = json.loads(f.read_text(encoding="utf-8"))

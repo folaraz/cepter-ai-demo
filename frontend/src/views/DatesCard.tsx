@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { DateMark, Summary } from '../api/types';
+import type { DateMark, Summary } from '@design/api/types';
 import { formatDate } from '../lib/format';
 import { placeMarks, ROW_GEOMETRY, yearTicks } from '../lib/timeline';
 import { useActions } from '../state/store';

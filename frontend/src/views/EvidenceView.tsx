@@ -1,4 +1,4 @@
-import type { Finding, QuoteEvidence } from '../api/types';
+import type { Finding, QuoteEvidence } from '@design/api/types';
 import { QUOTE, RESULT, REVIEW, SEVERITY } from '../lib/status';
 import { useActions, useStore, useSummary } from '../state/store';
 import { FileQuestionMark } from 'lucide-react';

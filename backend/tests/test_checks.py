@@ -27,7 +27,7 @@ from app.checks.runner import (
     run_checks,
 )
 from app.checks.view import GraphView
-from app.config import BACKEND_DIR, DATAROOM_DIR
+from app.config import DATAROOM_DIR, REPO_ROOT
 from app.db.repositories import findings as findings_repo
 from app.db.repositories import graph as graph_repo
 from app.domain.claims import Claim
@@ -53,7 +53,7 @@ from tests.test_consolidate import (
     perfect_claims,
 )
 
-EXPECTED = BACKEND_DIR / "tests" / "contract" / "expected"
+EXPECTED = REPO_ROOT / "design" / "api" / "fixtures"
 PLANTED = yaml.safe_load((DATAROOM_DIR / "planted_facts.yaml").read_text(encoding="utf-8"))
 AS_OF = date(2026, 9, 21)
 

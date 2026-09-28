@@ -1,5 +1,5 @@
 // Places the critical-date labels on the Summary timeline without overlaps.
-import type { DateMark } from '../api/types';
+import type { DateMark } from '@design/api/types';
 
 export type LabelRow = 'above-far' | 'above-near' | 'below-near';
 

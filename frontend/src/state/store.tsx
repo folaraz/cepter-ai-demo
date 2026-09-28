@@ -2,8 +2,8 @@
 // loaded data and the toast. React context + useReducer; async work lives in useActions().
 import { createContext, useCallback, useContext, useMemo, useReducer, useRef, type ReactNode } from 'react';
 import * as api from '../api/client';
-import type { CheckResult, DocumentDetail, DocumentListItem, EvalStatus, Finding, FindingRow, Rfi, Summary } from '../api/types';
-import type { AskResponse, AskSuggestion } from '../api/ask.types';
+import type { CheckResult, DocumentDetail, DocumentListItem, EvalStatus, Finding, FindingRow, Rfi, Summary } from '@design/api/types';
+import type { AskResponse, AskSuggestion } from '@design/api/ask.types';
 import { findingName } from '../lib/format';
 
 export type View = 'summary' | 'evidence' | 'documents' | 'rfi' | 'ask';

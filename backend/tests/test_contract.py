@@ -1,5 +1,5 @@
 """C8/C10 contract test: a fresh database, the pipeline, the seed reviews, then every GET
-endpoint compared with backend/tests/contract/expected/ under the rules in its README.
+endpoint compared with design/api/fixtures/ under the rules in its README.
 
 The pipeline runs on the perfect extraction (tests/perfect_extraction.py) so this holds
 without recordings; test_contract_on_the_recorded_extraction repeats it on the recorded
@@ -16,7 +16,7 @@ import psycopg
 import pytest
 from fastapi.testclient import TestClient
 
-from app.config import BACKEND_DIR
+from app.config import REPO_ROOT
 from app.db.pool import connect
 from app.evals.harness import run_eval
 from app.ingest.service import ingest_dataroom
@@ -30,7 +30,7 @@ from tests.test_consolidate import PerfectTransport
 
 pytestmark = pytest.mark.db
 
-EXPECTED = BACKEND_DIR / "tests" / "contract" / "expected"
+EXPECTED = REPO_ROOT / "design" / "api" / "fixtures"
 
 
 def expected(name: str) -> Any:
@@ -56,7 +56,7 @@ def api(tmp_path: Path, empty_database: str, client_for: ClientFor) -> Iterator[
         yield client
 
 
-# ---------- comparison rules (tests/contract/expected/README.md) ----------
+# ---------- comparison rules (design/api/fixtures/README.md) ----------
 
 ISO_DATETIME = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 

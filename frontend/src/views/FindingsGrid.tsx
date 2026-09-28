@@ -1,5 +1,5 @@
 import type { KeyboardEvent } from 'react';
-import type { Summary } from '../api/types';
+import type { Summary } from '@design/api/types';
 import { RESULT, REVIEW, SEVERITY } from '../lib/status';
 import { plural } from '../lib/format';
 import { cn } from '../lib/cn';

@@ -6,10 +6,10 @@ import userEvent from '@testing-library/user-event';
 import { App } from '../App';
 import { StoreProvider, type View } from '../state/store';
 import { ApiError, __askFixtureOverrides, __setAskDelay, resetFixtures } from '../api/client';
-import type { AskResponse } from '../api/ask.types';
-import testDropped from '../api/fixtures/ask/test-dropped.json';
-import a01 from '../api/fixtures/ask/a01.json';
-import r04 from '../api/fixtures/ask/r04.json';
+import type { AskResponse } from '@design/api/ask.types';
+import testDropped from '@design/api/fixtures/ask/test-dropped.json';
+import a01 from '@design/api/fixtures/ask/a01.json';
+import r04 from '@design/api/fixtures/ask/r04.json';
 
 // Exact strings from backend/ask.yaml -> messages.
 const ABSTAIN_NOT_FOUND = "The data room doesn't answer this. No paragraph states it, so there is no figure to give.";
