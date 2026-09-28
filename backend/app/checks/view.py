@@ -42,6 +42,7 @@ class GraphView:
         self.documents = {d.id: d for d in documents}
         self.paragraphs = {p.id: p for p in paragraphs}
         self.document_order = document_order
+        self._provenance = provenance
         self._by_node_prop: dict[tuple[str, str | None], list[Provenance]] = defaultdict(list)
         self._by_edge: dict[int, list[Provenance]] = defaultdict(list)
         for row in provenance:
@@ -76,6 +77,9 @@ class GraphView:
 
     def property_rows(self, node: Node, prop: str) -> list[Provenance]:
         return self._by_node_prop.get((node.id, prop), [])
+
+    def all_rows(self) -> list[Provenance]:
+        return self._provenance
 
     def identity_rows(self, node: Node) -> list[Provenance]:
         """A party's name claims: who it is, per document."""

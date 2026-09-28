@@ -1,5 +1,6 @@
 """C11: the eval harness, the gate and the eval endpoints."""
 
+import json
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
@@ -8,6 +9,7 @@ import psycopg
 import pytest
 from fastapi.testclient import TestClient
 
+from app.ask.service import ask
 from app.checks import runner
 from app.checks.runner import Outcome
 from app.db.migrate import migrate
@@ -24,6 +26,7 @@ from app.llm.replay import RecordingStore
 from app.llm.tracing import db_tracer
 from app.pipeline import run_pipeline
 from app.published import load_published
+from app.retrieval.index import build_index
 from app.reviews.seed import apply_seed
 from app.reviews.service import submit_review, undo_review
 from tests.conftest import ClientFor
@@ -56,7 +59,30 @@ def db(tmp_path: Path, empty_database: str) -> Iterator[psycopg.Connection]:
         ingest_dataroom(conn)
         result = run_pipeline(conn, perfect_llm(tmp_path)(conn), kind="published", publish=True)
         apply_seed(conn, result.run_id)
+        build_index(conn)
         yield conn
+
+
+def perfect_ask(tmp_path: Path) -> Any:
+    """Ask's golden questions answered by the perfect model, recording as it goes."""
+    store = RecordingStore(tmp_path / "ask")
+
+    def runner(conn: psycopg.Connection, question: str, run_id: str) -> Any:
+        return ask(
+            conn,
+            question,
+            session_id=None,
+            policy="record",
+            run_id=run_id,
+            store=False,
+            llm_factory=lambda trace: AnthropicLLMClient(
+                trace=trace, store=store, transport=PerfectTransport()
+            ),
+            recordings=store,
+        )
+
+    runner.store = store  # type: ignore[attr-defined]
+    return runner
 
 
 def metric(run: EvalRun, name: str) -> tuple[int, int]:
@@ -210,8 +236,10 @@ def api(
 ) -> Iterator[TestClient]:
     with client_for(empty_database) as client:
         client.app.state.eval_llm = perfect_llm(tmp_path)  # type: ignore[attr-defined]
+        client.app.state.eval_ask = perfect_ask(tmp_path)  # type: ignore[attr-defined]
         yield client
         del client.app.state.eval_llm  # type: ignore[attr-defined]
+        del client.app.state.eval_ask  # type: ignore[attr-defined]
 
 
 def f03(client: TestClient) -> tuple[str, str]:
@@ -274,3 +302,77 @@ def test_the_report_table(db: psycopg.Connection, tmp_path: Path) -> None:
         ("State", "PASSING"),
     ):
         assert f"{label:<32}{value:>18}" in table, table
+
+
+# ---------- Ask's metrics ----------
+
+
+def test_ask_meets_every_target(db: psycopg.Connection, tmp_path: Path) -> None:
+    run = run_eval(
+        db, perfect_llm(tmp_path)(db), session_id=None, gate=0.90, ask_runner=perfect_ask(tmp_path)
+    )
+    assert run.state == "passing", format_report(run)
+    assert metric(run, "retrieval_recall") == (8, 8)
+    assert metric(run, "answer_accuracy") == (12, 12)
+    assert metric(run, "abstention") == (3, 3)
+    assert run.citation_validity == 1 and run.score == 1
+    report = format_report(run)
+    assert "Keyword-only recall" in report and "Routing (reported)" in report
+    assert run.metrics["routing"] == {"passed": 15, "total": 15}
+    keyword_only: dict[str, int] = run.metrics["keyword_only_recall"]  # type: ignore[assignment]
+    assert keyword_only["passed"] < 8
+
+
+def test_a_tampered_ask_recording_is_caught_as_a_wrong_answer(
+    db: psycopg.Connection, tmp_path: Path
+) -> None:
+    """The verifier never serves a quote that isn't verbatim, so a tampered recording
+    shows up as a dropped sentence and a failed answer, not as an invalid citation."""
+    runner = perfect_ask(tmp_path)
+    run_eval(db, perfect_llm(tmp_path)(db), session_id=None, gate=0.90, ask_runner=runner)
+    store = runner.store
+    rent = "How much rent does the tenant pay?"
+    tampered = 0
+    for path in store.directory.glob("*.json"):
+        recording = store.load(path.stem)
+        if (
+            recording
+            and recording.purpose == "ask:answer"
+            and recording.metadata["question"] == rent
+        ):
+            text = json.dumps(recording.output, ensure_ascii=False).replace("£1,150", "£1,500")
+            store.save(recording.model_copy(update={"output": json.loads(text)}))
+            tampered += 1
+    assert tampered == 1
+
+    replaying = perfect_ask_replay(store)
+    run = run_eval(db, perfect_llm(tmp_path)(db), session_id=None, gate=0.90, ask_runner=replaying)
+    assert metric(run, "answer_accuracy") == (11, 12)
+    assert failures(run, "answer_accuracy") == ["a04"]
+    assert run.metrics["dropped_sentences"] == 1
+    assert run.citation_validity == 1  # nothing unverified was served
+    assert run.state == "passing"  # the gate, as specified, averages it away (0.99)
+
+
+def perfect_ask_replay(store: RecordingStore) -> Any:
+    def runner(conn: psycopg.Connection, question: str, run_id: str) -> Any:
+        return ask(
+            conn,
+            question,
+            session_id=None,
+            policy="replay",
+            run_id=run_id,
+            store=False,
+            llm_factory=lambda trace: AnthropicLLMClient(trace=trace, store=store),
+            recordings=store,
+        )
+
+    return runner
+
+
+def test_missing_ask_recordings_make_the_eval_an_error(
+    db: psycopg.Connection, tmp_path: Path
+) -> None:
+    empty = perfect_ask_replay(RecordingStore(tmp_path / "none"))
+    run = run_eval(db, perfect_llm(tmp_path)(db), session_id=None, gate=0.90, ask_runner=empty)
+    assert run.state == "error" and "MissingRecording" in (run.error or "")

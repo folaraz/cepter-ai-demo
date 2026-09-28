@@ -65,7 +65,9 @@ jobs:
       # verbatim, or a correction no longer held) fails the build.
       - name: Eval gate
         if: hashFiles('backend/fixtures/llm/*.json') != ''
-        run: uv run lens run --publish && uv run lens seed && uv run lens eval --gate 0.90
+        run: >-
+          uv run lens run --publish && uv run lens index && uv run lens seed &&
+          uv run lens eval --gate 0.90
 
   image:
     # The deploy image builds: the UI, the Python runtime and the embedding model.

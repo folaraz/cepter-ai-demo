@@ -49,6 +49,16 @@ uv run python tools/check_templates.py
 uv run python tools/check_ask.py
 ```
 
+## Ask
+
+`POST /api/ask` answers a question about the data room, or says it can't. The model
+routes the question and drafts lookup answers; code checks the route against
+`ask.yaml`, renders relationship answers from its templates, and verifies every lookup
+sentence (verbatim quotes from retrieved paragraphs, no number or date its quotes don't
+state). Model calls replay recordings; without one, a call goes live only with
+`ASK_LIVE=true` and within the limits in `ask.yaml`, otherwise the answer is
+"unavailable". `GET /api/ask/suggestions` lists the recorded suggested questions.
+
 ## Retrieval (Ask)
 
 `lens index` stores one embedded chunk per paragraph (bge-small, 384 dimensions, local).
@@ -93,12 +103,15 @@ the app at `/`: files in `dist` as themselves, any other non-`/api` path as
 `claude-sonnet-5` rejects non-default sampling parameters, and replay is what makes runs
 repeatable.
 
-To record model responses (needs an API key; nothing else does):
+To record model responses (needs an API key; nothing else does). Record both before
+committing: the release step and CI's eval gate replay extraction *and* Ask.
 
 ```bash
 export ANTHROPIC_API_KEY=...
 uv run lens record              # one extraction call per document -> fixtures/llm/
-git add fixtures/llm && git commit -m "Record extract.v1 responses"
+uv run lens run --publish && uv run lens index
+uv run lens record --ask        # routing and answers for evals/ask_golden.jsonl
+git add fixtures/llm && git commit -m "Record extract.v1, ask.route.v1 and ask.answer.v1"
 unset ANTHROPIC_API_KEY
 ```
 

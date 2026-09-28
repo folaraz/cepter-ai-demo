@@ -23,12 +23,7 @@ TYPES_TS = REPO_ROOT / "design" / "api" / "types.ts"
 ASK_TYPES_TS = REPO_ROOT / "design" / "api" / "ask.types.ts"
 
 # Models the API doesn't have yet, and the component that adds them.
-PENDING = {
-    "AskRequest": "C14",
-    "AskSentence": "C14",
-    "AskResponse": "C14",
-    "AskSuggestion": "C14",
-}
+PENDING: dict[str, str] = {}
 
 # (interface, field) -> why the API differs from types.ts on purpose.
 DEVIATIONS = {
@@ -45,6 +40,8 @@ PYTHON_UNIONS = {
     "ReviewState": get_args(models.ReviewState),
     "QuoteStatus": get_args(models.QuoteStatus),
     "EvalState": get_args(models.EvalState),
+    "AskRoute": get_args(models.AskRoute),
+    "AskStatus": get_args(models.AskStatus),
 }
 
 

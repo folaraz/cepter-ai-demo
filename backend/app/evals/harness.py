@@ -21,7 +21,6 @@ Ask's three metrics (retrieval recall, answer accuracy, abstention) join in C14.
 """
 
 from collections.abc import Callable
-from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Any
 
@@ -36,31 +35,14 @@ from app.db.repositories import runs
 from app.domain.evals import EvalOutcome, EvalRun, NewEvalRun
 from app.domain.findings import FindingRecord
 from app.domain.graph import Node
+from app.evals.ask_eval import AskRunner, score_ask
 from app.evals.golden import GoldenSet, golden_set
+from app.evals.ratio import Ratio
 from app.ingest.manifest import load_manifest
 from app.llm.client import LLMClient
 from app.pipeline import run_pipeline
 from app.published import evidence_of
 from app.reviews.fingerprint import evidence_fingerprint
-
-GATED = ("extraction", "conflicts", "checks", "corrections", "citation_validity")
-
-
-@dataclass
-class Ratio:
-    passed: int = 0
-    total: int = 0
-    failures: list[str] = field(default_factory=list)
-
-    def add(self, ok: bool, label: str) -> None:
-        self.total += 1
-        self.passed += ok
-        if not ok:
-            self.failures.append(label)
-
-    @property
-    def value(self) -> float | None:
-        return self.passed / self.total if self.total else None
 
 
 def start_eval(conn: Connection, *, session_id: str | None, gate: float) -> EvalRun:
@@ -78,14 +60,17 @@ def start_eval(conn: Connection, *, session_id: str | None, gate: float) -> Eval
     )
 
 
-def complete_eval(conn: Connection, llm: LLMClient, started: EvalRun) -> EvalRun:
-    """Run the pipeline and score it against the golden set the eval started with."""
+def complete_eval(
+    conn: Connection, llm: LLMClient, started: EvalRun, ask_runner: AskRunner | None = None
+) -> EvalRun:
+    """Run the pipeline and score it against the golden set the eval started with, and
+    Ask's golden questions against the new run unless `ask_runner` is None."""
     golden = golden_set(conn, started.session_id)
     try:
         if golden.hash != started.golden_hash:
             raise RuntimeError("the golden set changed while the eval was starting")
         result = run_pipeline(conn, llm, kind="eval", session_id=started.session_id)
-        outcome = score_run(conn, result.run_id, golden, float(started.gate))
+        outcome = score_run(conn, result.run_id, golden, float(started.gate), ask_runner)
         return evals_repo.finish_eval_run(conn, started.id, outcome, result.run_id)
     except Exception as err:
         failed = EvalOutcome(
@@ -101,11 +86,25 @@ def complete_eval(conn: Connection, llm: LLMClient, started: EvalRun) -> EvalRun
         return evals_repo.finish_eval_run(conn, started.id, failed)
 
 
-def run_eval(conn: Connection, llm: LLMClient, *, session_id: str | None, gate: float) -> EvalRun:
-    return complete_eval(conn, llm, start_eval(conn, session_id=session_id, gate=gate))
+def run_eval(
+    conn: Connection,
+    llm: LLMClient,
+    *,
+    session_id: str | None,
+    gate: float,
+    ask_runner: AskRunner | None = None,
+) -> EvalRun:
+    started = start_eval(conn, session_id=session_id, gate=gate)
+    return complete_eval(conn, llm, started, ask_runner)
 
 
-def score_run(conn: Connection, run_id: str, golden: GoldenSet, gate: float) -> EvalOutcome:
+def score_run(
+    conn: Connection,
+    run_id: str,
+    golden: GoldenSet,
+    gate: float,
+    ask_runner: AskRunner | None = None,
+) -> EvalOutcome:
     run = runs.get_run(conn, run_id)
     assert run is not None
     view = GraphView.load(conn, run_id, [d.id for d in load_manifest()], run.as_of)
@@ -119,6 +118,14 @@ def score_run(conn: Connection, run_id: str, golden: GoldenSet, gate: float) -> 
         "citation_validity": _citations(view, findings),
     }
     learned = corrections[1]
+    ask_report: dict[str, Any] = {}
+    if ask_runner is not None:
+        scores = score_ask(conn, run_id, ask_runner)
+        ratios |= scores.ratios
+        ratios["citation_validity"].passed += scores.citations.passed
+        ratios["citation_validity"].total += scores.citations.total
+        ratios["citation_validity"].failures += scores.citations.failures
+        ask_report = scores.report
     values = [r.value for r in ratios.values() if r.value is not None]
     score = sum(values) / len(values) if values else 0.0
     citation = ratios["citation_validity"].value
@@ -137,6 +144,7 @@ def score_run(conn: Connection, run_id: str, golden: GoldenSet, gate: float) -> 
         sum(c.status == "rejected" for c in claims) / len(claims) if claims else 0.0
     )
     metrics["llm_calls"] = len(calls)
+    metrics |= ask_report
     return EvalOutcome(
         state="passing" if passing else "failing",
         score=Decimal(str(round(score, 4))),

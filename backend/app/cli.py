@@ -4,12 +4,14 @@ from collections import Counter
 
 import typer
 
+from app.ask.service import ask
 from app.config import get_settings
 from app.db.migrate import migrate as apply_schema
 from app.db.pool import connect
 from app.db.repositories import runs
 from app.domain.claims import Claim
 from app.domain.runs import RunKind
+from app.evals.ask_eval import replay_runner
 from app.evals.harness import run_eval
 from app.evals.report import format_report
 from app.ingest.service import ingest_dataroom
@@ -17,7 +19,7 @@ from app.llm.anthropic_client import AnthropicLLMClient
 from app.llm.client import MissingRecording
 from app.llm.tracing import db_tracer
 from app.pipeline import PipelineResult, run_pipeline
-from app.retrieval.calibrate import calibrate
+from app.retrieval.calibrate import calibrate, read_ask_golden
 from app.retrieval.index import build_index
 from app.reviews.golden import export_session_corrections
 from app.reviews.seed import apply_seed
@@ -67,13 +69,33 @@ def _report(result: PipelineResult) -> None:
 
 
 @app.command()
-def record() -> None:
-    """Call the model for every document and save the responses to backend/fixtures/llm/.
-    Needs ANTHROPIC_API_KEY. Commit the recordings afterwards."""
+def record(
+    ask_questions: bool = typer.Option(
+        False, "--ask", help="Record Ask's golden questions instead of extraction."
+    ),
+) -> None:
+    """Call the model and save its responses to backend/fixtures/llm/. Needs
+    ANTHROPIC_API_KEY. Commit the recordings afterwards.
+
+    Without --ask: one extraction call per document. With --ask: the routing and answer
+    calls for every question in evals/ask_golden.jsonl, against the published run (run
+    `lens run --publish` and `lens index` first)."""
     with connect(get_settings().database_url) as conn:
-        ingest_dataroom(conn)
-        llm = AnthropicLLMClient(trace=db_tracer(conn))
-        _report(run_pipeline(conn, llm, mode="record"))
+        if not ask_questions:
+            ingest_dataroom(conn)
+            llm = AnthropicLLMClient(trace=db_tracer(conn))
+            _report(run_pipeline(conn, llm, mode="record"))
+            return
+        for item in read_ask_golden():
+            answer = ask(
+                conn,
+                item["question"],
+                session_id=None,
+                policy="record",
+                store=False,
+                llm_factory=lambda trace: AnthropicLLMClient(trace=trace),
+            )
+            typer.echo(f"{item['id']:<4} {answer.route or '-':<13} {answer.status}")
 
 
 @app.command()
@@ -124,7 +146,7 @@ def eval_command(
     session: str | None = typer.Option(None, help="Include this session's corrections."),
     gate: float | None = typer.Option(None, help="Passing score; defaults to EVAL_GATE."),
     as_json: bool = typer.Option(False, "--json", help="Print the eval row as JSON."),
-    no_ask: bool = typer.Option(False, "--no-ask", help="Skip the Ask metrics (C14)."),
+    no_ask: bool = typer.Option(False, "--no-ask", help="Skip Ask's golden questions."),
 ) -> None:
     """Re-run the pipeline in replay mode and score it against the golden set. Exits 1
     when failing: score under the gate, a citation that isn't verbatim, or a correction
@@ -132,7 +154,10 @@ def eval_command(
     settings = get_settings()
     with connect(settings.database_url) as conn:
         llm = AnthropicLLMClient(trace=db_tracer(conn), default_mode="replay")
-        result = run_eval(conn, llm, session_id=session, gate=gate or settings.eval_gate)
+        runner = None if no_ask else replay_runner
+        result = run_eval(
+            conn, llm, session_id=session, gate=gate or settings.eval_gate, ask_runner=runner
+        )
     if as_json:
         typer.echo(result.model_dump_json(indent=2))
     else:
@@ -167,7 +192,9 @@ def release() -> None:
 
         typer.echo(f"seed: {apply_seed(conn, published.run_id)} reviews added")
 
-        result = run_eval(conn, llm, session_id=None, gate=settings.eval_gate)
+        result = run_eval(
+            conn, llm, session_id=None, gate=settings.eval_gate, ask_runner=replay_runner
+        )
         typer.echo(format_report(result))
     if result.state != "passing":
         raise typer.Exit(1)
@@ -181,11 +208,11 @@ def index() -> None:
     typer.echo(f"{result.written} chunks embedded, {result.unchanged} unchanged")
 
 
-ask = typer.Typer(no_args_is_help=True, help="Ask: questions about the data room.")
-app.add_typer(ask, name="ask")
+ask_cli = typer.Typer(no_args_is_help=True, help="Ask: questions about the data room.")
+app.add_typer(ask_cli, name="ask")
 
 
-@ask.command("calibrate")
+@ask_cli.command("calibrate")
 def ask_calibrate() -> None:
     """For every golden Ask question: the best similarity, and where each expected
     paragraph ranks under vector, keyword and hybrid search. Use it to set

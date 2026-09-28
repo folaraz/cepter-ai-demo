@@ -207,3 +207,40 @@ class ReviewResponse(BaseModel):
 
 class UndoRequest(BaseModel):
     undo_token: str
+
+
+# ---------- Ask (design/api/ask.types.ts) ----------
+
+AskRoute = Literal["lookup", "relationship", "out_of_scope"]
+AskStatus = Literal["answered", "abstained", "unavailable"]
+
+
+class AskRequest(BaseModel):
+    question: str  # 3–500 characters
+
+
+class AskSentence(BaseModel):
+    text: str
+    citations: list[QuoteEvidence]  # verified quotes
+    finding_id: str | None  # only on template sentences that state an absence
+
+
+class AskResponse(BaseModel):
+    id: str
+    question: str
+    route: AskRoute | None  # null when unavailable
+    status: AskStatus
+    sentences: list[AskSentence]  # empty unless answered
+    message: str | None  # shown instead of sentences when abstained or unavailable
+    related_finding_id: str | None
+    related_rfi_id: str | None
+    dropped_sentences: int
+    mode: Literal["replay", "live", "cache"]
+    latency_ms: int
+    cost_gbp: float
+
+
+class AskSuggestion(BaseModel):
+    id: str  # golden item ID, e.g. "a01"
+    question: str
+    route: AskRoute

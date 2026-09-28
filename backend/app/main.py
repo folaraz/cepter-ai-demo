@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from psycopg_pool import ConnectionPool
 
 from app import web
-from app.api import evals, findings, health, reviews, rfi, summary
+from app.api import ask, evals, findings, health, reviews, rfi, summary
 from app.api.session import session_middleware
 from app.config import get_settings
 from app.db.pool import create_pool
@@ -50,6 +50,7 @@ for router in (
     reviews.router,
     rfi.router,
     evals.router,
+    ask.router,
 ):
     app.include_router(router, prefix="/api")
 app.include_router(web.router)  # last: its catch-all must not shadow the API
