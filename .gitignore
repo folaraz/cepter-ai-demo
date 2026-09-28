@@ -15,3 +15,5 @@ frontend/test-results/
 .ruff_cache/
 # onnxruntime telemetry session file (fastembed)
 *.ses
+# Local Claude Code config (launch.json, settings.local.json)
+.claude/
