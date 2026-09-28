@@ -7,6 +7,10 @@ validation error appended to the prompt, then an LLMError is raised.
 
 Sampling parameters are not sent: claude-sonnet-5 rejects a non-default temperature, and
 repeatability comes from replaying recordings, not from temperature 0.
+
+Thinking is turned off: with it on, a forced tool choice is not guaranteed and the model
+can end its turn without calling the tool. If a response still has no tool call, the call
+is retried once, like an answer that fails validation.
 """
 
 import time
@@ -15,7 +19,12 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 import anthropic
-from anthropic.types import MessageParam, ToolChoiceToolParam, ToolParam
+from anthropic.types import (
+    MessageParam,
+    ThinkingConfigDisabledParam,
+    ToolChoiceToolParam,
+    ToolParam,
+)
 from pydantic import BaseModel, ValidationError
 
 from app.config import get_settings
@@ -42,6 +51,15 @@ class Transport(Protocol):
     def call(self, *, model: str, system: str, user: str, tool: dict[str, Any]) -> ToolCall: ...
 
 
+class NoToolCall(LLMError):
+    """The model ended its turn without calling the tool."""
+
+    def __init__(self, stop_reason: str | None, input_tokens: int, output_tokens: int) -> None:
+        self.stop_reason = stop_reason
+        self.input_tokens, self.output_tokens = input_tokens, output_tokens
+        super().__init__(f"model stopped with {stop_reason!r} instead of a tool call")
+
+
 class AnthropicTransport:
     def __init__(self, api_key: str | None = None) -> None:
         # With no key the SDK looks for credentials itself; it only fails when a call is made.
@@ -59,17 +77,15 @@ class AnthropicTransport:
             messages=messages,
             tools=[tool_param],
             tool_choice=ToolChoiceToolParam(type="tool", name=tool["name"]),
+            thinking=ThinkingConfigDisabledParam(type="disabled"),
         )
-        if response.stop_reason != "tool_use":
-            raise LLMError(f"model stopped with {response.stop_reason!r} instead of a tool call")
+        usage = (response.usage.input_tokens, response.usage.output_tokens)
         for block in response.content:
             if block.type == "tool_use":
                 return ToolCall(
-                    input=dict(block.input),
-                    input_tokens=response.usage.input_tokens,
-                    output_tokens=response.usage.output_tokens,
+                    input=dict(block.input), input_tokens=usage[0], output_tokens=usage[1]
                 )
-        raise LLMError("response had no tool call")
+        raise NoToolCall(response.stop_reason, *usage)
 
 
 def tool_for(schema: type[BaseModel]) -> dict[str, Any]:
@@ -166,7 +182,15 @@ class AnthropicLLMClient:
         input_tokens = output_tokens = 0
         prompt = user
         for attempt in (1, 2):
-            call = transport.call(model=self._model, system=system, user=prompt, tool=tool)
+            try:
+                call = transport.call(model=self._model, system=system, user=prompt, tool=tool)
+            except NoToolCall as missing:
+                input_tokens += missing.input_tokens
+                output_tokens += missing.output_tokens
+                if attempt == 2:
+                    raise LLMError(f"{purpose}: no {tool['name']} call, twice") from missing
+                prompt = f"{user}\n\nAnswer by calling {tool['name']}."
+                continue
             input_tokens += call.input_tokens
             output_tokens += call.output_tokens
             try:

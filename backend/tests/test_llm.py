@@ -13,7 +13,13 @@ from pydantic import BaseModel
 
 from app.db.repositories import runs
 from app.domain.runs import NewLLMCall
-from app.llm.anthropic_client import AnthropicLLMClient, AnthropicTransport, ToolCall, tool_for
+from app.llm.anthropic_client import (
+    AnthropicLLMClient,
+    AnthropicTransport,
+    NoToolCall,
+    ToolCall,
+    tool_for,
+)
 from app.llm.client import LLMError, MissingRecording, recording_key
 from app.llm.pricing import cost_gbp
 from app.llm.replay import RecordingStore
@@ -257,3 +263,44 @@ def test_transport_raises_when_the_model_does_not_call_the_tool() -> None:
     transport, _ = stub_transport(response)
     with pytest.raises(LLMError, match="refusal"):
         transport.call(model=MODEL, system="s", user="u", tool=tool_for(Capacity))
+
+
+def test_transport_turns_thinking_off_so_the_tool_call_is_forced() -> None:
+    response = SimpleNamespace(
+        stop_reason="tool_use",
+        content=[SimpleNamespace(type="tool_use", input=GOOD)],
+        usage=SimpleNamespace(input_tokens=10, output_tokens=5),
+    )
+    transport, messages = stub_transport(response)
+    transport.call(model=MODEL, system="s", user="u", tool=tool_for(Capacity))
+    assert messages.kwargs["thinking"] == {"type": "disabled"}
+
+
+class EndsTurnOnce:
+    """Ends its turn without the tool the first time, as the real model once did."""
+
+    def __init__(self) -> None:
+        self.prompts: list[str] = []
+
+    def call(self, *, user: str, **_: Any) -> ToolCall:
+        self.prompts.append(user)
+        if len(self.prompts) == 1:
+            raise NoToolCall("end_turn", 300, 20)
+        return ToolCall(input=GOOD, input_tokens=300, output_tokens=40)
+
+
+def test_a_missing_tool_call_is_retried_once(tmp_path: Path, traced: list[NewLLMCall]) -> None:
+    transport = EndsTurnOnce()
+    result = client(tmp_path, traced, transport).structured(**PROMPT, mode="record")
+    assert result == Capacity(**GOOD)
+    assert "Answer by calling Capacity." in transport.prompts[1]
+    assert (traced[0].input_tokens, traced[0].output_tokens) == (600, 60)
+
+
+def test_two_missing_tool_calls_raise(tmp_path: Path, traced: list[NewLLMCall]) -> None:
+    class AlwaysEnds:
+        def call(self, **_: Any) -> ToolCall:
+            raise NoToolCall("end_turn", 1, 1)
+
+    with pytest.raises(LLMError, match="no Capacity call, twice"):
+        client(tmp_path, traced, AlwaysEnds()).structured(**PROMPT, mode="record")

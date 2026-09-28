@@ -1,10 +1,14 @@
-"""The extract.v1 prompt. Any change to the text here changes the recording key, so bump
-PROMPT_VERSION and re-record rather than editing a recorded prompt in place."""
+"""The extraction prompt. Any change to the text here changes the recording key, so bump
+PROMPT_VERSION and re-record rather than editing a recorded prompt in place.
+
+extract.v2: a PARTY_TO quote must name the party (v1 quotes like 'the "Landlord"' failed
+the verifier's name rule); conditions get no number (it is only in headings); a
+condition's `requires` is the plan's name, not the surrounding clause."""
 
 from app.domain.documents import Document, Paragraph
 from app.domain.ontology import ASSET, ASSET_LOCAL_ID, Ontology, PropertySpec
 
-PROMPT_VERSION = "extract.v1"
+PROMPT_VERSION = "extract.v2"
 
 RULES = f"""\
 You extract facts from one document in the data room for a renewable-energy asset.
@@ -24,9 +28,14 @@ Rules:
 5. Each land parcel is its own LandParcel entity with its number as the number property.
    A sentence naming several parcels gives one relation per parcel, all citing it.
 6. Each party is a Party entity with a name property quoted as written. Link it to the
-   agreement or instrument with PARTY_TO and the role the text gives it.
-7. Each planning condition is its own Condition entity, numbered, linked from its Permit
-   with HAS_CONDITION citing the condition's paragraph.
+   agreement or instrument with PARTY_TO and the role the text gives it. A PARTY_TO quote
+   must contain both the party's name and the words that give its role, for example
+   'ACME SOLAR LIMITED (the "Buyer")', never the role alone.
+7. Each planning condition is its own Condition entity, linked from its Permit with
+   HAS_CONDITION citing the condition's paragraph. Condition numbers appear only in
+   headings, which cannot be quoted, so give a condition no number property.
+   A condition's `requires` is only the name of the plan, scheme or document it requires
+   (for example "Drainage Strategy"), not the clause around it.
 8. Dates as ISO YYYY-MM-DD. Numbers as numbers (3, not "three"). Enum values exactly as
    listed.
 9. Extract only what the text states. Never infer a value, and never record that
