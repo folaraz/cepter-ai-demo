@@ -55,6 +55,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Documents */
+        get: operations["get_documents_api_documents_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Document */
+        get: operations["get_document_api_documents__document_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/findings/{finding_id}/review": {
         parameters: {
             query?: never;
@@ -316,6 +350,84 @@ export interface components {
             from: string;
             /** To */
             to: string;
+        };
+        /** DocumentDate */
+        DocumentDate: {
+            /** Label */
+            label: string;
+            /** Value */
+            value: string;
+        };
+        /** DocumentDetail */
+        DocumentDetail: {
+            document: components["schemas"]["DocumentListItem"];
+            /** Pages */
+            pages: components["schemas"]["DocumentPage"][];
+            /** Notes */
+            notes: components["schemas"]["DocumentNote"][];
+        };
+        /** DocumentListItem */
+        DocumentListItem: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** File Name */
+            file_name: string;
+            /** Pages */
+            pages: number;
+            /** Parties */
+            parties: components["schemas"]["DocumentParty"][];
+            date: components["schemas"]["DocumentDate"] | null;
+            /** Finding Ids */
+            finding_ids: string[];
+            /** Note Count */
+            note_count: number;
+        };
+        /** DocumentNote */
+        DocumentNote: {
+            /** Id */
+            id: string;
+            /** Paragraph Id */
+            paragraph_id: string;
+            /** Quote Start */
+            quote_start: number;
+            /** Quote End */
+            quote_end: number;
+            /** Label */
+            label: string;
+            /** Value */
+            value: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "verified" | "corroborated" | "conflict";
+            /** Finding Ids */
+            finding_ids: string[];
+        };
+        /** DocumentPage */
+        DocumentPage: {
+            /** Number */
+            number: number;
+            /** Paragraphs */
+            paragraphs: components["schemas"]["DocumentParagraph"][];
+        };
+        /** DocumentParagraph */
+        DocumentParagraph: {
+            /** Id */
+            id: string;
+            /** Heading */
+            heading: string;
+            /** Text */
+            text: string;
+        };
+        /** DocumentParty */
+        DocumentParty: {
+            /** Name */
+            name: string;
+            /** Role */
+            role: string;
         };
         /** DocumentSummary */
         DocumentSummary: {
@@ -689,6 +801,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Finding"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_documents_api_documents_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentListItem"][];
+                };
+            };
+        };
+    };
+    get_document_api_documents__document_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentDetail"];
                 };
             };
             /** @description Validation Error */

@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 import type { Finding, QuoteEvidence } from '../api/types';
 import { QUOTE } from '../lib/status';
 import { useActions, useSummary } from '../state/store';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Icon, IconButton, Sk } from '../components/ui';
+import { BookOpenText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Icon, IconButton, Sk, TextLink } from '../components/ui';
 import { cn } from '../lib/cn';
 
 // White sheet, 1px hairline, radius 4, one shadow tier, 56x64 padding (see .paper in app.css).
@@ -16,6 +16,7 @@ export function SourcePage({ finding, quotes, srcIdx }: { finding: Finding | nul
   const { setSrc } = useActions();
   return (
     <SourcePane
+      findingId={finding?.id}
       quotes={quotes}
       index={srcIdx}
       onIndex={setSrc}
@@ -38,6 +39,7 @@ export function SourcePane({
   empty,
   resetKey,
   label = 'Source document',
+  findingId,
 }: {
   quotes: QuoteEvidence[];
   index: number;
@@ -48,7 +50,10 @@ export function SourcePane({
   /** Changes when the set of quotes belongs to something else (a different finding or answer). */
   resetKey?: string | number;
   label?: string;
+  /** The finding these sources belong to; the reader then lights up that finding's note. */
+  findingId?: string;
 }) {
+  const { openDocument } = useActions();
   const n = quotes.length;
   const i = Math.min(index, Math.max(0, n - 1));
   const src = quotes[i];
@@ -67,6 +72,15 @@ export function SourcePane({
           <Sk className="w-[120px]" />
         ) : null}
         <span className="grow" />
+        {src && (
+          <TextLink
+            className="mr-2 text-sm"
+            onClick={() => openDocument(src.citation.document_id, { paragraph: src.citation.paragraph_id, finding: findingId })}
+          >
+            <Icon icon={BookOpenText} size={14} />
+            Open in document
+          </TextLink>
+        )}
         <div className="flex items-center gap-1.5">
           <IconButton icon={ChevronLeft} size="sm" aria-label="Previous source" disabled={n < 2} onClick={() => onIndex((i - 1 + n) % n)} />
           <IconButton icon={ChevronRight} size="sm" aria-label="Next source" disabled={n < 2} onClick={() => onIndex((i + 1) % n)} />

@@ -13,7 +13,7 @@ for (const scheme of ['light', 'dark']) {
   const scan = async (name, hash, prep) => {
     await page.goto('about:blank'); // fresh app state per scan (Ask history lives in memory)
     await page.goto(`${base}/${hash}`);
-    await page.waitForSelector('[role=row][data-focus], article mark, [data-part=rfi], #ask-input');
+    await page.waitForSelector('[role=row][data-focus], article mark, [data-part=rfi], #ask-input, [data-part=document-row]');
     if (prep) await prep();
     const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']).analyze();
     failures += violations.length;
@@ -33,6 +33,8 @@ for (const scheme of ['light', 'dark']) {
   });
   await scan('Evidence, missing evidence', '#/evidence/F-01');
   await scan('Requests', '#/requests');
+  await scan('Documents', '#/documents', () => page.waitForSelector('[data-part=document-row]'));
+  await scan('Document reader', '#/documents/planning', () => page.waitForSelector('[data-page="3"]'));
   const askVia = (q, done) => async () => {
     await page.getByRole('button', { name: q }).click();
     if (done) await page.waitForSelector(done);

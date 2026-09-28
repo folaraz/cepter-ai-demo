@@ -33,14 +33,15 @@ function useTheme(): [Theme, () => void] {
   return [theme, toggle];
 }
 
-const CRUMB = { summary: 'Summary', evidence: 'Evidence', rfi: 'Seller questions', ask: 'Ask' } as const;
+const CRUMB = { summary: 'Summary', evidence: 'Evidence', documents: 'Documents', rfi: 'Seller questions', ask: 'Ask' } as const;
 
 export function TopBar() {
   const { state } = useStore();
   const summary = useSummary();
   const { setHelp } = useActions();
   const [theme, toggleTheme] = useTheme();
-  const crumb = state.view === 'evidence' && state.selectedId ? `Evidence · ${findingName(state.selectedId)}` : CRUMB[state.view];
+  const docTitle = state.view === 'documents' && state.docId ? summary?.documents.find((d) => d.id === state.docId)?.title : undefined;
+  const crumb = state.view === 'evidence' && state.selectedId ? `Evidence · ${findingName(state.selectedId)}` : (docTitle ?? CRUMB[state.view]);
 
   return (
     <header className="flex h-(--topbar-h) shrink-0 items-center gap-4 border-b border-hairline bg-surface px-4">

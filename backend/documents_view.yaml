@@ -1,0 +1,62 @@
+# How GET /api/documents and GET /api/documents/{id} word what was taken from each document.
+# Deterministic: every note is a verified quote from the published run's provenance.
+#
+# A note is one statement in one paragraph: a quoted span, a label and a value. Rows that
+# say the same thing twice are folded together:
+#   - a Party's name row is covered by its PARTY_TO row (the role quote names it too)
+#   - a LandParcel's number row is covered by the COVERS / SITE_INCLUDES / CABLE_CROSSES row
+#   - rows for several parcels quoted by one span become one note ("Parcels 9 to 11")
+#   - a HAS_CONDITION row is covered by the condition's type row
+
+# The one date shown for each document in the list, read from that document's own quotes.
+documents:
+  lease: {date: {label: "Starts", property: Lease.start_date}}
+  planning: {date: {label: "Decided", property: Permit.decision_date}}
+  grid: {date: {label: "Connects", property: GridConnection.connection_date}}
+  ppa: {date: {label: "Signed", property: OfftakeAgreement.signed_date}}
+  site: {}
+
+# Node properties. format: date -> "31 Mar 2029"; number -> "49.9"; enum -> the labels
+# under enums, joined as prose; text -> as quoted. "{name}" is the node's display name.
+properties:
+  Asset.export_capacity_mw: {label: "Export capacity", format: number, unit: "MW"}
+  Asset.technology: {label: "Technology", format: enum}
+  Lease.start_date: {label: "Lease starts", format: date}
+  Lease.term_years: {label: "Lease term", format: number, unit: "years"}
+  Lease.signed_date: {label: "Lease signed", format: date}
+  Easement.signed_date: {label: "Easement signed", format: date}
+  Permit.reference: {label: "Planning reference", format: text}
+  Permit.decision_date: {label: "Decision date", format: date}
+  Permit.authority: {label: "Planning authority", format: text}
+  Condition.condition_type: {label: "{name}", format: enum}
+  Condition.years: {label: "{name} period", format: number, unit: "years"}
+  Condition.requires: {label: "{name} requires", format: text}
+  Condition.discharged_on: {label: "{name} discharged", format: date}
+  GridConnection.reference: {label: "Offer reference", format: text}
+  GridConnection.connection_date: {label: "Connection date", format: date}
+  GridConnection.max_import_capacity_mw: {label: "Import capacity", format: number, unit: "MW"}
+  GridConnection.substation: {label: "Substation", format: text}
+  GridConnection.voltage_kv: {label: "Voltage", format: number, unit: "kV"}
+  OfftakeAgreement.target_cod: {label: "Target COD", format: date}
+  OfftakeAgreement.long_stop_date: {label: "Long-stop date", format: date}
+  OfftakeAgreement.term_years: {label: "PPA term", format: number, unit: "years"}
+  OfftakeAgreement.price_gbp_per_mwh: {label: "Price", format: money, unit: "per MWh"}
+  OfftakeAgreement.signed_date: {label: "PPA signed", format: date}
+
+enums:
+  technology: {solar_pv: "solar PV", bess: "battery storage", wind: "wind"}
+  condition_type:
+    time_limit: "Time limit"
+    approved_plans: "Approved plans"
+    temporary_period: "Temporary permission"
+    decommissioning: "Decommissioning"
+    pre_commencement: "Pre-commencement"
+    other: "Other"
+
+# Edges. PARTY_TO: the label is the role (role_labels in ask.yaml), the value the party.
+# Parcel edges: the value is the parcels, "Parcels 9, 10 and 11".
+edges:
+  PARTY_TO: {value: party}
+  COVERS: {label: "Land covered", value: parcels}
+  SITE_INCLUDES: {label: "Site includes", value: parcels}
+  CABLE_CROSSES: {label: "Cable crosses", value: parcels}

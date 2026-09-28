@@ -118,6 +118,57 @@ export interface DocumentSummary {
   pages: number;
 }
 
+// ---------- Documents: the data room, read page by page ----------
+
+export interface DocumentParty {
+  name: string; // display name, "John Hartley"
+  role: string; // as the document gives it, "landlord"
+}
+
+export interface DocumentDate {
+  label: string; // "Signed"
+  value: string; // "3 Mar 2025"
+}
+
+export interface DocumentListItem {
+  id: string;
+  title: string;
+  file_name: string;
+  pages: number;
+  parties: DocumentParty[]; // named in this document, in reading order
+  date: DocumentDate | null; // the document's key date, as it states it
+  finding_ids: string[]; // findings (flagged or passed) that quote it, in finding order
+  note_count: number; // statements taken from it
+}
+
+export interface DocumentParagraph {
+  id: string;
+  heading: string; // "" when the paragraph has none
+  text: string;
+}
+
+export interface DocumentPage {
+  number: number;
+  paragraphs: DocumentParagraph[];
+}
+
+export interface DocumentNote {
+  id: string; // "n1", in reading order
+  paragraph_id: string;
+  quote_start: number; // paragraph.text.slice(quote_start, quote_end) is the quote
+  quote_end: number;
+  label: string; // "Export capacity", "Landlord"
+  value: string; // "49.9 MW", "John Hartley"
+  status: QuoteStatus;
+  finding_ids: string[]; // findings whose evidence quotes this span
+}
+
+export interface DocumentDetail {
+  document: DocumentListItem;
+  pages: DocumentPage[]; // pages with text, in order
+  notes: DocumentNote[];
+}
+
 export interface ExpectedDocument {
   label: string;
   expected_by: string;
@@ -186,6 +237,8 @@ export interface Rfi {
 // GET  /api/findings/{id}               -> Finding
 // POST /api/findings/{id}/review        -> ReviewResponse   (body: ReviewRequest)
 // POST /api/reviews/undo                -> FindingRow       (body: { undo_token })
+// GET  /api/documents                   -> DocumentListItem[]
+// GET  /api/documents/{id}              -> DocumentDetail
 // GET  /api/rfi                         -> Rfi[]
 // GET  /api/rfi.md                      -> text/markdown
 // POST /api/evals/run                   -> EvalStatus       (may return state "running"; poll GET /api/evals/latest)

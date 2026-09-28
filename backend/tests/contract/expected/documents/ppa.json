@@ -1,0 +1,223 @@
+{
+  "document": {
+    "id": "ppa",
+    "title": "Power purchase agreement",
+    "file_name": "ppa.pdf",
+    "pages": 5,
+    "parties": [
+      {
+        "name": "Brackenfield Solar",
+        "role": "generator"
+      },
+      {
+        "name": "Northwind Energy Supply",
+        "role": "buyer"
+      }
+    ],
+    "date": {
+      "label": "Signed",
+      "value": "3 Mar 2025"
+    },
+    "finding_ids": [
+      "F-02",
+      "F-03",
+      "F-07",
+      "F-08"
+    ],
+    "note_count": 9
+  },
+  "pages": [
+    {
+      "number": 1,
+      "paragraphs": [
+        {
+          "id": "ppa:p1:¶1",
+          "heading": "Parties",
+          "text": "This Agreement is made between Brackenfield Solar Limited (the \"Generator\") and Northwind Energy Supply Limited (the \"Buyer\")."
+        },
+        {
+          "id": "ppa:p1:¶2",
+          "heading": "Schedule 1: Facility",
+          "text": "Contracted Capacity: 49.9 MW (AC), measured at the Delivery Point."
+        },
+        {
+          "id": "ppa:p1:¶3",
+          "heading": "Schedule 1: Facility",
+          "text": "The Facility means the solar photovoltaic generating station and co-located battery storage at Bracken Farm, Wickham."
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "paragraphs": [
+        {
+          "id": "ppa:p2:¶1",
+          "heading": "1. Definitions",
+          "text": "\"Commercial Operation\" means the date on which the Facility first exports electricity under this Agreement."
+        },
+        {
+          "id": "ppa:p2:¶2",
+          "heading": "1. Definitions",
+          "text": "\"Delivery Point\" means the Point of Connection to the distribution system at Wickham Primary Substation."
+        },
+        {
+          "id": "ppa:p2:¶3",
+          "heading": "2. Term",
+          "text": "This Agreement continues for 10 years from Commercial Operation."
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "paragraphs": [
+        {
+          "id": "ppa:p3:¶1",
+          "heading": "3. Price",
+          "text": "The Contract Price shall be £61.50 per MWh, indexed annually to the Consumer Prices Index."
+        },
+        {
+          "id": "ppa:p3:¶2",
+          "heading": "4. Delivery",
+          "text": "The Buyer shall purchase all electricity exported by the Facility at the Delivery Point."
+        },
+        {
+          "id": "ppa:p3:¶3",
+          "heading": "5. Metering",
+          "text": "Metering shall comply with the Balancing and Settlement Code."
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "paragraphs": [
+        {
+          "id": "ppa:p4:¶1",
+          "heading": "6. Commercial Operation",
+          "text": "The Generator shall use reasonable endeavours to achieve Commercial Operation on or before 31 March 2029 (the \"Target COD\")."
+        },
+        {
+          "id": "ppa:p4:¶2",
+          "heading": "6. Commercial Operation",
+          "text": "If Commercial Operation has not occurred by 31 December 2029 (the \"Long-Stop Date\"), the Buyer may terminate this Agreement by notice to the Generator."
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "paragraphs": [
+        {
+          "id": "ppa:p5:¶1",
+          "heading": "Execution",
+          "text": "Signed for and on behalf of Northwind Energy Supply Limited on 3 March 2025."
+        },
+        {
+          "id": "ppa:p5:¶2",
+          "heading": "Execution",
+          "text": "Signed for and on behalf of Brackenfield Solar Limited on 3 March 2025."
+        }
+      ]
+    }
+  ],
+  "notes": [
+    {
+      "id": "n1",
+      "paragraph_id": "ppa:p1:¶1",
+      "quote_start": 31,
+      "quote_end": 75,
+      "label": "Generator",
+      "value": "Brackenfield Solar",
+      "status": "verified",
+      "finding_ids": [
+        "F-07"
+      ]
+    },
+    {
+      "id": "n2",
+      "paragraph_id": "ppa:p1:¶1",
+      "quote_start": 80,
+      "quote_end": 125,
+      "label": "Buyer",
+      "value": "Northwind Energy Supply",
+      "status": "verified",
+      "finding_ids": [
+        "F-08"
+      ]
+    },
+    {
+      "id": "n3",
+      "paragraph_id": "ppa:p1:¶2",
+      "quote_start": 0,
+      "quote_end": 28,
+      "label": "Export capacity",
+      "value": "49.9 MW",
+      "status": "corroborated",
+      "finding_ids": [
+        "F-03"
+      ]
+    },
+    {
+      "id": "n4",
+      "paragraph_id": "ppa:p1:¶3",
+      "quote_start": 23,
+      "quote_end": 91,
+      "label": "Technology",
+      "value": "Solar PV and battery storage",
+      "status": "corroborated",
+      "finding_ids": []
+    },
+    {
+      "id": "n5",
+      "paragraph_id": "ppa:p2:¶3",
+      "quote_start": 29,
+      "quote_end": 37,
+      "label": "PPA term",
+      "value": "10 years",
+      "status": "verified",
+      "finding_ids": []
+    },
+    {
+      "id": "n6",
+      "paragraph_id": "ppa:p3:¶1",
+      "quote_start": 28,
+      "quote_end": 42,
+      "label": "Price",
+      "value": "£61.50 per MWh",
+      "status": "verified",
+      "finding_ids": []
+    },
+    {
+      "id": "n7",
+      "paragraph_id": "ppa:p4:¶1",
+      "quote_start": 78,
+      "quote_end": 104,
+      "label": "Target COD",
+      "value": "31 Mar 2029",
+      "status": "verified",
+      "finding_ids": [
+        "F-02"
+      ]
+    },
+    {
+      "id": "n8",
+      "paragraph_id": "ppa:p4:¶2",
+      "quote_start": 41,
+      "quote_end": 83,
+      "label": "Long-stop date",
+      "value": "31 Dec 2029",
+      "status": "verified",
+      "finding_ids": []
+    },
+    {
+      "id": "n9",
+      "paragraph_id": "ppa:p5:¶1",
+      "quote_start": 28,
+      "quote_end": 75,
+      "label": "PPA signed",
+      "value": "3 Mar 2025",
+      "status": "verified",
+      "finding_ids": [
+        "F-08"
+      ]
+    }
+  ]
+}

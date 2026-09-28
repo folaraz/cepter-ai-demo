@@ -142,6 +142,30 @@ assert.equal(await chip.getAttribute('aria-pressed'), 'true');
 assert.match(await text('article mark'), /Maximum Export Capacity at the Point of Connection shall be 45 MW/);
 step('"/" opens Ask; a question answers with chips; a citation opens its highlighted passage');
 
+// Documents: the data room, a document read with its notes, and a finding's source in context.
+await page.getByRole('button', { name: /^Documents/ }).first().click();
+await focusIs('documents-heading');
+assert.match(await text('[data-focus="documents-heading"]'), /Five documents in the room\. Two that the checks need are missing\./);
+assert.equal(await page.locator('[data-part=document-row]').count(), 5);
+await page.locator('[data-part=document-row]', { hasText: 'Power purchase agreement' }).click();
+await focusIs('document-heading');
+await page.waitForSelector('[data-page="5"]');
+await page.locator('body').focus();
+await page.keyboard.press('j');
+await page.keyboard.press('j');
+await page.keyboard.press('j');
+assert.equal(await page.locator('mark.bg-mark').first().innerText(), 'Contracted Capacity: 49.9 MW');
+step('Documents lists the room; the reader marks every quoted passage and J steps through the notes');
+
+await page.goto(`${base}/#/evidence/F-03`);
+await page.waitForSelector('article mark');
+await page.getByRole('button', { name: 'Next source' }).click();
+await page.getByRole('button', { name: 'Open in document' }).click();
+await focusIs('document-heading');
+await page.waitForFunction(() => document.querySelector('mark.bg-mark')?.textContent === 'Contracted Capacity: 49.9 MW');
+assert.match(page.url(), /#\/documents\/ppa\/.+\/F-03$/);
+step('"Open in document" opens the source in the reader with that passage lit');
+
 // Shortcuts do not fire while typing.
 await page.getByRole('button', { name: /Evidence/ }).first().click();
 await page.keyboard.press('r');
