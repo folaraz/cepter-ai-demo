@@ -67,7 +67,7 @@
   --tracking-tight: -0.01em;
   --tracking-none: 0;
 
-  /* Type sizes used by the artboard. Line height is inherited unless set. */
+  /* Type sizes used by the design. Line height is inherited unless set. */
   --text-*: initial;
   --text-2xs: 10px;
   --text-xs: 11px;
