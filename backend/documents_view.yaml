@@ -6,7 +6,8 @@
 #   - a Party's name row is covered by its PARTY_TO row (the role quote names it too)
 #   - a LandParcel's number row is covered by the COVERS / SITE_INCLUDES / CABLE_CROSSES row
 #   - rows for several parcels quoted by one span become one note ("Parcels 9 to 11")
-#   - a HAS_CONDITION row is covered by the condition's type row
+#   - a planning condition's rows (its type, years, what it requires) become one note that
+#     says what the condition asks of the project (see conditions below)
 
 # The one date shown for each document in the list, read from that document's own quotes.
 documents:
@@ -28,10 +29,6 @@ properties:
   Permit.reference: {label: "Planning reference", format: text}
   Permit.decision_date: {label: "Decision date", format: date}
   Permit.authority: {label: "Planning authority", format: text}
-  Condition.condition_type: {label: "{name}", format: enum}
-  Condition.years: {label: "{name} period", format: number, unit: "years"}
-  Condition.requires: {label: "{name} requires", format: text}
-  Condition.discharged_on: {label: "{name} discharged", format: date}
   GridConnection.reference: {label: "Offer reference", format: text}
   GridConnection.connection_date: {label: "Connection date", format: date}
   GridConnection.max_import_capacity_mw: {label: "Import capacity", format: number, unit: "MW"}
@@ -45,13 +42,6 @@ properties:
 
 enums:
   technology: {solar_pv: "solar PV", bess: "battery storage", wind: "wind"}
-  condition_type:
-    time_limit: "Time limit"
-    approved_plans: "Approved plans"
-    temporary_period: "Temporary permission"
-    decommissioning: "Decommissioning"
-    pre_commencement: "Pre-commencement"
-    other: "Other"
 
 # Edges. PARTY_TO: the label is the role (role_labels in ask.yaml), the value the party.
 # Parcel edges: the value is the parcels, "Parcels 9, 10 and 11".
@@ -60,3 +50,26 @@ edges:
   COVERS: {label: "Land covered", value: parcels}
   SITE_INCLUDES: {label: "Site includes", value: parcels}
   CABLE_CROSSES: {label: "Cable crosses", value: parcels}
+
+# Planning conditions. One note per condition, labelled with its number ("Condition 5")
+# and worded as the obligation it puts on the project. {years} and {requires} are that
+# condition's own verified values; when one wasn't extracted, `without` is used instead,
+# so a sentence never states a value that isn't quoted. `discharged` is added when a
+# discharge date was found.
+conditions:
+  time_limit:
+    text: "Work must start within {years} years of the permission"
+    without: "Work must start within the time limit"
+  approved_plans:
+    text: "Build to the approved plans"
+  temporary_period:
+    text: "Permission lasts {years} years, then the site is restored"
+    without: "Permission is for a limited period, then the site is restored"
+  decommissioning:
+    text: "A removal scheme is due when export ends"
+  pre_commencement:
+    text: "No work may start until the {requires} is approved"
+    without: "No work may start until this condition is discharged"
+  other:
+    text: "A condition of the planning permission"
+  discharged: "Discharged {date}"

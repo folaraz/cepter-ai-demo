@@ -8,6 +8,7 @@ worded by backend/documents_view.yaml. Nothing here is written by a model.
 from dataclasses import dataclass, field
 from datetime import date
 from functools import cache
+from string import Formatter
 from typing import Any
 
 import yaml
@@ -155,7 +156,8 @@ def _notes(p: Published, doc_id: str) -> list[DocumentNote]:
         note.statuses.add(row.status)
 
     order = {q.id: i for i, q in enumerate(_paragraphs(p, doc_id))}
-    ordered = sorted(folded.values(), key=lambda n: (order[n.paragraph_id], n.start, n.end))
+    notes = [*folded.values(), *_condition_notes(p, doc_id, spec["conditions"])]
+    ordered = sorted(notes, key=lambda n: (order[n.paragraph_id], n.start, n.end))
     return [
         DocumentNote(
             id=f"n{i}",
@@ -185,6 +187,8 @@ def _describe(p: Published, row: Provenance, spec: dict[str, Any]) -> tuple[str,
         return edge_spec["label"], p.view.node(edge.target_id).key, True
     if row.property is None:
         return None  # a party's name: its PARTY_TO row quotes it too
+    if p.view.node(row.node_id or "").type == "Condition":
+        return None  # one note per condition: see _condition_notes
     prop_spec = spec["properties"].get(_qualified(p, row))
     if prop_spec is None:
         return None  # a parcel's number: its parcel edge says it
@@ -209,6 +213,53 @@ def _format(value: Any, prop_spec: dict[str, Any], prop: str, enums: dict[str, A
         case _:
             text = str(value)
     return f"{text} {unit}".strip()
+
+
+def _condition_notes(p: Published, doc_id: str, spec: dict[str, Any]) -> list[_Note]:
+    """One note per planning condition, worded as what it asks of the project: its type,
+    years and requirement folded into one sentence, marked across every span they quote."""
+    rows_of: dict[str, list[Provenance]] = {}
+    for row in _rows(p, doc_id):
+        if row.edge_id is None and row.node_id and p.view.node(row.node_id).type == "Condition":
+            rows_of.setdefault(row.node_id, []).append(row)
+    notes = []
+    for node_id, rows in rows_of.items():
+        values = {r.property: r.value for r in rows}
+        kind = values.get("condition_type")
+        if kind is None:
+            continue  # nothing says what the condition is
+        text = condition_text(str(kind), values, spec)
+        paragraph = next(r.paragraph_id for r in rows if r.property == "condition_type")
+        same = [r for r in rows if r.paragraph_id == paragraph]
+        notes.append(
+            _Note(
+                paragraph,
+                min(r.quote_start for r in same),
+                max(r.quote_end for r in same),
+                p.view.node(node_id).name or "Condition",
+                values=[text],
+                statuses={r.status for r in same},
+            )
+        )
+    return notes
+
+
+def condition_text(kind: str, values: dict[str | None, Any], spec: dict[str, Any]) -> str:
+    """The obligation a condition puts on the project, from its own verified values. A
+    sentence that needs a value that wasn't quoted uses its `without` wording instead."""
+    wording = spec.get(kind, spec["other"])
+    known: dict[str, Any] = {"requires": values.get("requires")}
+    if values.get("years") is not None:
+        known["years"] = format_number(float(values["years"]))
+    needed = {name for _, name, _, _ in Formatter().parse(wording["text"]) if name}
+    if all(known.get(n) is not None for n in needed):
+        text: str = wording["text"].format(**known)
+    else:
+        text = wording.get("without", wording["text"])
+    if values.get("discharged_on") is not None:
+        done = short_date(date.fromisoformat(str(values["discharged_on"])))
+        text = f"{text}. {spec['discharged'].format(date=done)}"
+    return text
 
 
 def _parcels(numbers: list[str]) -> str:

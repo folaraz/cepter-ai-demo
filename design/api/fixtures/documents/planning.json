@@ -24,7 +24,7 @@
       "F-05",
       "F-06"
     ],
-    "note_count": 15
+    "note_count": 12
   },
   "pages": [
     {
@@ -204,7 +204,7 @@
       "quote_start": 33,
       "quote_end": 84,
       "label": "Condition 1",
-      "value": "Time limit",
+      "value": "Work must start within 3 years of the permission",
       "status": "verified",
       "finding_ids": [
         "F-06"
@@ -212,79 +212,43 @@
     },
     {
       "id": "n9",
-      "paragraph_id": "planning:p2:¶2",
-      "quote_start": 73,
-      "quote_end": 84,
-      "label": "Condition 1 period",
-      "value": "3 years",
-      "status": "verified",
-      "finding_ids": [
-        "F-06"
-      ]
-    },
-    {
-      "id": "n10",
       "paragraph_id": "planning:p2:¶4",
       "quote_start": 56,
       "quote_end": 74,
       "label": "Condition 2",
-      "value": "Approved plans",
+      "value": "Build to the approved plans",
       "status": "verified",
       "finding_ids": []
     },
     {
-      "id": "n11",
+      "id": "n10",
       "paragraph_id": "planning:p3:¶2",
       "quote_start": 39,
       "quote_end": 71,
       "label": "Condition 3",
-      "value": "Temporary permission",
+      "value": "Permission lasts 40 years, then the site is restored",
       "status": "verified",
       "finding_ids": [
         "F-04"
       ]
     },
     {
-      "id": "n12",
-      "paragraph_id": "planning:p3:¶2",
-      "quote_start": 63,
-      "quote_end": 71,
-      "label": "Condition 3 period",
-      "value": "40 years",
-      "status": "verified",
-      "finding_ids": [
-        "F-04"
-      ]
-    },
-    {
-      "id": "n13",
+      "id": "n11",
       "paragraph_id": "planning:p3:¶4",
       "quote_start": 46,
       "quote_end": 89,
       "label": "Condition 4",
-      "value": "Decommissioning",
+      "value": "A removal scheme is due when export ends",
       "status": "verified",
       "finding_ids": []
     },
     {
-      "id": "n14",
+      "id": "n12",
       "paragraph_id": "planning:p3:¶6",
       "quote_start": 0,
-      "quote_end": 35,
-      "label": "Condition 5",
-      "value": "Pre-commencement",
-      "status": "verified",
-      "finding_ids": [
-        "F-05"
-      ]
-    },
-    {
-      "id": "n15",
-      "paragraph_id": "planning:p3:¶6",
-      "quote_start": 36,
       "quote_end": 74,
-      "label": "Condition 5 requires",
-      "value": "Construction Traffic Management Plan",
+      "label": "Condition 5",
+      "value": "No work may start until the Construction Traffic Management Plan is approved",
       "status": "verified",
       "finding_ids": [
         "F-05"
