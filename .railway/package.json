@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "description": "Railway IaC SDK for railway.ts (npm ci here before railway config plan)",
+  "type": "module",
+  "devDependencies": {
+    "railway": "3.11.0"
+  }
+}

@@ -135,29 +135,48 @@ Session reviews, questions and eval runs older than 7 days are removed at startu
 
 One service, built from the repo-root `Dockerfile`: Node builds the UI, then a Python
 3.12 image with the embedding model downloaded at build time (the container never
-fetches anything at runtime). `railway.json` configures the build, the pre-deploy
-release step and the health check.
+fetches anything at runtime). `.railway/railway.ts` (Railway Infrastructure as Code)
+configures the app service: the Dockerfile build, the pre-deploy release step, the
+health check, the restart policy and its variables. Railway no longer reads
+`railway.json`.
 
-1. **Postgres with pgvector.** In the Railway project, add a Postgres service that has
-   pgvector (Railway's pgvector template, or the `pgvector/pgvector:pg16` image). Confirm
-   it on the first deploy: `lens migrate` fails loudly if `CREATE EXTENSION vector`
-   isn't available.
-2. **The app service.** New service from this GitHub repo; Railway picks up
-   `railway.json` and builds the `Dockerfile`. Set:
+1. **Postgres with pgvector.** In the Railway project, add a service from the official
+   `pgvector/pgvector:pg16` image (not the `pgvector` template, which resolves to a
+   community repo). Attach a volume at `/var/lib/postgresql/data` and set
+   `PGDATA=/var/lib/postgresql/data/pgdata` (Postgres won't initialise in the volume's
+   root, which holds `lost+found`), plus `POSTGRES_USER`, `POSTGRES_DB` and a random
+   `POSTGRES_PASSWORD`. Confirm it on the first deploy: `lens migrate` fails loudly if
+   `CREATE EXTENSION vector` isn't available.
+2. **The app service.** Create an empty service named `app` and set `DATABASE_URL` to the
+   Postgres connection URL built from the postgres service's variables. Then apply
+   `.railway/railway.ts` from the repo root, after `railway link` to the project:
+
+   ```
+   (cd .railway && npm ci)
+   railway config plan
+   railway config apply
+   ```
+
+   The file is a named partial (`app`): it manages only the app service, so the
+   database is never touched by an apply. It sets:
 
    | Variable | Value |
    |---|---|
-   | `DATABASE_URL` | the Postgres service's connection URL |
+   | `DATABASE_URL` | kept as set in Railway (`preserve()`) |
    | `COOKIE_SECURE` | `true` (the site is served over HTTPS) |
    | `LLM_MODE` | `replay` (the image's default) |
    | `ASK_LIVE` | `false` (the image's default): no API key needed |
+   | `RAILWAY_DOCKERFILE_PATH` | `Dockerfile` (without it Railway falls back to Railpack) |
 
-3. **Release.** Before each deploy goes live, Railway runs `lens release`: migrate,
+3. **Upload.** Railway's GitHub app can't see this repository yet, so deploy from the
+   repo root with `railway up --service app`. Railway doesn't read `.railway/` during a
+   deploy; settings change only through `railway config apply`.
+4. **Release.** Before each deploy goes live, Railway runs `lens release`: migrate,
    ingest, run and publish the pipeline on the committed recordings, seed the demo's
    reviews, then the accuracy check. It stops at the first failure, and a failed
    release never goes live. It needs `fixtures/llm/` recordings committed (`lens
    record`, above).
-4. **Check** that the public URL opens on the Summary and `/api/health` reports the
+5. **Check** that the public URL opens on the Summary and `/api/health` reports the
    published run.
 
 **Live Ask** (after C14): set `ASK_LIVE=true` and `ANTHROPIC_API_KEY`. Free-form
