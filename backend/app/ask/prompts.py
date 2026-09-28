@@ -1,9 +1,13 @@
-"""The ask.route.v2 and ask.answer.v1 prompts. Changing any text here changes the
+"""The ask.route.v2 and ask.answer.v2 prompts. Changing any text here changes the
 recording keys: bump the version in backend/ask.yaml and re-record (`lens record --ask`).
 
 ask.route.v2: a question asking for one value is a lookup even when a graph query covers
 that value (v1 sent "What is the target commercial operation date?" to property_sources);
-a question about this asset's contracts is never out_of_scope."""
+a question about this asset's contracts is never out_of_scope.
+
+ask.answer.v2: a loosely worded question about a right the paragraphs state is answered
+with the document's own condition, not abstained on (claude-sonnet-5-5 read "if the plant
+isn't running" as "stops running after operation" and abstained on the PPA long-stop)."""
 
 from typing import Any
 
@@ -38,10 +42,14 @@ Rules:
    and give no sentences.
 2. A related but different fact is not an answer: a removal scheme is not a bond, and an
    import limit is not an export limit. Abstain instead.
-3. Every sentence cites at least one paragraph, with a quote copied character for
+3. Read the question as a diligence reviewer would. If a paragraph states the right or
+   term the question asks about, answer with the condition exactly as the document states
+   it, even when the question is loosely worded. Rule 2 is for a different thing, not for
+   the same thing stated more precisely.
+4. Every sentence cites at least one paragraph, with a quote copied character for
    character from it: the shortest span that supports the sentence.
-4. Never state a number or a date that isn't in one of the sentence's quotes.
-5. At most {max_sentences} sentences, in plain English. No legal advice, no hedging, no
+5. Never state a number or a date that isn't in one of the sentence's quotes.
+6. At most {max_sentences} sentences, in plain English. No legal advice, no hedging, no
    commentary about the documents themselves.
 """
 

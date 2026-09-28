@@ -45,7 +45,7 @@ class DraftSentence(BaseModel):
 
 
 class AnswerDraft(BaseModel):
-    """ask.answer.v1's answer."""
+    """ask.answer.v2's answer."""
 
     sentences: list[DraftSentence]  # at most answer.max_sentences
     abstain: bool

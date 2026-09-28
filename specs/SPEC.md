@@ -538,7 +538,7 @@ methods apart).
    quote. No second model call.
 5. **Lookup:** retrieve (C13). If the best similarity is below `min_similarity` and
    keyword search found nothing, abstain without calling the model. Otherwise call
-   `ask.answer.v1` (`replay_first`) with the top paragraphs **in document order**, each as
+   `ask.answer.v2` (`replay_first`) with the top paragraphs **in document order**, each as
    `[paragraph_id] (heading) text`. Output schema:
 
    ```python

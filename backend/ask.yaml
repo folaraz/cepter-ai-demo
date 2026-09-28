@@ -41,7 +41,7 @@ routing:
   routes: [lookup, relationship, out_of_scope]
 
 answer:
-  prompt_version: "ask.answer.v1"
+  prompt_version: "ask.answer.v2"
   max_sentences: 4
 
 limits:
