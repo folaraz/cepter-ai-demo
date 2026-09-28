@@ -37,7 +37,7 @@ retrieval:
   prompt_order: document
 
 routing:
-  prompt_version: "ask.route.v1"
+  prompt_version: "ask.route.v2"
   routes: [lookup, relationship, out_of_scope]
 
 answer:
