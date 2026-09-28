@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
-import type { CheckResult, Finding } from '../api/types';
+import type { CheckResult, Finding } from '@design/api/types';
 import { RESULT, RESULT_ORDER } from '../lib/status';
 import { useActions, useStore } from '../state/store';
 import { Check, CircleAlert } from 'lucide-react';

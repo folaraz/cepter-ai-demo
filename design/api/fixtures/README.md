@@ -1,8 +1,15 @@
-# Contract test expectations
+# API fixtures: the one copy of the contract's data
 
-The backend must return these shapes and values; the contract test compares each
-endpoint's JSON with the matching file here. `design/api/fixtures/` is identical to this
-folder, so fixture mode and the real API show the same data.
+These files are three things at once, so there is only one copy of each:
+
+- the UI's fixture mode reads them (`frontend/src/api/client.ts`, via `@design/api/fixtures`);
+- the backend's contract test compares every endpoint's JSON with them
+  (`backend/tests/test_contract.py`, under the rules below);
+- `backend/tools/check_dataroom.py`, `check_templates.py` and `check_ask.py` prove the
+  data room and the wording files can produce them.
+
+So fixture mode and the real API show the same data. Change a file here only when the
+product's output changes on purpose, and never to make a test pass.
 
 ## Three deliberate updates to the original UI fixtures
 
@@ -11,9 +18,6 @@ folder, so fixture mode and the real API show the same data.
 | `summary.documents[].pages` | 14, 6, 22, 31, 3 | 3, 3, 3, 5, 2 | The real page counts of the committed synthetic PDFs. |
 | `summary.missing_documents` | 1 item | 2 items | The Condition 5 discharge is also expected and missing; the backend lists every missing-evidence finding that names a document. |
 | `summary.facts[network_operator].value` | "Fenland Distribution" | "Fenland Distribution Networks" | The display rule only strips the legal suffix ("plc"); it does not shorten names. |
-
-If your frontend copied its fixtures before these updates, copy `summary.json` from here
-over `frontend/src/api/fixtures/summary.json`. The UI needs no code change.
 
 Ask is not compared here: its expectations are `evals/ask_golden.jsonl` (C14), and its UI
 fixtures in `design/api/fixtures/ask/` are verified by `backend/tools/check_ask.py`.

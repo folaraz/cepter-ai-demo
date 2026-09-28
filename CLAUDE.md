@@ -3,7 +3,7 @@
 Diligence associate for one renewable-energy asset. `frontend/` is the React UI; `backend/` holds the FastAPI service; its spec is `specs/SPEC.md`. `design/` is the source of truth for both.
 
 ## Frontend rules
-- The UI spec is design/DESIGN_HANDOFF.md. The API contract is design/api/types.ts, plus design/api/ask.types.ts for Ask. Ask's user-facing messages come verbatim from backend/ask.yaml `messages`; never write your own.
+- The running app is the UI reference; these rules govern changes to it. The API contract is design/api/types.ts, plus design/api/ask.types.ts for Ask. Ask's user-facing messages come verbatim from backend/ask.yaml `messages`; never write your own.
 - Use only CSS variables from design/tokens.css. No raw hex, no new colours or fonts.
 - Styling is Tailwind v4 (frontend/src/styles/app.css). Its theme is mapped from the tokens and every default palette, font, radius, shadow and text size is cleared, so only token utilities exist: `bg-surface`, `text-muted`, `border-hairline`, `rounded-card`, `text-md`, `font-display`... Spacing is the 4px token base (`p-4` = 16px). Shared primitives live in frontend/src/components/ui.tsx (Button, Tag, ResultPill, Kbd, Sk); reuse them rather than re-styling.
 - Type roles come from tokens.css classes: `t-display`, `t-title`, `t-label`, `t-ref`.
@@ -18,7 +18,6 @@ The product should look crafted, not templated. These were deliberately removed;
 - Filler content (placeholder paragraphs, fake context). Show real data or nothing.
 - Keyboard caps inside buttons. Shortcuts live in `title` tooltips and the shortcuts sheet.
 - Text characters as icons. Use Lucide via `<Icon>`; icon-only controls use `<IconButton>` with an aria-label.
-This deliberately overrides the numbered labels and the Summary glow in design/DESIGN_HANDOFF.md.
 
 ## Writing for the reviewer
 The people using this are diligence lawyers and associates, not engineers. Deal language is fine (COD, PPA, easement, lease term, RFI, severity). System language is not:
@@ -41,7 +40,7 @@ The people using this are diligence lawyers and associates, not engineers. Deal 
 
 ## Backend rules
 - The backend spec is specs/SPEC.md. The API contract is design/api/types.ts and
-  design/api/ask.types.ts. Expected output is backend/tests/contract/expected/ (read its
+  design/api/ask.types.ts. Expected output is design/api/fixtures/ (read its
   README) and, for Ask, evals/ask_golden.jsonl.
 - Never store or serve a fact or an answer sentence without a verified quote. Absence
   statements link to the finding that established them instead. Rejected claims stay in
@@ -52,7 +51,7 @@ The people using this are diligence lawyers and associates, not engineers. Deal 
 - Tests and CI run with no API key: LLM_MODE=replay, and Ask uses recordings. A missing
   recording must raise, never fall back to the API.
 - Do not edit data/dataroom/pdf/, evals/golden.jsonl, evals/ask_golden.jsonl or
-  tests/contract/expected/ to make a test pass. If they look wrong, stop and say so.
+  design/api/fixtures/ to make a test pass. If they look wrong, stop and say so.
 - Plain SQL via psycopg 3; no ORM. Pydantic 2 models at every boundary.
 - Keep backend/tools/check_dataroom.py, check_templates.py and check_ask.py green.
 

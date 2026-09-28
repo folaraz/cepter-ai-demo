@@ -36,7 +36,7 @@ step('Enter opens Evidence at source 1');
 await page.getByRole('button', { name: 'Next source' }).focus();
 await page.keyboard.press('Enter');
 assert.match(await text('[data-part=source-toolbar]'), /Source 2 of 3/);
-// The model chooses the quote span; it must contain the value (backend/tests/contract/expected/README.md).
+// The model chooses the quote span; it must contain the value (design/api/fixtures/README.md).
 assert.match(await text('article mark'), /49\.9 MW/);
 step('Next source swaps the page and highlights the verbatim quote');
 

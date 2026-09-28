@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, CircleCheck } from 'lucide-react';
-import type { DocumentDetail, DocumentListItem, DocumentNote, DocumentPage } from '../api/types';
+import type { DocumentDetail, DocumentListItem, DocumentNote, DocumentPage } from '@design/api/types';
 import { QUOTE, RESULT } from '../lib/status';
 import { findingName } from '../lib/format';
 import { cn } from '../lib/cn';

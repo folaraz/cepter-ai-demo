@@ -8,7 +8,7 @@ Needs: pip install pyyaml
 For each check in backend/checks/, renders title, why, how, evidence roles, missing
 evidence, RFI and summary strings using the hand-written context in
 data/dataroom/planted_facts.yaml, and compares them with
-backend/tests/contract/expected/. If this passes, the only thing the check code has to
+design/api/fixtures/. If this passes, the only thing the check code has to
 get right is computing the same context values from the graph.
 """
 
@@ -21,7 +21,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-EXPECTED = ROOT / "backend" / "tests" / "contract" / "expected"
+EXPECTED = ROOT / "design" / "api" / "fixtures"
 
 
 def load_yaml(path: Path) -> dict:

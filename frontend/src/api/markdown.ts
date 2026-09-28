@@ -1,4 +1,4 @@
-import type { Rfi } from './types';
+import type { Rfi } from '@design/api/types';
 import { SEVERITY } from '../lib/status';
 
 /** The RFI list as Markdown, written for the seller. Mirrors GET /api/rfi.md so fixture mode exports the same file.

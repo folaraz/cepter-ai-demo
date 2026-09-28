@@ -6,7 +6,7 @@ code has verified, every finding comes from a declarative check, every answer se
 verified before it is sent, and every reviewer correction becomes a regression test.
 
 **The target is fixed.** `design/api/types.ts` plus `design/api/ask.types.ts` is the
-contract, and `backend/tests/contract/expected/` is the expected output for everything
+contract, and `design/api/fixtures/` is the expected output for everything
 except Ask, whose expectations are `evals/ask_golden.jsonl`. When the backend meets both,
 it is done.
 
@@ -31,7 +31,7 @@ Verified before handover, so you don't need to build or debug these:
 | `backend/schema.sql` | All tables, including `chunks` (pgvector + full-text) and `asks` | applied twice on Postgres 16 with pgvector 0.6; constraints and vector and keyword queries tested |
 | `backend/seed/reviews.yaml` | Reviews applied at deploy | |
 | `evals/golden.jsonl` | 20 golden items, including `corr-001` with a real evidence fingerprint | |
-| `backend/tests/contract/expected/` | Fixtures plus three deliberate updates (see its README) | |
+| `design/api/fixtures/` | The one copy of the contract's data: UI fixture mode and the contract test both read it (see its README) | |
 
 Run the three checks from the repo root: `python backend/tools/check_dataroom.py`,
 `python backend/tools/check_templates.py` and `python backend/tools/check_ask.py`. Wire
@@ -334,7 +334,7 @@ document-noun lists ("Planning and the PPA").
 
 **Done when** the runner's results, finding IDs, evidence order and context values equal
 `planted_facts.yaml` (five flagged, three passed), and the rendered strings equal
-`tests/contract/expected/findings/*.json`.
+`design/api/fixtures/findings/*.json`.
 
 ### C8. Summary and RFIs. Never cut.
 
@@ -402,7 +402,7 @@ plus the caller's session reviews.
 
 The **contract test** (`tests/test_contract.py`) runs the pipeline in replay mode into a
 fresh database, seeds reviews, calls every GET endpoint, and compares the JSON with
-`tests/contract/expected/` under the rules in that folder's README. Ask has its own tests
+`design/api/fixtures/` under the rules in that folder's README. Ask has its own tests
 (C14) because its wording comes partly from the model.
 
 FastAPI serves `frontend/dist` at `/` with an SPA fallback to `index.html`.

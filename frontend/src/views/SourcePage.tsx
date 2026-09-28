@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { Finding, QuoteEvidence } from '../api/types';
+import type { Finding, QuoteEvidence } from '@design/api/types';
 import { QUOTE } from '../lib/status';
 import { useActions, useSummary } from '../state/store';
 import { BookOpenText, ChevronLeft, ChevronRight } from 'lucide-react';

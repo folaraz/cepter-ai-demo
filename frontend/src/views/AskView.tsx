@@ -14,8 +14,8 @@ import {
   CircleAlert,
   type LucideIcon,
 } from 'lucide-react';
-import type { AskResponse, AskRoute, AskSentence, AskSuggestion } from '../api/ask.types';
-import type { QuoteEvidence } from '../api/types';
+import type { AskResponse, AskRoute, AskSentence, AskSuggestion } from '@design/api/ask.types';
+import type { QuoteEvidence } from '@design/api/types';
 import { ASK_MAX, ASK_MIN } from '../api/client';
 import { findingName, shortDocTitle } from '../lib/format';
 import { cn } from '../lib/cn';

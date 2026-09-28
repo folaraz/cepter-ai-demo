@@ -10,32 +10,32 @@ import type {
   ReviewResponse,
   Rfi,
   Summary,
-} from './types';
-import summaryFixture from './fixtures/summary.json';
-import evalFixture from './fixtures/eval-latest.json';
-import rfiFixture from './fixtures/rfi.json';
-import f01 from './fixtures/findings/F-01.json';
-import f02 from './fixtures/findings/F-02.json';
-import f03 from './fixtures/findings/F-03.json';
-import f04 from './fixtures/findings/F-04.json';
-import f05 from './fixtures/findings/F-05.json';
-import f06 from './fixtures/findings/F-06.json';
-import f07 from './fixtures/findings/F-07.json';
-import f08 from './fixtures/findings/F-08.json';
-import documentsFixture from './fixtures/documents.json';
-import docLease from './fixtures/documents/lease.json';
-import docPlanning from './fixtures/documents/planning.json';
-import docGrid from './fixtures/documents/grid.json';
-import docPpa from './fixtures/documents/ppa.json';
-import docSite from './fixtures/documents/site.json';
-import type { AskResponse, AskSuggestion } from './ask.types';
-import askSuggestionsFixture from './fixtures/ask/suggestions.json';
-import askA01 from './fixtures/ask/a01.json';
-import askR01 from './fixtures/ask/r01.json';
-import askR03 from './fixtures/ask/r03.json';
-import askR04 from './fixtures/ask/r04.json';
-import askX01 from './fixtures/ask/x01.json';
-import askUnavailable from './fixtures/ask/unavailable.json';
+} from '@design/api/types';
+import summaryFixture from '@design/api/fixtures/summary.json';
+import evalFixture from '@design/api/fixtures/eval-latest.json';
+import rfiFixture from '@design/api/fixtures/rfi.json';
+import f01 from '@design/api/fixtures/findings/F-01.json';
+import f02 from '@design/api/fixtures/findings/F-02.json';
+import f03 from '@design/api/fixtures/findings/F-03.json';
+import f04 from '@design/api/fixtures/findings/F-04.json';
+import f05 from '@design/api/fixtures/findings/F-05.json';
+import f06 from '@design/api/fixtures/findings/F-06.json';
+import f07 from '@design/api/fixtures/findings/F-07.json';
+import f08 from '@design/api/fixtures/findings/F-08.json';
+import documentsFixture from '@design/api/fixtures/documents.json';
+import docLease from '@design/api/fixtures/documents/lease.json';
+import docPlanning from '@design/api/fixtures/documents/planning.json';
+import docGrid from '@design/api/fixtures/documents/grid.json';
+import docPpa from '@design/api/fixtures/documents/ppa.json';
+import docSite from '@design/api/fixtures/documents/site.json';
+import type { AskResponse, AskSuggestion } from '@design/api/ask.types';
+import askSuggestionsFixture from '@design/api/fixtures/ask/suggestions.json';
+import askA01 from '@design/api/fixtures/ask/a01.json';
+import askR01 from '@design/api/fixtures/ask/r01.json';
+import askR03 from '@design/api/fixtures/ask/r03.json';
+import askR04 from '@design/api/fixtures/ask/r04.json';
+import askX01 from '@design/api/fixtures/ask/x01.json';
+import askUnavailable from '@design/api/fixtures/ask/unavailable.json';
 import { rfiToMarkdown } from './markdown';
 import type { components } from './schema';
 
