@@ -98,7 +98,7 @@ def test_summary(api: TestClient) -> None:
     assert set(got) == set(want)
 
 
-@pytest.mark.parametrize("finding_id", ["F-01", "F-02", "F-03", "F-04", "F-05"])
+@pytest.mark.parametrize("finding_id", [f"F-0{n}" for n in range(1, 9)])
 def test_findings(api: TestClient, finding_id: str) -> None:
     got, want = (
         api.get(f"/api/findings/{finding_id}").json(),

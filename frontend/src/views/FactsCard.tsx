@@ -20,20 +20,32 @@ export function FactsCard({ summary }: { summary: Summary | null }) {
       />
       <div className="grid grid-cols-4 gap-px bg-hairline max-lg:grid-cols-2">
         {summary
-          ? summary.facts.map((f) => (
-              <button
-                key={f.key}
-                type="button"
-                className={cn(cell, hit)}
-                onClick={() => openEvidence(f.finding_id)}
-                aria-label={`${f.label}: ${f.value}. ${QUOTE[f.status].word}. Show the source`}
-              >
-                <span className="text-sm text-muted">{f.label}</span>
-                <span className="text-lg font-medium wrap-anywhere">{f.value}</span>
-                {/* Exact quotes are the norm (see heading); only exceptions are called out. */}
-                {f.status === 'verified' ? <span className="h-[18px]" /> : <Tag def={QUOTE[f.status]} small />}
-              </button>
-            ))
+          ? summary.facts.map((f) => {
+              const body = (
+                <>
+                  <span className="text-sm text-muted">{f.label}</span>
+                  <span className="text-lg font-medium wrap-anywhere">{f.value}</span>
+                  {/* Exact quotes are the norm (see heading); only exceptions are called out. */}
+                  {f.status === 'verified' ? <span className="h-[18px]" /> : <Tag def={QUOTE[f.status]} small />}
+                </>
+              );
+              // A fact opens the check that tests it; one no check tests has nothing to open.
+              return f.finding_id ? (
+                <button
+                  key={f.key}
+                  type="button"
+                  className={cn(cell, hit)}
+                  onClick={() => openEvidence(f.finding_id!)}
+                  aria-label={`${f.label}: ${f.value}. ${QUOTE[f.status].word}. Show the check`}
+                >
+                  {body}
+                </button>
+              ) : (
+                <div key={f.key} className={cell}>
+                  {body}
+                </div>
+              );
+            })
           : Array.from({ length: 8 }, (_, i) => (
               <div key={i} className={cell} aria-hidden="true">
                 <Sk className="w-[48%]" />

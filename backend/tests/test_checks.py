@@ -168,10 +168,10 @@ def test_passed_titles_match_the_summary(findings: dict[str, FindingRecord]) -> 
 def test_initial_review_state_matches_the_fixtures_before_any_review(
     findings: dict[str, FindingRecord],
 ) -> None:
-    # F-04 is lawyer_verified in the fixture only because of a seed review (C9).
+    # F-04 (lawyer_verified) and F-07 (corrected) differ only because of seed reviews (C9).
     for path in sorted((EXPECTED / "findings").glob("F-*.json")):
         want = json.loads(path.read_text(encoding="utf-8"))
-        if want["id"] == "F-04":
+        if want["id"] in ("F-04", "F-07"):
             continue
         got = findings[want["check_id"]]
         assert initial_review_state(got.severity, got.result) == want["review"], want["id"]

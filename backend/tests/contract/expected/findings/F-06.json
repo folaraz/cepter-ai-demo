@@ -1,0 +1,51 @@
+{
+  "id": "F-06",
+  "check_id": "permission_in_force",
+  "title": "Planning permission in force; commencement deadline not passed",
+  "severity": "high",
+  "result": "pass",
+  "review": "ai_extracted",
+  "quote_count": 2,
+  "gap_count": 0,
+  "source_titles": [
+    "Planning decision"
+  ],
+  "why": "If development did not begin before the deadline the permission has expired and a new application is needed.",
+  "how": "Decision date plus the Condition 1 time limit gives a commencement deadline of 12 Jun 2027, compared with the run date.",
+  "evidence": [
+    {
+      "kind": "quote",
+      "citation": {
+        "document_id": "planning",
+        "paragraph_id": "planning:p1:¶3",
+        "page": 1,
+        "quote": "12 June 2024"
+      },
+      "document_title": "Planning decision",
+      "file_name": "planning_decision.pdf",
+      "role": "decision date",
+      "heading": "Application details",
+      "paragraph_text": "Date of decision: 12 June 2024",
+      "quote_start": 18,
+      "quote_end": 30,
+      "status": "verified"
+    },
+    {
+      "kind": "quote",
+      "citation": {
+        "document_id": "planning",
+        "paragraph_id": "planning:p2:¶2",
+        "page": 2,
+        "quote": "three years"
+      },
+      "document_title": "Planning decision",
+      "file_name": "planning_decision.pdf",
+      "role": "condition 1",
+      "heading": "Condition 1: Time limit",
+      "paragraph_text": "The development hereby permitted shall be begun before the expiration of three years from the date of this permission.",
+      "quote_start": 73,
+      "quote_end": 84,
+      "status": "verified"
+    }
+  ]
+}

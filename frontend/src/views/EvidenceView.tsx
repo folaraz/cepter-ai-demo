@@ -31,12 +31,13 @@ export function EvidenceView() {
           {entry?.status === 'error' ? (
             <ErrorNote title="Couldn't load this finding." onRetry={() => id && loadFinding(id, true)} />
           ) : finding ? (
-            <FindingDetail finding={finding} num={Math.max(0, index) + 1} srcIdx={srcIdx} />
+            <FindingDetail finding={finding} num={index >= 0 ? index + 1 : null} srcIdx={srcIdx} />
           ) : (
             <FindingSkeleton />
           )}
         </div>
-        {finding && <ReviewFooter key={finding.id} finding={finding} />}
+        {/* A passed check opened from a key fact is read-only: only flagged findings are reviewed. */}
+        {finding && index >= 0 && <ReviewFooter key={finding.id} finding={finding} />}
       </section>
       <Separator />
       <SourcePage finding={finding} quotes={quotes} srcIdx={srcIdx} />
@@ -65,18 +66,19 @@ function EvidenceNav({ index, total }: { index: number; total: number }) {
   );
 }
 
-function FindingDetail({ finding, num, srcIdx }: { finding: Finding; num: number; srcIdx: number }) {
+/** num: the finding's row number, or null for a passed check (not one of the flagged rows). */
+function FindingDetail({ finding, num, srcIdx }: { finding: Finding; num: number | null; srcIdx: number }) {
   const { setSrc } = useActions();
   let q = -1;
   return (
     <>
       <div className="flex flex-col gap-3">
-        <span className="text-sm font-medium text-muted">Finding {num}</span>
+        <span className="text-sm font-medium text-muted">{num === null ? 'Passed check' : `Finding ${num}`}</span>
         <h1 id="ev-h" className="t-title text-pretty focus:outline-none!" data-focus="evidence-heading" tabIndex={-1}>
           {finding.title}
         </h1>
         <div data-part="finding-status" className="flex flex-wrap items-center gap-3.5">
-          <Tag def={SEVERITY[finding.severity]} />
+          {num !== null && <Tag def={SEVERITY[finding.severity]} />}
           <ResultPill def={RESULT[finding.result]} />
           <Tag def={REVIEW[finding.review]} />
         </div>
