@@ -10,12 +10,13 @@ import { SummaryView } from './views/SummaryView';
 import { EvidenceView } from './views/EvidenceView';
 import { RequestsView } from './views/RequestsView';
 import { AskView } from './views/AskView';
+import { DocumentsView } from './views/DocumentsView';
 
 // ---------------------------------------------------------------- location hash <-> view
 
 function useHashSync() {
   const { state } = useStore();
-  const { setView, select, openEvidence } = useActions();
+  const { setView, select, openEvidence, openDocument } = useActions();
   const ready = state.summary.status === 'ready';
 
   // Back / forward. The initial route is read before first render (main.tsx).
@@ -24,6 +25,7 @@ function useHashSync() {
       const route = parseHash(window.location.hash);
       if (!route) return;
       if (route.view === 'evidence') openEvidence(route.id);
+      else if (route.view === 'documents') openDocument(route.id ?? null, route.paragraph ? { paragraph: route.paragraph, finding: route.finding } : null);
       else {
         if (route.id) select(route.id);
         setView(route.view);
@@ -31,17 +33,17 @@ function useHashSync() {
     };
     window.addEventListener('popstate', apply);
     return () => window.removeEventListener('popstate', apply);
-  }, [openEvidence, select, setView]);
+  }, [openDocument, openEvidence, select, setView]);
 
   // Reflect state in the hash: a new history entry per view, replace for J/K.
   useEffect(() => {
     if (!ready) return;
-    const next = toHash(state.view, state.selectedId);
+    const next = state.view === 'documents' ? toHash('documents', state.docId, state.docTarget) : toHash(state.view, state.selectedId);
     if (window.location.hash === next) return;
     const prev = parseHash(window.location.hash);
     if (prev && prev.view !== state.view) window.history.pushState(null, '', next);
     else window.history.replaceState(null, '', next);
-  }, [ready, state.view, state.selectedId]);
+  }, [ready, state.view, state.selectedId, state.docId, state.docTarget]);
 }
 
 // ---------------------------------------------------------------- global keyboard
@@ -71,6 +73,14 @@ function useShortcuts() {
         e.preventDefault();
         if (s.view !== 'ask') actions.setView('ask');
         actions.focus('ask-input');
+        return;
+      }
+      if (s.view === 'documents') {
+        // In the reader, J/K step through the margin notes.
+        if (s.docId && (key === 'j' || key === 'k')) {
+          e.preventDefault();
+          actions.moveNote(key === 'j' ? 1 : -1);
+        }
         return;
       }
       if (s.view === 'rfi' || s.view === 'ask' || s.summary.status !== 'ready') return;
@@ -119,13 +129,19 @@ function useFocusRequests() {
 
 export function App() {
   const { state } = useStore();
-  const { loadSummary, loadRfi, loadAskSuggestions } = useActions();
+  const { loadSummary, loadRfi, loadAskSuggestions, loadDocuments, loadDocument } = useActions();
 
   useEffect(() => {
     void loadSummary();
     void loadRfi();
     void loadAskSuggestions();
-  }, [loadSummary, loadRfi, loadAskSuggestions]);
+    void loadDocuments();
+  }, [loadSummary, loadRfi, loadAskSuggestions, loadDocuments]);
+
+  // A document opened straight from the URL.
+  useEffect(() => {
+    if (state.view === 'documents' && state.docId) void loadDocument(state.docId);
+  }, [state.view, state.docId, loadDocument]);
 
   useHashSync();
   useShortcuts();
@@ -144,6 +160,7 @@ export function App() {
         <main id="main" tabIndex={-1} className="flex min-h-0 min-w-0 grow flex-col focus:outline-none!">
           {state.view === 'summary' && <SummaryView />}
           {state.view === 'evidence' && <EvidenceView />}
+          {state.view === 'documents' && <DocumentsView />}
           {state.view === 'rfi' && <RequestsView />}
           {state.view === 'ask' && <AskView />}
         </main>

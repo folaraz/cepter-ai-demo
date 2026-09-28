@@ -108,6 +108,26 @@ def test_findings(api: TestClient, finding_id: str) -> None:
     assert got == want
 
 
+DOCUMENT_IDS = ["lease", "planning", "grid", "ppa", "site"]
+
+
+def test_documents(api: TestClient) -> None:
+    assert api.get("/api/documents").json() == expected("documents.json")
+
+
+@pytest.mark.parametrize("document_id", DOCUMENT_IDS)
+def test_document(api: TestClient, document_id: str) -> None:
+    got = api.get(f"/api/documents/{document_id}").json()
+    assert got == expected(f"documents/{document_id}.json")
+    text = {q["id"]: q["text"] for page in got["pages"] for q in page["paragraphs"]}
+    for note in got["notes"]:  # every note marks a real span of its own paragraph
+        assert 0 <= note["quote_start"] < note["quote_end"] <= len(text[note["paragraph_id"]])
+
+
+def test_an_unknown_document_is_a_404(api: TestClient) -> None:
+    assert api.get("/api/documents/deed").status_code == 404
+
+
 def test_rfi(api: TestClient) -> None:
     assert api.get("/api/rfi").json() == expected("rfi.json")
 

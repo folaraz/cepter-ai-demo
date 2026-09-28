@@ -18,6 +18,12 @@ over `frontend/src/api/fixtures/summary.json`. The UI needs no code change.
 Ask is not compared here: its expectations are `evals/ask_golden.jsonl` (C14), and its UI
 fixtures in `design/api/fixtures/ask/` are verified by `backend/tools/check_ask.py`.
 
+## Documents
+
+`documents.json` and `documents/{id}.json` are `GET /api/documents` and
+`GET /api/documents/{id}` over the hand-written correct extraction. Each note's wording
+comes from `backend/documents_view.yaml`; the contract test compares them exactly.
+
 ## Fields the contract test does not compare exactly
 
 | Field | Rule instead |

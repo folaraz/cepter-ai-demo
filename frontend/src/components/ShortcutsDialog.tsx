@@ -5,7 +5,7 @@ import { Button, Icon, Kbd, panel } from './ui';
 import { cn } from '../lib/cn';
 
 const SHORTCUTS: { what: string; keys: string[] }[] = [
-  { what: 'Next / previous finding', keys: ['J', 'K'] },
+  { what: 'Next / previous finding, or note in a document', keys: ['J', 'K'] },
   { what: 'Open evidence', keys: ['↵'] },
   { what: 'Accept a finding', keys: ['A'] },
   { what: 'Correct a finding', keys: ['C'] },

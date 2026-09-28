@@ -1,0 +1,120 @@
+[
+  {
+    "id": "lease",
+    "title": "Lease, Bracken Farm",
+    "file_name": "lease.pdf",
+    "pages": 3,
+    "parties": [
+      {
+        "name": "John Hartley",
+        "role": "landlord"
+      },
+      {
+        "name": "Brackenfield Solar",
+        "role": "tenant"
+      }
+    ],
+    "date": {
+      "label": "Starts",
+      "value": "1 Jan 2026"
+    },
+    "finding_ids": [
+      "F-01",
+      "F-04",
+      "F-07"
+    ],
+    "note_count": 7
+  },
+  {
+    "id": "planning",
+    "title": "Planning decision",
+    "file_name": "planning_decision.pdf",
+    "pages": 3,
+    "parties": [
+      {
+        "name": "Brackenfield Solar",
+        "role": "applicant"
+      },
+      {
+        "name": "John Hartley",
+        "role": "landowner"
+      }
+    ],
+    "date": {
+      "label": "Decided",
+      "value": "12 Jun 2024"
+    },
+    "finding_ids": [
+      "F-03",
+      "F-04",
+      "F-05",
+      "F-06"
+    ],
+    "note_count": 12
+  },
+  {
+    "id": "grid",
+    "title": "Grid connection offer",
+    "file_name": "grid_offer.pdf",
+    "pages": 3,
+    "parties": [
+      {
+        "name": "Fenland Distribution Networks",
+        "role": "network operator"
+      },
+      {
+        "name": "Brackenfield Solar",
+        "role": "customer"
+      }
+    ],
+    "date": {
+      "label": "Connects",
+      "value": "1 Oct 2029"
+    },
+    "finding_ids": [
+      "F-02",
+      "F-03",
+      "F-07"
+    ],
+    "note_count": 8
+  },
+  {
+    "id": "ppa",
+    "title": "Power purchase agreement",
+    "file_name": "ppa.pdf",
+    "pages": 5,
+    "parties": [
+      {
+        "name": "Brackenfield Solar",
+        "role": "generator"
+      },
+      {
+        "name": "Northwind Energy Supply",
+        "role": "buyer"
+      }
+    ],
+    "date": {
+      "label": "Signed",
+      "value": "3 Mar 2025"
+    },
+    "finding_ids": [
+      "F-02",
+      "F-03",
+      "F-07",
+      "F-08"
+    ],
+    "note_count": 9
+  },
+  {
+    "id": "site",
+    "title": "Site and cable route plan",
+    "file_name": "site_plan.pdf",
+    "pages": 2,
+    "parties": [],
+    "date": null,
+    "finding_ids": [
+      "F-01"
+    ],
+    "note_count": 2
+  }
+]

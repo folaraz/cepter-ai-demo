@@ -116,6 +116,55 @@ class DocumentSummary(BaseModel):
     pages: int
 
 
+class DocumentParty(BaseModel):
+    name: str  # display name, "John Hartley"
+    role: str  # as the document gives it, "landlord"
+
+
+class DocumentDate(BaseModel):
+    label: str  # "Signed"
+    value: str  # "3 Mar 2025"
+
+
+class DocumentListItem(BaseModel):
+    id: str
+    title: str
+    file_name: str
+    pages: int
+    parties: list[DocumentParty]  # named in this document, in reading order
+    date: DocumentDate | None  # the document's key date, as it states it
+    finding_ids: list[str]  # findings (flagged or passed) that quote it, in finding order
+    note_count: int  # statements taken from it
+
+
+class DocumentParagraph(BaseModel):
+    id: str
+    heading: str  # "" when the paragraph has none
+    text: str
+
+
+class DocumentPage(BaseModel):
+    number: int
+    paragraphs: list[DocumentParagraph]
+
+
+class DocumentNote(BaseModel):
+    id: str  # "n1", in reading order
+    paragraph_id: str
+    quote_start: int  # paragraph.text[quote_start:quote_end] is the quote
+    quote_end: int
+    label: str  # "Export capacity", "Landlord"
+    value: str  # "49.9 MW", "John Hartley"
+    status: QuoteStatus
+    finding_ids: list[str]  # findings whose evidence quotes this span
+
+
+class DocumentDetail(BaseModel):
+    document: DocumentListItem
+    pages: list[DocumentPage]  # pages with text, in order
+    notes: list[DocumentNote]
+
+
 class ExpectedDocument(BaseModel):
     label: str
     expected_by: str

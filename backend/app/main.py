@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from psycopg_pool import ConnectionPool
 
 from app import web
-from app.api import ask, evals, findings, health, reviews, rfi, summary
+from app.api import ask, documents, evals, findings, health, reviews, rfi, summary
 from app.api.session import session_middleware
 from app.config import get_settings
 from app.db.pool import create_pool
@@ -47,6 +47,7 @@ for router in (
     health.router,
     summary.router,
     findings.router,
+    documents.router,
     reviews.router,
     rfi.router,
     evals.router,

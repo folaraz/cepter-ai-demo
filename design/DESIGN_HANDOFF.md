@@ -45,7 +45,7 @@ A diligence associate for one renewable-energy asset. It shows what is wrong, wh
 └─────────────────────────────────┴─────────────────────────────────────────────┘
 ```
 
-Sidebar background `--canvas-soft`, 1px `--hairline` right border. Nav items are 36px pills; the active one is a `--surface` pill with a 1px hairline ring and `aria-current="page"`. In the documents list, documents cited by the currently selected finding get a filled dot and ink text.
+Sidebar background `--canvas-soft`, 1px `--hairline` right border. Nav items are 36px pills; the active one is a `--surface` pill with a 1px hairline ring and `aria-current="page"`. Nav order: Summary, Evidence, Documents, Seller questions, Ask. Each document in the sidebar list opens it in the reader (the open one takes the active style); missing documents open the finding that expects them.
 
 ## View 1: Summary (default)
 
@@ -89,6 +89,12 @@ Selecting a source card, or Previous/Next, swaps the page. Opening a finding alw
 
 Label `03. Requests for information`, headline "Three questions for the seller, each tied to the check it unblocks." in `.t-display`, a one-line explanation, and **Download questions** (the ink pill for this view) on the right. Then a single card with one row per RFI: DM Mono ID column, title + severity tag + "View finding →" link, request (14px, max ~680px), and a small definition list: Why · Documents · Unblocks (check id in DM Mono). Export downloads `GET /api/rfi.md` (fixture mode: build the Markdown client-side from `rfi.json`) and shows a toast.
 
+## View 3b: Documents
+
+**The data room** (`#/documents`). Serif headline counting what's in the room and what's missing ("Five documents in the room. Two that the checks need are missing."). One card with a row per document: a small paper icon (stacked when it has more than one page), the title, its parties with their roles, its key date, and on the right the page count and the flagged findings that quote it ("Findings 2 and 3"). Below, **Missing**: a dashed row per expected document ("Requested from the seller", "Needed by Finding 1") that opens that finding. Data: `GET /api/documents` plus `summary.missing_documents`.
+
+**The reader** (`#/documents/{id}`, optionally `/{paragraph}/{finding}`). Sticky bar with "All documents" and a page jump (the page in view is current). Title, parties, key date and length, then one line stating the norm once: marked passages are quoted word for word. Each page is the same paper sheet as Evidence, flowing like a real page. Every passage a finding or key fact rests on is marked in a soft highlight. In the margin, level with its paragraph, one card per paragraph lists what was taken from it: label, value, a quote-status tag only when it isn't a plain exact quote, and links to the flagged finding ("Finding 3", with its result icon) or the passed check that uses it. A planning condition gets one note saying what it asks of the project ("Condition 5: No work may start until the Construction Traffic Management Plan is approved"), not its category. Cards slide down only to avoid overlapping; below 1024px they fold in under their paragraph. Hovering a note or a passage lights up the pair; J/K step through the notes. Opened from a source ("Open in document" in Evidence and Ask), the reader centres that paragraph and lights the note for that finding. Data: `GET /api/documents/{id}`; wording from `backend/documents_view.yaml`.
+
 ## View 4: Ask
 
 Added after the original artboards, so there is no artboard for it: design it inside the current UI's patterns (navigation, headings, cards, chips, tokens). Contract: `api/ask.types.ts`. Behaviour: `specs/SPEC.md` C14. User-facing messages: `backend/ask.yaml` → `messages` (use those strings exactly).
@@ -124,6 +130,7 @@ Added after the original artboards, so there is no artboard for it: design it in
 | Key | Where | Action |
 |---|---|---|
 | J / ↓, K / ↑ | findings grid, Evidence | next / previous finding |
+| J, K | document reader | next / previous margin note |
 | Enter | findings grid | open Evidence for selected finding |
 | A | grid or Evidence | accept (toast with Undo) |
 | C | grid or Evidence | open Correct form |

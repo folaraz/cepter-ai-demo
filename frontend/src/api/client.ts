@@ -1,6 +1,8 @@
 // DataRoom Lens data layer. One flag switches every call between in-memory fixtures
 // (review and eval state kept here) and the FastAPI backend. Shapes follow ./types.ts.
 import type {
+  DocumentDetail,
+  DocumentListItem,
   EvalStatus,
   Finding,
   FindingRow,
@@ -20,6 +22,12 @@ import f05 from './fixtures/findings/F-05.json';
 import f06 from './fixtures/findings/F-06.json';
 import f07 from './fixtures/findings/F-07.json';
 import f08 from './fixtures/findings/F-08.json';
+import documentsFixture from './fixtures/documents.json';
+import docLease from './fixtures/documents/lease.json';
+import docPlanning from './fixtures/documents/planning.json';
+import docGrid from './fixtures/documents/grid.json';
+import docPpa from './fixtures/documents/ppa.json';
+import docSite from './fixtures/documents/site.json';
 import type { AskResponse, AskSuggestion } from './ask.types';
 import askSuggestionsFixture from './fixtures/ask/suggestions.json';
 import askA01 from './fixtures/ask/a01.json';
@@ -212,6 +220,23 @@ export async function getRfiMarkdown(): Promise<string> {
   if (!USE_FIXTURES) return http('/api/rfi.md', { headers: { Accept: 'text/markdown' } });
   const [rfis, summary] = await Promise.all([getRfi(), getSummary()]);
   return rfiToMarkdown(rfis, summary.asset.name);
+}
+
+const DOCUMENT_FIXTURES: Record<string, DocumentDetail> = Object.fromEntries(
+  ([docLease, docPlanning, docGrid, docPpa, docSite] as DocumentDetail[]).map((d) => [d.document.id, d]),
+);
+
+export function getDocuments(): Promise<DocumentListItem[]> {
+  return USE_FIXTURES ? fixture(() => clone(documentsFixture) as DocumentListItem[]) : http<Api['DocumentListItem'][]>('/api/documents');
+}
+
+export function getDocument(id: string): Promise<DocumentDetail> {
+  if (!USE_FIXTURES) return http<Api['DocumentDetail']>(`/api/documents/${encodeURIComponent(id)}`);
+  return fixture(() => {
+    const d = DOCUMENT_FIXTURES[id];
+    if (!d) throw new ApiError(`Document ${id} not found`, 404);
+    return clone(d);
+  });
 }
 
 export function getEvalLatest(): Promise<EvalStatus> {

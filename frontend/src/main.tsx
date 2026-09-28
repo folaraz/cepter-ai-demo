@@ -10,7 +10,15 @@ const route = parseHash(window.location.hash);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <StoreProvider initial={route ? { view: route.view, selectedId: route.id ?? null } : undefined}>
+    <StoreProvider
+      initial={
+        !route
+          ? undefined
+          : route.view === 'documents'
+            ? { view: 'documents', docId: route.id ?? null, docTarget: route.paragraph ? { paragraph: route.paragraph, finding: route.finding } : null }
+            : { view: route.view, selectedId: route.id ?? null }
+      }
+    >
       <App />
     </StoreProvider>
   </StrictMode>,

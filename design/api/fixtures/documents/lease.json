@@ -1,0 +1,180 @@
+{
+  "document": {
+    "id": "lease",
+    "title": "Lease, Bracken Farm",
+    "file_name": "lease.pdf",
+    "pages": 3,
+    "parties": [
+      {
+        "name": "John Hartley",
+        "role": "landlord"
+      },
+      {
+        "name": "Brackenfield Solar",
+        "role": "tenant"
+      }
+    ],
+    "date": {
+      "label": "Starts",
+      "value": "1 Jan 2026"
+    },
+    "finding_ids": [
+      "F-01",
+      "F-04",
+      "F-07"
+    ],
+    "note_count": 7
+  },
+  "pages": [
+    {
+      "number": 1,
+      "paragraphs": [
+        {
+          "id": "lease:p1:¶1",
+          "heading": "Parties",
+          "text": "This Lease is made on 15 December 2025 between JOHN HARTLEY of Bracken Farm, Wickham (the \"Landlord\") and Brackenfield Solar Limited, a company registered in England and Wales (the \"Tenant\")."
+        },
+        {
+          "id": "lease:p1:¶2",
+          "heading": "Background",
+          "text": "The Tenant intends to construct and operate a solar photovoltaic and battery storage facility on the Property."
+        },
+        {
+          "id": "lease:p1:¶3",
+          "heading": "1. The Property",
+          "text": "The Property comprises Parcels 9, 10 and 11 as shown edged red on Plan 1 annexed to this Lease."
+        },
+        {
+          "id": "lease:p1:¶4",
+          "heading": "2. Rent",
+          "text": "The Tenant shall pay a rent of £1,150 per hectare per annum, payable quarterly in advance."
+        },
+        {
+          "id": "lease:p1:¶5",
+          "heading": "3. Term",
+          "text": "The Landlord lets the Property to the Tenant for a term of 35 years from and including 1 January 2026."
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "paragraphs": [
+        {
+          "id": "lease:p2:¶1",
+          "heading": "4. Use",
+          "text": "The Tenant may use the Property for the generation, storage and export of electricity and for ancillary purposes."
+        },
+        {
+          "id": "lease:p2:¶2",
+          "heading": "5. Rent review",
+          "text": "The rent shall be reviewed on every fifth anniversary of the start of the term in line with the Consumer Prices Index."
+        },
+        {
+          "id": "lease:p2:¶3",
+          "heading": "6. Assignment",
+          "text": "The Tenant may assign the whole of this Lease with the consent of the Landlord, such consent not to be unreasonably withheld."
+        },
+        {
+          "id": "lease:p2:¶4",
+          "heading": "7. Reinstatement",
+          "text": "At the end of the term the Tenant shall remove the solar and battery equipment and return the Property to agricultural use within twelve months."
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "paragraphs": [
+        {
+          "id": "lease:p3:¶1",
+          "heading": "Execution",
+          "text": "Signed by John Hartley as the Landlord in the presence of a witness."
+        },
+        {
+          "id": "lease:p3:¶2",
+          "heading": "Execution",
+          "text": "Signed for and on behalf of Brackenfield Solar Limited by a director."
+        }
+      ]
+    }
+  ],
+  "notes": [
+    {
+      "id": "n1",
+      "paragraph_id": "lease:p1:¶1",
+      "quote_start": 14,
+      "quote_end": 38,
+      "label": "Lease signed",
+      "value": "15 Dec 2025",
+      "status": "verified",
+      "finding_ids": []
+    },
+    {
+      "id": "n2",
+      "paragraph_id": "lease:p1:¶1",
+      "quote_start": 47,
+      "quote_end": 101,
+      "label": "Landlord",
+      "value": "John Hartley",
+      "status": "verified",
+      "finding_ids": []
+    },
+    {
+      "id": "n3",
+      "paragraph_id": "lease:p1:¶1",
+      "quote_start": 106,
+      "quote_end": 190,
+      "label": "Tenant",
+      "value": "Brackenfield Solar",
+      "status": "verified",
+      "finding_ids": [
+        "F-07"
+      ]
+    },
+    {
+      "id": "n4",
+      "paragraph_id": "lease:p1:¶2",
+      "quote_start": 46,
+      "quote_end": 84,
+      "label": "Technology",
+      "value": "Solar PV and battery storage",
+      "status": "corroborated",
+      "finding_ids": []
+    },
+    {
+      "id": "n5",
+      "paragraph_id": "lease:p1:¶3",
+      "quote_start": 23,
+      "quote_end": 43,
+      "label": "Land covered",
+      "value": "Parcels 9 to 11",
+      "status": "verified",
+      "finding_ids": [
+        "F-01"
+      ]
+    },
+    {
+      "id": "n6",
+      "paragraph_id": "lease:p1:¶5",
+      "quote_start": 59,
+      "quote_end": 67,
+      "label": "Lease term",
+      "value": "35 years",
+      "status": "verified",
+      "finding_ids": [
+        "F-04"
+      ]
+    },
+    {
+      "id": "n7",
+      "paragraph_id": "lease:p1:¶5",
+      "quote_start": 87,
+      "quote_end": 101,
+      "label": "Lease starts",
+      "value": "1 Jan 2026",
+      "status": "verified",
+      "finding_ids": [
+        "F-04"
+      ]
+    }
+  ]
+}

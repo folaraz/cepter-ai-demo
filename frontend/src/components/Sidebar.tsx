@@ -1,8 +1,7 @@
-import { useMemo } from 'react';
-import { FileQuestionMark, FileSearch, FileText, LayoutList, MessageCircleQuestion, MessageSquareText, type LucideIcon } from 'lucide-react';
-import { useActions, useSelectedRow, useStore, useSummary, type View } from '../state/store';
+import { FileQuestionMark, FileSearch, FileText, Files, LayoutList, MessageCircleQuestion, MessageSquareText, type LucideIcon } from 'lucide-react';
+import { useActions, useStore, useSummary, type View } from '../state/store';
 import { EVAL } from '../lib/status';
-import { findingName, gbp, percent } from '../lib/format';
+import { gbp, percent } from '../lib/format';
 import { cn } from '../lib/cn';
 import { Button, Count, Icon, Tag } from './ui';
 
@@ -15,34 +14,16 @@ const subHeading = 'px-2.5 text-xs font-medium text-muted';
 export function Sidebar() {
   const { state } = useStore();
   const summary = useSummary();
-  const selected = useSelectedRow();
-  const { setView, openEvidence, runEval } = useActions();
+  const { setView, openEvidence, openDocument, runEval } = useActions();
 
   const nav: { view: View; icon: LucideIcon; label: string; count?: number }[] = [
     { view: 'summary', icon: LayoutList, label: 'Summary', count: summary?.findings.length },
     { view: 'evidence', icon: FileSearch, label: 'Evidence' },
+    { view: 'documents', icon: Files, label: 'Documents', count: state.documents.status === 'ready' ? state.documents.data.length : undefined },
     { view: 'rfi', icon: MessageSquareText, label: 'Seller questions', count: state.rfi.status === 'ready' ? state.rfi.data.length : undefined },
     { view: 'ask', icon: MessageCircleQuestion, label: 'Ask' },
   ];
 
-  // On Ask, the dots follow the answer whose sources are open; elsewhere, the selected finding.
-  const askAnswer = useMemo(() => {
-    if (state.view !== 'ask' || !state.askViewing) return null;
-    const e = state.askEntries.find((x) => x.key === state.askViewing!.entryKey);
-    return e?.status === 'done' ? e.response : null;
-  }, [state.view, state.askViewing, state.askEntries]);
-  const cited = useMemo(
-    () =>
-      new Set(
-        askAnswer
-          ? askAnswer.sentences.flatMap((s) => s.citations.map((c) => c.document_title))
-          : state.view === 'ask'
-            ? []
-            : (selected?.source_titles ?? []),
-      ),
-    [askAnswer, selected, state.view],
-  );
-  const citedBy = askAnswer ? 'this answer' : selected && state.view !== 'ask' ? findingName(selected.id) : null;
   const ev = summary?.eval;
   const running = ev?.state === 'running';
 
@@ -68,7 +49,7 @@ export function Sidebar() {
                   navItem,
                   on ? 'bg-surface text-ink shadow-[0_0_0_1px_var(--hairline),0_1px_2px_rgba(0,0,0,0.04)]' : 'bg-transparent text-body hover:bg-surface-strong',
                 )}
-                onClick={() => (n.view === 'evidence' ? openEvidence() : setView(n.view))}
+                onClick={() => (n.view === 'evidence' ? openEvidence() : n.view === 'documents' ? openDocument(null) : setView(n.view))}
               >
                 <Icon icon={n.icon} size={15} className={on ? 'text-ink' : 'text-muted'} />
                 <span>{n.label}</span>
@@ -85,38 +66,24 @@ export function Sidebar() {
         </h2>
         <div className="flex flex-col">
         <h3 className={subHeading}>In the data room</h3>
-        {/* Legend for the dots: follows the selected finding, so it's clear why the list changes. */}
-        <p className="flex items-center gap-1.5 px-2.5 pt-0.5 pb-2 text-xs text-muted">
-          {citedBy ? (
-            <>
-              <span aria-hidden="true" className="size-1.5 rounded-full bg-ink" />
-              Quoted in {citedBy}
-            </>
-          ) : (
-            ' '
-          )}
-        </p>
-        <ul role="list">
+        <ul role="list" className="pt-1">
           {summary?.documents.map((d) => {
-            const on = cited.has(d.title);
+            const on = state.view === 'documents' && state.docId === d.id;
             return (
-              <li
-                key={d.id}
-                title={`${d.title}, ${d.pages} pages`}
-                className={cn(
-                  'grid h-[30px] grid-cols-[24px_minmax(0,1fr)_auto] items-center px-2.5 text-md',
-                  on ? 'font-medium text-ink' : 'text-body',
-                )}
-              >
-                <Icon icon={FileText} size={14} className={on ? 'text-ink' : 'text-muted'} />
-                <span className="truncate">{d.title}</span>
-                {on ? (
-                  <span className="ml-2 size-1.5 rounded-full bg-ink">
-                    <span className="sr-only">, quoted in {citedBy}</span>
-                  </span>
-                ) : (
-                  <span />
-                )}
+              <li key={d.id}>
+                <button
+                  type="button"
+                  aria-current={on ? 'page' : undefined}
+                  title={`${d.title}, ${d.pages} ${d.pages === 1 ? 'page' : 'pages'}`}
+                  onClick={() => openDocument(d.id)}
+                  className={cn(
+                    'grid h-[30px] w-full grid-cols-[24px_minmax(0,1fr)] items-center rounded-inner px-2.5 text-left text-md transition-[background-color] duration-120',
+                    on ? 'bg-surface font-medium text-ink shadow-[0_0_0_1px_var(--hairline)]' : 'text-body hover:bg-surface-strong',
+                  )}
+                >
+                  <Icon icon={FileText} size={14} className={on ? 'text-ink' : 'text-muted'} />
+                  <span className="truncate">{d.title}</span>
+                </button>
               </li>
             );
           })}

@@ -2,11 +2,11 @@
 // loaded data and the toast. React context + useReducer; async work lives in useActions().
 import { createContext, useCallback, useContext, useMemo, useReducer, useRef, type ReactNode } from 'react';
 import * as api from '../api/client';
-import type { CheckResult, EvalStatus, Finding, FindingRow, Rfi, Summary } from '../api/types';
+import type { CheckResult, DocumentDetail, DocumentListItem, EvalStatus, Finding, FindingRow, Rfi, Summary } from '../api/types';
 import type { AskResponse, AskSuggestion } from '../api/ask.types';
 import { findingName } from '../lib/format';
 
-export type View = 'summary' | 'evidence' | 'rfi' | 'ask';
+export type View = 'summary' | 'evidence' | 'documents' | 'rfi' | 'ask';
 export type ReviewMode = 'idle' | 'reject' | 'correct';
 
 export type Loadable<T> =
@@ -52,6 +52,19 @@ export interface State {
   askViewing: { entryKey: number; index: number } | null;
   /** Polite live-region text for the Ask view. */
   askAnnounce: string;
+  documents: Loadable<DocumentListItem[]>;
+  docs: Record<string, Loadable<DocumentDetail>>;
+  /** The document open in the reader; null shows the list of documents. */
+  docId: string | null;
+  /** Where the reader was opened from: a paragraph to scroll to, and the finding that led there. */
+  docTarget: DocTarget | null;
+  /** The margin note that's lit up (J/K, hover or a deep link). */
+  activeNote: string | null;
+}
+
+export interface DocTarget {
+  paragraph?: string;
+  finding?: string;
 }
 
 export const PANE_MIN = 400;
@@ -76,12 +89,21 @@ const initialState: State = {
   askDraft: '',
   askViewing: null,
   askAnnounce: '',
+  documents: { status: 'loading' },
+  docs: {},
+  docId: null,
+  docTarget: null,
+  activeNote: null,
 };
 
 type Action =
   | { type: 'summary'; value: Loadable<Summary> }
   | { type: 'finding'; id: string; value: Loadable<Finding> }
   | { type: 'rfi'; value: Loadable<Rfi[]> }
+  | { type: 'documents'; value: Loadable<DocumentListItem[]> }
+  | { type: 'doc'; id: string; value: Loadable<DocumentDetail> }
+  | { type: 'openDocument'; id: string | null; target: DocTarget | null }
+  | { type: 'activeNote'; id: string | null }
   | { type: 'view'; view: View }
   | { type: 'select'; id: string; view?: View; mode?: ReviewMode }
   | { type: 'src'; idx: number }
@@ -120,6 +142,14 @@ function reducer(state: State, action: Action): State {
       return { ...state, findings: { ...state.findings, [action.id]: action.value } };
     case 'rfi':
       return { ...state, rfi: action.value };
+    case 'documents':
+      return { ...state, documents: action.value };
+    case 'doc':
+      return { ...state, docs: { ...state.docs, [action.id]: action.value } };
+    case 'openDocument':
+      return { ...state, view: 'documents', docId: action.id, docTarget: action.target, activeNote: null, reviewMode: 'idle' };
+    case 'activeNote':
+      return { ...state, activeNote: action.id };
     case 'view':
       return { ...state, view: action.view, reviewMode: action.view === 'evidence' ? state.reviewMode : 'idle' };
     case 'select': {
@@ -281,6 +311,55 @@ export function useActions() {
   }, [dispatch]);
 
   const setView = useCallback((view: View) => dispatch({ type: 'view', view }), [dispatch]);
+
+  const loadDocuments = useCallback(async () => {
+    dispatch({ type: 'documents', value: { status: 'loading' } });
+    try {
+      dispatch({ type: 'documents', value: { status: 'ready', data: await api.getDocuments() } });
+    } catch (e) {
+      dispatch({ type: 'documents', value: { status: 'error', error: message(e) } });
+    }
+  }, [dispatch]);
+
+  const loadDocument = useCallback(
+    async (id: string, force = false) => {
+      const cur = stateRef.current.docs[id];
+      if (!force && cur && cur.status !== 'error') return;
+      dispatch({ type: 'doc', id, value: { status: 'loading' } });
+      try {
+        dispatch({ type: 'doc', id, value: { status: 'ready', data: await api.getDocument(id) } });
+      } catch (e) {
+        dispatch({ type: 'doc', id, value: { status: 'error', error: message(e) } });
+      }
+    },
+    [dispatch, stateRef],
+  );
+
+  /** The list of documents (id null), or one document, optionally at a paragraph. */
+  const openDocument = useCallback(
+    (id: string | null, target: DocTarget | null = null) => {
+      dispatch({ type: 'openDocument', id, target });
+      if (id) void loadDocument(id);
+      dispatch({ type: 'focus', key: id ? 'document-heading' : 'documents-heading' });
+    },
+    [dispatch, loadDocument],
+  );
+
+  const setActiveNote = useCallback((id: string | null) => dispatch({ type: 'activeNote', id }), [dispatch]);
+
+  /** Step the lit-up margin note by delta (J/K in the reader). */
+  const moveNote = useCallback(
+    (delta: number) => {
+      const s = stateRef.current;
+      const doc = s.docId ? s.docs[s.docId] : undefined;
+      if (doc?.status !== 'ready' || doc.data.notes.length === 0) return;
+      const notes = doc.data.notes;
+      const idx = notes.findIndex((n) => n.id === s.activeNote);
+      const next = idx < 0 ? (delta > 0 ? 0 : notes.length - 1) : Math.max(0, Math.min(notes.length - 1, idx + delta));
+      dispatch({ type: 'activeNote', id: notes[next].id });
+    },
+    [dispatch, stateRef],
+  );
 
   const select = useCallback(
     (id: string, opts: { focusRow?: boolean } = {}) => {
@@ -501,10 +580,12 @@ export function useActions() {
       loadSummary, loadFinding, loadRfi, setView, select, openEvidence, move, setMode, review, undo, runEval, exportRfi,
       setSrc, setLeftW, togglePassed, dismissToast, setHelp, focus,
       loadAskSuggestions, setAskDraft, ask, cancelAsk, retryAsk, viewAskSource,
+      loadDocuments, loadDocument, openDocument, setActiveNote, moveNote,
     }),
     [loadSummary, loadFinding, loadRfi, setView, select, openEvidence, move, setMode, review, undo, runEval, exportRfi,
       setSrc, setLeftW, togglePassed, dismissToast, setHelp, focus,
-      loadAskSuggestions, setAskDraft, ask, cancelAsk, retryAsk, viewAskSource],
+      loadAskSuggestions, setAskDraft, ask, cancelAsk, retryAsk, viewAskSource,
+      loadDocuments, loadDocument, openDocument, setActiveNote, moveNote],
   );
 }
 

@@ -229,7 +229,7 @@ CHECKED = sorted(name for name in INTERFACES if name not in PENDING)
 
 
 def test_the_reader_finds_every_declaration() -> None:
-    assert len(INTERFACES) == 20 and set(UNIONS) >= set(PYTHON_UNIONS) | {"AskRoute", "AskStatus"}
+    assert len(INTERFACES) == 27 and set(UNIONS) >= set(PYTHON_UNIONS) | {"AskRoute", "AskStatus"}
     assert [f.name for f in INTERFACES["Finding"]][-3:] == ["why", "how", "evidence"]
     [corrected] = [f for f in INTERFACES["ReviewRequest"] if f.name == "corrected_result"]
     assert corrected.optional and not corrected.nullable
