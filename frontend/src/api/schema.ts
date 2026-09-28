@@ -377,7 +377,7 @@ export interface components {
              */
             status: "verified" | "corroborated" | "conflict";
             /** Finding Id */
-            finding_id: string;
+            finding_id: string | null;
         };
         /** Finding */
         Finding: {

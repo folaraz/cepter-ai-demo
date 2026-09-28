@@ -108,9 +108,11 @@ function reducer(state: State, action: Action): State {
     case 'summary': {
       const next = { ...state, summary: action.value };
       if (action.value.status === 'ready') {
-        const rows = action.value.data.findings;
-        // Keep a selection that came from the URL if it exists; otherwise start at the first row.
-        if (!rows.some((f) => f.id === state.selectedId)) next.selectedId = rows[0]?.id ?? null;
+        const { findings: rows, facts, dates } = action.value.data;
+        // Keep a selection that came from the URL if it exists (a flagged finding, or a passed
+        // check a fact or date links to); otherwise start at the first row.
+        const known = new Set([...rows.map((f) => f.id), ...facts.map((f) => f.finding_id), ...dates.map((d) => d.finding_id)]);
+        if (!state.selectedId || !known.has(state.selectedId)) next.selectedId = rows[0]?.id ?? null;
       }
       return next;
     }
@@ -261,10 +263,13 @@ export function useActions() {
       dispatch({ type: 'summary', value: { status: 'ready', data } });
       // Prefetch every finding so J/K in Evidence never waits.
       data.findings.forEach((f) => void loadFinding(f.id));
+      // A passed check opened from the URL isn't a row, so load it too.
+      const sel = stateRef.current.selectedId;
+      if (sel && [...data.facts, ...data.dates].some((f) => f.finding_id === sel)) void loadFinding(sel);
     } catch (e) {
       dispatch({ type: 'summary', value: { status: 'error', error: message(e) } });
     }
-  }, [dispatch, loadFinding]);
+  }, [dispatch, loadFinding, stateRef]);
 
   const loadRfi = useCallback(async () => {
     dispatch({ type: 'rfi', value: { status: 'loading' } });
@@ -326,6 +331,8 @@ export function useActions() {
       const s = stateRef.current;
       const id = s.selectedId;
       if (!id || s.saving) return false;
+      // Only flagged findings are reviewed; a passed check opened from a fact is read-only.
+      if (s.summary.status === 'ready' && !s.summary.data.findings.some((f) => f.id === id)) return false;
       dispatch({ type: 'saving', value: true });
       try {
         const res = await api.postReview(id, { action, ...payload });

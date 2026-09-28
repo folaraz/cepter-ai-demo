@@ -143,7 +143,7 @@ def main() -> int:
     same("summary fact keys", [f["key"] for f in view["facts"]], [f["key"] for f in summary["facts"]])
     for vf, sf in zip(view["facts"], summary["facts"]):
         same(f"fact {vf['key']} label", vf["label"], sf["label"])
-        same(f"fact {vf['key']} finding", fid_of[vf["finding"]], sf["finding_id"])
+        same(f"fact {vf['key']} finding", fid_of.get(vf["finding"]), sf["finding_id"])  # None: not clickable
     same("summary date keys", [d["key"] for d in view["dates"]], [d["key"] for d in summary["dates"]])
     for vd, sd in zip(view["dates"], summary["dates"]):
         same(f"date {vd['key']} label", vd["label"], sd["label"])

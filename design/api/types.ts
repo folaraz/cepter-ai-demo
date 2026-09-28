@@ -86,7 +86,7 @@ export interface Fact {
   label: string;
   value: string; // display string, already formatted
   status: QuoteStatus;
-  finding_id: string; // clicking the fact opens this finding's evidence
+  finding_id: string | null; // clicking the fact opens the check that tests it; null: no check does, not clickable
 }
 
 export interface DateMark {

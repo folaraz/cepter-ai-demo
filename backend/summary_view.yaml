@@ -11,6 +11,8 @@ headline:
     many: " {n_word} critical gaps: {phrases}."    # phrases joined "a; b"
 
 facts:
+  # finding: the check that tests the fact; a flagged or a passed check, whichever it is.
+  # null when no check tests it: the fact is shown but opens nothing.
   # value formats: date_short -> "1 Oct 2029"; name_display -> legal suffix removed, title case
   - key: export_capacity
     label: "Export capacity"
@@ -36,22 +38,22 @@ facts:
     label: "Landowner"
     source: {party_role: landlord, on: Lease}
     format: name_display          # "JOHN HARTLEY" -> "John Hartley"
-    finding: lease_covers_operating_life
+    finding: null                 # no check tests the landowner: shown, not clickable
   - key: offtaker
     label: "Offtaker"
     source: {party_role: buyer, on: OfftakeAgreement}
     format: name_display          # "Northwind Energy Supply Limited" -> "Northwind Energy Supply"
-    finding: grid_before_cod
+    finding: offtaker_identified
   - key: network_operator
     label: "Network operator"
     source: {party_role: network_operator, on: GridConnection}
     format: name_display          # -> "Fenland Distribution Networks"
-    finding: grid_before_cod
+    finding: null                 # no check tests the network operator
   - key: planning_ref
     label: "Planning ref."
     source: {property: Permit.reference}
     format: as_is
-    finding: pre_commencement_conditions
+    finding: permission_in_force
 
 # Fact status (QuoteStatus): "conflict" if the property group has a conflict;
 # "corroborated" if the value (or, for a Party, the merged node) is evidenced by two or
@@ -63,7 +65,7 @@ dates:
     label: "Planning granted"
     source: {property: Permit.decision_date}
     tone: neutral
-    finding: pre_commencement_conditions
+    finding: permission_in_force
   - key: lease_start
     label: "Lease starts"
     source: {property: Lease.start_date}
@@ -73,7 +75,7 @@ dates:
     label: "Commencement deadline"
     source: {derived: "Permit.decision_date + Condition(time_limit).years"}
     tone: neutral
-    finding: pre_commencement_conditions
+    finding: permission_in_force
   - key: target_cod
     label: "Target COD · PPA"
     source: {property: OfftakeAgreement.target_cod}

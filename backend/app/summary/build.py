@@ -126,7 +126,7 @@ def _facts(p: Published, specs: list[dict[str, Any]], finding_of: dict[str, str]
                 label=spec["label"],
                 value=value,
                 status=status,
-                finding_id=finding_of[spec["finding"]],
+                finding_id=finding_of[spec["finding"]] if spec["finding"] else None,
             )
         )
     return facts

@@ -44,28 +44,28 @@
       "label": "Landowner",
       "value": "John Hartley",
       "status": "corroborated",
-      "finding_id": "F-04"
+      "finding_id": null
     },
     {
       "key": "offtaker",
       "label": "Offtaker",
       "value": "Northwind Energy Supply",
       "status": "verified",
-      "finding_id": "F-02"
+      "finding_id": "F-08"
     },
     {
       "key": "network_operator",
       "label": "Network operator",
       "value": "Fenland Distribution Networks",
       "status": "verified",
-      "finding_id": "F-02"
+      "finding_id": null
     },
     {
       "key": "planning_ref",
       "label": "Planning ref.",
       "value": "24/00318/FUL",
       "status": "verified",
-      "finding_id": "F-05"
+      "finding_id": "F-06"
     }
   ],
   "dates": [
@@ -74,7 +74,7 @@
       "label": "Planning granted",
       "date": "2024-06-12",
       "tone": "neutral",
-      "finding_id": "F-05"
+      "finding_id": "F-06"
     },
     {
       "key": "lease_start",
@@ -88,7 +88,7 @@
       "label": "Commencement deadline",
       "date": "2027-06-12",
       "tone": "neutral",
-      "finding_id": "F-05"
+      "finding_id": "F-06"
     },
     {
       "key": "target_cod",

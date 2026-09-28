@@ -84,7 +84,7 @@ class Fact(BaseModel):
     label: str
     value: str
     status: QuoteStatus
-    finding_id: str
+    finding_id: str | None  # None: no check tests this fact, so it opens nothing
 
 
 class DateMark(BaseModel):

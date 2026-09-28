@@ -17,6 +17,9 @@ import f02 from './fixtures/findings/F-02.json';
 import f03 from './fixtures/findings/F-03.json';
 import f04 from './fixtures/findings/F-04.json';
 import f05 from './fixtures/findings/F-05.json';
+import f06 from './fixtures/findings/F-06.json';
+import f07 from './fixtures/findings/F-07.json';
+import f08 from './fixtures/findings/F-08.json';
 import type { AskResponse, AskSuggestion } from './ask.types';
 import askSuggestionsFixture from './fixtures/ask/suggestions.json';
 import askA01 from './fixtures/ask/a01.json';
@@ -61,7 +64,7 @@ class FixtureBackend {
   constructor() {
     this.summary = clone(summaryFixture) as Summary;
     this.evalStatus = clone(evalFixture) as EvalStatus;
-    const list = [f01, f02, f03, f04, f05].map((f) => clone(f) as Finding);
+    const list = [f01, f02, f03, f04, f05, f06, f07, f08].map((f) => clone(f) as Finding);
     this.findings = Object.fromEntries(list.map((f) => [f.id, f]));
   }
 
@@ -84,7 +87,9 @@ class FixtureBackend {
   getFinding(id: string): Finding {
     const f = this.findings[id];
     if (!f) throw new ApiError(`Finding ${id} not found`, 404);
-    return clone({ ...f, ...this.row(id) });
+    // Passed checks (F-06 to F-08) have no summary row to merge.
+    const row = this.summary.findings.find((r) => r.id === id);
+    return clone(row ? { ...f, ...row } : f);
   }
 
   postReview(id: string, req: ReviewRequest): ReviewResponse {
