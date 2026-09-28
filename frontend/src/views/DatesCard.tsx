@@ -53,8 +53,10 @@ export function DatesCard({ summary }: { summary: Summary | null }) {
   const w = summary.date_window;
   const toYear = w.to.slice(0, 4);
   const byKey = Object.fromEntries(placed.map((p) => [p.mark.key, p]));
-  const clashFrom = byKey[summary.clash.from_key];
-  const clashTo = byKey[summary.clash.to_key];
+  // Both are null when their checks pass: no band, no label, no "After" row.
+  const clash = summary.clash;
+  const clashFrom = clash ? byKey[clash.from_key] : undefined;
+  const clashTo = clash ? byKey[clash.to_key] : undefined;
   const lh = summary.long_horizon;
 
   return (
@@ -62,13 +64,13 @@ export function DatesCard({ summary }: { summary: Summary | null }) {
       <Head scale={`${w.from.slice(0, 4)} to ${toYear}, drawn to scale. Select a date to see its source.`} />
       <div className={plot}>
         <Axis />
-        {clashFrom && clashTo && (
+        {clash && clashFrom && clashTo && (
           // Pointer shortcut only; the clash label below is the accessible control.
           <div
             aria-hidden="true"
             className="absolute top-[79px] h-[7px] cursor-pointer rounded-[2px] bg-critical opacity-35"
             style={{ left: `${clashFrom.pct}%`, width: `${clashTo.pct - clashFrom.pct}%` }}
-            onClick={() => openEvidence(summary.clash.finding_id)}
+            onClick={() => openEvidence(clash.finding_id)}
           />
         )}
         {placed.map(({ mark, pct, row, anchor }) => {
@@ -99,15 +101,15 @@ export function DatesCard({ summary }: { summary: Summary | null }) {
             </div>
           );
         })}
-        {clashTo && (
+        {clash && clashTo && (
           <button
             type="button"
             className="absolute top-[130px] inline-flex items-center gap-1.5 whitespace-nowrap border-none bg-transparent p-0 text-sm font-medium text-critical underline-offset-3 hover:underline"
             style={{ right: `${100 - clashTo.pct}%` }}
-            onClick={() => openEvidence(summary.clash.finding_id)}
+            onClick={() => openEvidence(clash.finding_id)}
           >
             <Icon icon={CircleX} size={13} />
-            {summary.clash.label}
+            {clash.label}
           </button>
         )}
         {yearTicks(w).map((y) => (
@@ -116,15 +118,17 @@ export function DatesCard({ summary }: { summary: Summary | null }) {
           </span>
         ))}
       </div>
-      <button type="button" className={beyond} onClick={() => openEvidence(lh.finding_id)}>
-        <span className="shrink-0 font-semibold text-ink">After {toYear}</span>
-        <span>{lh.text}</span>
-        <span className="grow" />
-        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-critical">
-          <Icon icon={CircleX} size={13} />
-          {lh.flag}
-        </span>
-      </button>
+      {lh && (
+        <button type="button" className={beyond} onClick={() => openEvidence(lh.finding_id)}>
+          <span className="shrink-0 font-semibold text-ink">After {toYear}</span>
+          <span>{lh.text}</span>
+          <span className="grow" />
+          <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-critical">
+            <Icon icon={CircleX} size={13} />
+            {lh.flag}
+          </span>
+        </button>
+      )}
     </section>
   );
 }

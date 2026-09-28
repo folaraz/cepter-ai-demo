@@ -118,21 +118,19 @@ def test_the_pipeline_meets_every_target(db: psycopg.Connection, tmp_path: Path)
     assert run.metrics["llm_calls"] == 5 and run.cost_gbp is not None and run.cost_gbp > 0
 
 
-def test_a_broken_check_is_reported(
+def test_a_broken_check_fails_the_gate(
     db: psycopg.Connection, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Flipping grid_before_cod loses a check item. Note the spec's gate alone does not
-    fail on it (mean of five ratios is 0.93 > 0.90); the C7 tests are what fail in CI."""
+    """Flipping grid_before_cod loses one check item. The average (0.93) would clear a
+    0.90 gate and hide it; each item is its own gate, so the eval fails."""
     monkeypatch.setitem(
         runner._REGISTRY, "grid_before_cod", lambda inputs, view: Outcome("pass", {})
     )
     run = run_eval(db, perfect_llm(tmp_path)(db), session_id=None, gate=0.90)
     assert metric(run, "checks") == (2, 3)
     assert failures(run, "checks") == ["g-c03"]
-    assert float(run.score or 0) == pytest.approx(0.9333, abs=1e-4)
-    # A stricter gate catches it.
-    strict = run_eval(db, perfect_llm(tmp_path)(db), session_id=None, gate=0.95)
-    assert strict.state == "failing"
+    assert float(run.score or 0) == pytest.approx(0.9333, abs=1e-4)  # shown, not gated
+    assert run.state == "failing"
 
 
 def test_an_edited_cited_paragraph_makes_the_correction_lapse(
@@ -323,11 +321,10 @@ def test_ask_meets_every_target(db: psycopg.Connection, tmp_path: Path) -> None:
     assert keyword_only["passed"] < 8
 
 
-def test_a_tampered_ask_recording_is_caught_as_a_wrong_answer(
-    db: psycopg.Connection, tmp_path: Path
-) -> None:
+def test_a_tampered_ask_recording_fails_the_gate(db: psycopg.Connection, tmp_path: Path) -> None:
     """The verifier never serves a quote that isn't verbatim, so a tampered recording
-    shows up as a dropped sentence and a failed answer, not as an invalid citation."""
+    shows up as a dropped sentence and a failed answer rather than an invalid citation.
+    That one failed answer fails the eval."""
     runner = perfect_ask(tmp_path)
     run_eval(db, perfect_llm(tmp_path)(db), session_id=None, gate=0.90, ask_runner=runner)
     store = runner.store
@@ -351,7 +348,7 @@ def test_a_tampered_ask_recording_is_caught_as_a_wrong_answer(
     assert failures(run, "answer_accuracy") == ["a04"]
     assert run.metrics["dropped_sentences"] == 1
     assert run.citation_validity == 1  # nothing unverified was served
-    assert run.state == "passing"  # the gate, as specified, averages it away (0.99)
+    assert run.state == "failing"  # an average (0.99) would have hidden it
 
 
 def perfect_ask_replay(store: RecordingStore) -> Any:

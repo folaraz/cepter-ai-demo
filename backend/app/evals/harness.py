@@ -13,8 +13,12 @@
    paragraph changes, the override lapses and the correction is no longer held.
 3. Report, without gating: corrections the pipeline already agrees with ("learned"), the
    verifier's rejection rate, model calls and their cost.
-4. score = mean of the ratios (a metric with no items is skipped). Passing needs
-   score >= gate, citation validity 1.0 and every correction held.
+4. Passing needs every golden item to pass (extraction, conflicts, checks, corrections,
+   and Ask's answers and abstentions) and citation validity of 100%. An average can hide
+   a broken check, so each item is its own gate: everything replays deterministically,
+   so anything under 100% is a regression, not noise. `score` (the mean of the ratios)
+   is reported and shown in the UI. `gate` is also applied to it, for later evals against
+   a live model where some variance is expected.
 5. Write an eval_runs row.
 
 Ask's three metrics (retrieval recall, answer accuracy, abstention) join in C14.
@@ -130,7 +134,8 @@ def score_run(
     score = sum(values) / len(values) if values else 0.0
     citation = ratios["citation_validity"].value
     held = ratios["corrections"]
-    passing = score >= gate and (citation is None or citation == 1.0) and held.passed == held.total
+    every_item = all(r.passed == r.total for r in ratios.values())
+    passing = every_item and score >= gate
 
     claims = claims_repo.list_claims(conn, run_id)
     calls = runs.list_llm_calls(conn, run_id)

@@ -336,7 +336,8 @@ document-noun lists ("Planning and the PPA").
 ### C8. Summary and RFIs. Never cut.
 
 - **Summary** follows `summary_view.yaml`: headline template, eight facts with statuses,
-  six date marks, date window, clash, long-horizon note, flagged findings sorted by
+  six date marks, date window, clash and long-horizon note (each null unless its check
+  flags: `when_fails` in `summary_view.yaml`), flagged findings sorted by
   (severity, order), passed checks, documents and missing documents, and the eval status
   (C11).
 - **RFIs:** one per flagged finding whose check defines `rfi`, if the result is
@@ -440,9 +441,14 @@ the API counts this set only; Ask questions are reported separately.
    `corr-001` is learned through name normalisation), routing accuracy, keyword-only and
    vector-only recall next to hybrid recall, sentences dropped by answer verification,
    the verifier rejection rate, LLM calls and cost.
-4. `score` = mean of the eight ratios (skip a metric with no items).
-   State is `passing` if score ≥ gate **and** citation validity is 1.0 **and** every
-   correction is held; otherwise `failing`.
+4. **Every golden item is its own gate.** State is `passing` only if every item passes
+   (extraction, conflicts, checks, corrections held, retrieval recall, Ask answers and
+   abstentions) **and** citation validity is 100%; otherwise `failing`. An average can
+   hide a broken check (one wrong check out of three still averages about 0.93), and
+   because everything replays deterministically, anything under 100% is a regression,
+   not noise. `score` = mean of the eight ratios (skip a metric with no items) is kept
+   as the number shown in the UI. `--gate` is also applied to the score, for later evals
+   against a live model where some variance is expected.
 5. Write an `eval_runs` row (Ask results go in `metrics`), print the metrics table (it
    goes in the README) and exit non-zero when failing.
 
@@ -456,8 +462,9 @@ the API counts this set only; Ask questions are reported separately.
 
 **Done when:**
 - CI fails if a check is deliberately broken (flip `>` in `grid_before_cod`).
-- CI fails if an Ask answer's citation is tampered with in a recording (citation validity
-  below 1.0).
+- CI fails if an Ask answer's citation is tampered with in a recording. The verifier
+  never serves a quote that isn't verbatim, so the tampered sentence is dropped and the
+  answer fails answer accuracy; citation validity stays 100%.
 - A test edits a cited paragraph's text in the eval run: the fingerprint lapses and the
   correction shows as not held.
 - `lens eval` prints the table. Targets: extraction 15/15, conflicts 1/1, checks 3/3,

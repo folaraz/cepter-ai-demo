@@ -83,8 +83,9 @@ Corrections held                   1/1 (1 learned)
 Citation validity                             100%
 ```
 
-Passing needs score >= the gate, 100% citation validity and every correction held. A
-correction holds only while the paragraphs it cited are unchanged. CI runs the gate once
+Passing needs **every** golden item to pass and 100% citation validity: an average can
+hide a broken check, so each item is its own gate. The score (the mean) is what the UI
+shows. A correction holds only while the paragraphs it cited are unchanged. CI runs the gate once
 recordings are committed. `POST /api/evals/run` runs it for a visitor's session.
 
 ## The UI

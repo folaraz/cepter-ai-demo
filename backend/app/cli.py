@@ -149,8 +149,8 @@ def eval_command(
     no_ask: bool = typer.Option(False, "--no-ask", help="Skip Ask's golden questions."),
 ) -> None:
     """Re-run the pipeline in replay mode and score it against the golden set. Exits 1
-    when failing: score under the gate, a citation that isn't verbatim, or a correction
-    that no longer holds."""
+    when failing: any golden item not met (each item is its own gate) or a citation that
+    isn't verbatim."""
     settings = get_settings()
     with connect(settings.database_url) as conn:
         llm = AnthropicLLMClient(trace=db_tracer(conn), default_mode="replay")

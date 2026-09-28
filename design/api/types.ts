@@ -144,8 +144,8 @@ export interface Summary {
   facts: Fact[];
   dates: DateMark[];
   date_window: { from: string; to: string };
-  clash: DateClash;
-  long_horizon: LongHorizonNote;
+  clash: DateClash | null; // null unless grid_before_cod flags (summary_view.yaml when_fails)
+  long_horizon: LongHorizonNote | null; // null unless lease_covers_operating_life flags
   findings: FindingRow[]; // pre-sorted: severity desc, then id
   passed: { check_id: string; title: string }[];
   documents: DocumentSummary[];
